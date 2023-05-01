@@ -1,11 +1,19 @@
 # Adrian Cantrill's AWS Certified Solutions Architect - Associate (SAA-C03) Course
 
 
-# PUBLIC INTRODUCTION - No Notes
+# INTRODUCTION & SCENARIO
 
+# Public Introduction - No Notes
 
-# COURSE RESOURCES
+# Course Resources
 
 ## Course has GitHub Repository: https://github.com/acantril/aws-sa-associate-saac03
-### Walked through 
+### Walked through how to d/l Git to PC and clone repo for access.
+#### To update to latest version: "git pull"
 
+### Walked through and recommended VS Studio Code install
+
+# Site Tools & Features
+
+## Quick tour of the learning platform
+### Products page, Slack channel, free GitHub repo: "Labs" link, mini projects in the GH repo, "More" tab for tech support
