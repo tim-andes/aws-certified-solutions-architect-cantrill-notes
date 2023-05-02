@@ -37,17 +37,46 @@ if it helps business.
 Major offices NY, Seattle, London all use Head Office services for data
 Field workers on laptop, 3g/4g/ satellite for email/files, chat/planning, research data
 
-Problems: Hardware failing, datacenter decommissioned in 18months, so business needs to migrate out. New investment needed, not sure if on premise, azure, aws, etc. Previous AWS/Azure attempts didn't pan out. Distance to datacenter is sub-optimal for much of company. Lean/appropriately sized, but trouble with peak traffic. IT team sucks at cloud.
+## Problems: Hardware failing, datacenter decommissioned in 18months, so business needs to migrate out. New investment needed, not sure if on premise, azure, aws, etc. Previous AWS/Azure attempts didn't pan out. Distance to datacenter is sub-optimal for much of company. Lean/appropriately sized, but trouble with peak traffic. IT team sucks at cloud.
 
-Ideal Outcomes: 
+## Ideal Outcomes: 
 - Fast performance for all field workers
 - Able to deploy into new regions quickly when required
 - Low cost and scalable base infrastructure, cost close to 0 as possible while meeting reqs
 - Agility - new marketing campaigns, social and progressive applications (IOT, Big Data, etc). Wants to make use of emerging technologies
 - Automation - low base staffing costs
 
-Pay attention to which areas need more information, so you can ask the right questions.
+## Pay attention to which areas need more information, so you can ask the right questions.
 
-# Connect with other students and your instructor
+# Connect with other students and your instructor - techstudyslack.com. Make sure you meet people in the industry--50% of jobs aren't posted anywhere.
+- No better way to learn tech than help others
+
+# Course upgrades: If you've already bought a course but want a bundle, you'll just have to pay the difference.
 
 
+# COURSE FUNDAMENTALS AND AWS ACCOUNTS
+
+## AWS Accounts
+AWS Accounts are not only required to use AWS services, they are also one of the most important tools available to a solutions architect.
+Many students confuse accounts with users inside the accounts. An org may use one account or many thousands. Bigger orgs generally use multiple AWS accounts.
+
+At a high level, AWS Account is a container for Identities (users) (which you log in with) and Resources (which you provision).
+
+When creating an AWS account need need to provide:
+- Unique email address (for EACH AWS account); this creates a special type of identity: the account root user
+- Provide a payment method, generally a Credit Card
+
+Root Users can only access their own accounts. Initially, it is also the only user. Root user has full control over the one specific AWS account and any resources inside it. Root user CANNOT be restricted in any way. Protect the root username and password.
+
+### Billing 
+Credit Card used to open account is the Account Payment Method. Any billable usage is charged to this CC. "Pay-as-you-go" platform. There is a free tier which we use in this course.
+
+### Security
+You can create restricted identities/users using Identity and Access Management (IAM): Users, Groups, and Roles can also be created and given FULL or LIMITED permissions. All of these ID's start off with NO access/permissions in the account. The IAM service is Account specific. Cross-account permissions are a possibility, as well (to be covered later).
+
+### Boundary of the Account
+AWS accounts are really good at containing what's inside the accounts; bad employee or bad actor, etc. Having separate AWS accounts for different uses (DEV, PROD, etc), you can limit overall damage.
+
+By default, all access to an AWS account is denied except for the root user.
+
+# TIP: Create new accounts for the course, don't use existing AWS accounts
