@@ -7,30 +7,34 @@
 
 # Course Resources
 
-## Course has GitHub Repository: https://github.com/acantril/aws-sa-associate-saac03
-### Walked through how to d/l Git to PC and clone repo for access.
-#### To update to latest version: "git pull"
+Course has GitHub Repository: https://github.com/acantril/aws-sa-associate-saac03
+Walked through how to d/l Git to PC and clone repo for access.
+To update to latest version: "git pull"
 
-### Walked through and recommended VS Studio Code install
+Walked through and recommended VS Studio Code install
 
 # Site Tools & Features
 
 ## Quick tour of the learning platform
-### Products page, Slack channel, free GitHub repo: "Labs" link, mini projects in the GH repo, "More" tab for tech support
+ Products page, Slack channel, free GitHub repo: "Labs" link, mini projects in the GH repo, "More" tab for tech support
 
 # AWS Exams / Certifications
 
 ## How to get started
-### Don't start with the Cloud Practitioner Foundational Cert, start with Associate level SA (Solutions Architect). The content overlaps.
-### After you finish SA Associate do the Role Based certs, then Specialty certs later. Get SA Professional prior to Specialties certs
-#### In Associate level, start with 1. SA before SysOps/Developer 2. then Developer Associate 3. then SysOps Associate (Hardest exam of the 3).
-#### In Professional level, tests are way harder. Longer questions, more questions. 1. Professional SA, 2. DevOps Pro exam
+Don't start with the Cloud Practitioner Foundational Cert, start with Associate level SA (Solutions Architect). The content overlaps.
+After you finish SA Associate do the Role Based certs, then Specialty certs later. Get SA Professional prior to Specialties certs
+- In Associate level, start with 1. SA before SysOps/Developer 2. then Developer Associate 3. then SysOps Associate (Hardest exam of the 3).
+- In Professional level, tests are way harder. Longer questions, more questions. 1. Professional SA, 2. DevOps Pro exam
 
 # Scenario - Animals4life
 
-## Animal rescue/awareness Org. Global company, 100 staff, 100 remote staff, etc etc. Small data-center is old, and data should be migrated out. 
-## Badly implemented AWS trial in SYD Region. Isolated Azure/GCP Pilots. All staff uses this infrastructure. Company runs lean but will get new tech
-## if it helps business. 
-### On Premise: 192.168.10.0/24, Class C
-### AWS Pilot: 10.0.0.0/16, Class B
-### Azure Pilot: 172.31.0.0/16, Class C
+Animal rescue/awareness Org. Global company, 100 staff, 100 remote staff, etc etc. Small data-center is old, and data should be migrated out. 
+Badly implemented AWS trial in SYD Region. Isolated Azure/GCP Pilots. All staff uses this infrastructure. Company runs lean but will get new tech
+if it helps business. 
+- On Premise: 192.168.10.0/24, Class C
+- AWS Pilot: 10.0.0.0/16, Class B
+- Azure Pilot: 172.31.0.0/16, Class C
+Major offices NY, Seattle, London all use Head Office services for data
+Field workers on laptop, 3g/4g/ satellite for email/files, chat/planning, research data
+
+Problems: Hardware failing, datacenter decommissioned in 18months, so business needs to migrate out. New investment needed, not sure if on premise, azure, aws, etc. Previous AWS/Azure attempts didn't pan out. Distance to datacenter is sub-optimal for much of company. Lean/appropriately sized, but trouble with peak traffic. IT team sucks at cloud.
