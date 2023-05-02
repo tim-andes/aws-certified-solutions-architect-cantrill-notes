@@ -33,8 +33,21 @@ Badly implemented AWS trial in SYD Region. Isolated Azure/GCP Pilots. All staff 
 if it helps business. 
 - On Premise: 192.168.10.0/24, Class C
 - AWS Pilot: 10.0.0.0/16, Class B
-- Azure Pilot: 172.31.0.0/16, Class C
+- Azure Pilot: 172.31.0.0/16, Class B
 Major offices NY, Seattle, London all use Head Office services for data
 Field workers on laptop, 3g/4g/ satellite for email/files, chat/planning, research data
 
 Problems: Hardware failing, datacenter decommissioned in 18months, so business needs to migrate out. New investment needed, not sure if on premise, azure, aws, etc. Previous AWS/Azure attempts didn't pan out. Distance to datacenter is sub-optimal for much of company. Lean/appropriately sized, but trouble with peak traffic. IT team sucks at cloud.
+
+Ideal Outcomes: 
+- Fast performance for all field workers
+- Able to deploy into new regions quickly when required
+- Low cost and scalable base infrastructure, cost close to 0 as possible while meeting reqs
+- Agility - new marketing campaigns, social and progressive applications (IOT, Big Data, etc). Wants to make use of emerging technologies
+- Automation - low base staffing costs
+
+Pay attention to which areas need more information, so you can ask the right questions.
+
+# Connect with other students and your instructor
+
+
