@@ -6,7 +6,6 @@
 # Public Introduction - No Notes
 
 # Course Resources
-
 Course has GitHub Repository: https://github.com/acantril/aws-sa-associate-saac03
 Walked through how to d/l Git to PC and clone repo for access.
 To update to latest version: "git pull"
@@ -16,7 +15,7 @@ Walked through and recommended VS Studio Code install
 # Site Tools & Features
 
 ## Quick tour of the learning platform
- Products page, Slack channel, free GitHub repo: "Labs" link, mini projects in the GH repo, "More" tab for tech support
+Products page, Slack channel, free GitHub repo: "Labs" link, mini projects in the GH repo, "More" tab for tech support
 
 # AWS Exams / Certifications
 
