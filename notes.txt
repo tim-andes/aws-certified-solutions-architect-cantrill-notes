@@ -122,4 +122,38 @@ To Activate MFA for a specific ID, like Root user, you activate MFA for that use
 ### Securing an AWS Account
 Attach MFA device to Root user.
 
-In AWS Console... Account > Security Credentials to IAM > Assign MFA Device, follow steps.
+In AWS Console... Account > Security Credentials to IAM console > locate "Assign MFA Device", follow steps.
+- Log Out and test MFA login.
+
+# REMEMBER: When setting up a new AWS account / Identity, you need to add another entry within your OTP application.
+
+By end of this course, you should have a total of 4 virtual MFA's configured.
+
+### Creating a Budget
+Understand Free Tier and set up a budget.
+
+AWS Free Tier: https://aws.amazon.com/free/
+- Details allocations of free resources
+
+Spend Details: Account > Billing Dashboard > click "Bills" (for spend details)
+
+Billing Notification Preferences: Click "Billing Preferences" > check all boxes within "Invoice delivery preferences" and "Alert preferences" and Update
+
+Create Cost Budgets: click "Budgets" > select Use a Template > select an appropriate option based on monthly spend budget (select Zero spend budget) > Budget Name "Monthly Zero Budget", enter Email Recipients for alerts ([EMAIL]+trainingawsgeneral@gmail.com) > click "Create Budget"
+-- Budgets allow you to monitor spend and configure alerts when hitting spend targets
+
+### Creating the Production Account
+After creating General AWS account, we now need to create multiple AWS accounts and connect them with an AWS Organization.
+
+#### Create Production AWS Account
+Steps:
+1. First, decide on email address to use [EMAIL]+trainingawsproduction1@gmail.com
+2. Credit Card
+3. Support Plan
+4. Secure AWS account with MFA to Root user of Production Account
+5. Billing Preferences, check the boxes, adding email address for alerts
+6. Create budget
+7. Enable IAM User & Role Access to Billing (in Accounts)
+8. Optional: Update alternate contacts in Account
+
+### IAM (Identity and Access Management) Basics
