@@ -96,7 +96,30 @@ Choose free tier AWS account after providing all account setup info (unique emai
 
 Complete the prompted steps. Account will now be created.
 
-## Account
+### Account
 - Always a good idea to update Alternate Contacts
 - IAM User and Role Access to Billing Information, click "Edit", check Activate IAM Access
 -- If this IAM box isn't checked, even an IAM ID will full admin permissions wouldn't be able to access the billing console
+
+### Multi-Factor Authentication (MFA)
+- Username and PW is step one
+- MFA makes things more secure with OTP
+
+Definition: Factors - Different pieces of evidence which prove identity
+
+4 Common Factors:
+- Knowledge (username / PW)
+- Possession (debit card, MFA device, MFA app, etc)
+- Inherent - Something you are: fingerprint, biometrics, etc.
+- Location - Physical location, which network (corp or wifi)
+
+More factors means more security and harder to fake. Also means less convenient. Trying to strike a balance between security and convenience.
+
+With AWS: 1. first, username and PW 2. MFA OTP (physical MFA or virtual via app ie. Google Authenticator)
+
+To Activate MFA for a specific ID, like Root user, you activate MFA for that user. AWS generates secret key and other associated information (user it links to, service). All this information use all this information together to generate a QR code. Scan code using MFA app
+
+### Securing an AWS Account
+Attach MFA device to Root user.
+
+In AWS Console... Account > Security Credentials to IAM > Assign MFA Device, follow steps.
