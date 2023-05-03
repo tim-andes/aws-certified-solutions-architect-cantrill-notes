@@ -157,3 +157,40 @@ Steps:
 8. Optional: Update alternate contacts in Account
 
 ### IAM (Identity and Access Management) Basics
+We first need to understand the identity situation. Accounts created have Root user will full access. AWS account and Root user can be thought of as the same thing. 
+
+Generally, you want to give access to other people in the companies, but with restricted access -- ONLY GIVE THEM PERMISSIONS REQUIRED TO DO A JOB, called "Least Priveleged Access". 
+
+EXAM: IAM is a globally resilient service, so any data is always secure acroos all AWS regions.
+
+Any IAM's in an account are completely separate from any other accounts. IAM as a service can do as much as the Root user if given all permissions, exception being some billing stuff (but that can be activated).
+
+Inside IAM, you can create multiple identities. 
+
+IAM let's you create 3 types of identity objects:
+- User
+- Group
+- Role
+
+Users: Humans or applications that need access to your AWS account. An application that does backups of the account may also be an IAM user.
+
+Group: Collections of related users. All dev team users, finance, HR, etc.
+
+Roles: Can be used by AWS Services or if you want to grant external access to your account. Used to grant access to services in your account to an uncertain number of entities. EX: If you want all EC2 instances in your account to access the Simple Storage Service, you can create a role which grants access and allow instances to use that role. (Roles used when the number of entities needing access is uncertain)
+
+### IAM Policy or Policy Document
+Objects or documents to be used to Allow or Deny access to AWS services, only when attached to users, groups, or roles.
+
+### High Level IAM
+IAM has 3 main jobs:
+1. IDP (ID Provider): Manages identities
+2. Authentication Process: Authenticates identities (when anyone makes request to AWS, they're known as a Security Principle--they must prove their identity)
+3. Authorization: Allowed or Denied access to resources. This is based on Policies associated with the identity that is authenticated with.
+
+### Other IAM Key Points
+- No cost for IAM
+- Global service / Global Resilience (copes with failure of large parts of the AWS system)
+- IAM only controls with its identities can do. Allow or Deny identities in account
+- No direct control on external accounts or users. It only controls local accounts or users
+- Identity federation (to be covered later) and MFA
+
