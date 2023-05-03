@@ -194,3 +194,4 @@ IAM has 3 main jobs:
 - No direct control on external accounts or users. It only controls local accounts or users
 - Identity federation (to be covered later) and MFA
 
+Next, we'll create an IAM account with full permissions to take the place of the Root user. Root users should generally only be used to create an account. Afterward, best practice is to utilize an IAM User rather than account root user. We'll use this IAM user to create new identities with less permissions (only enough for the user to do a certain task)
