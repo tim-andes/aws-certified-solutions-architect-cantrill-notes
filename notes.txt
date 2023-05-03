@@ -79,4 +79,24 @@ AWS accounts are really good at containing what's inside the accounts; bad emplo
 
 By default, all access to an AWS account is denied except for the root user.
 
-# TIP: Create new accounts for the course, don't use existing AWS accounts
+# TIP: Create new accounts for the course, don't use existing AWS accounts. The longer an AWS account exists, the more potential for configuratoin errors.
+
+
+## DEMO: Creating the GENERAL AWS Account: https://learn.cantrill.io/courses/1820301/lectures/41301459
+1. Create General AWS account (*MANAGEMENT). This account's root user will be what we log in with (root user = account specific).
+2. Add root user MFA for security.
+3. Create a Budget to protect against unintended costs.
+4. Create an IAM user, IAMADMIN. Give permissions. Then we'll use this ID for the course.
+5. Create a second accound, Production. Will also have IAMADMIN user.
+
+## TIP: using one email for multiple accounts with Gmail. AWS accounts should be viewed as disposable, create as many as you need. Create a new account for each course. 
+### TIP Example: email is catguy@gmail.com. You can use + sign in email address to create 'unique' email addresses. Ex: catguy+AWSAccount1@gmail.com, catguy+AWSAccount2@gmail.com, etc etc. This is called a Dynamic Alias.
+
+Choose free tier AWS account after providing all account setup info (unique email, CC, verification.
+
+Complete the prompted steps. Account will now be created.
+
+## Account
+- Always a good idea to update Alternate Contacts
+- IAM User and Role Access to Billing Information, click "Edit", check Activate IAM Access
+-- If this IAM box isn't checked, even an IAM ID will full admin permissions wouldn't be able to access the billing console
