@@ -218,4 +218,9 @@ IAM Dashboard > left sidebar "Users" > Create user "iamadmin"
 - Give admin permissions "Attach policies directly" > check "AdministratorAccess"
 - Create user
 - Test login
+- Confirm login with profile dropdown that will show account name
+- Secure admin account with OTP > Security Credentials > Assign MFA
+- Log out and test OTP
 
+## DEMO Adding an IAM Admin to PRODUCTION ACCOUNT
+Same as previous section.
