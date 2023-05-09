@@ -198,4 +198,24 @@ IAM has 3 main jobs:
 Next, we'll create an IAM account with full permissions to take the place of the Root user. Root users should generally only be used to create an account. Afterward, best practice is to utilize an IAM User rather than account root user. We'll use this IAM user to create new identities with less permissions (only enough for the user to do a certain task)
 
 ## DEMO Adding an IAM Admin to GENERAL ACCOUNT
+Set up AIM ID with Admin permissions
+
+Search "IAM" > IAM Dashboard
+
+To sign on with IAM identities, use sign-in URL: http://[account-id].signin.aws.amazon.com/console. 
+-- To make friendlier URL, set alias.
+
+### To set alias, make it globablly unique. 
+1. Within IAM Dashboard, find right-side AWS Account info, find "Account Alias", click "Create".
+- Must be a globablly unique ID. I am using "ta-cantrill-training-aws-general"
+-- Now URL is https://ta-cantrill-training-aws-general.signin.aws.amazon.com/console
+
+### Create IAM Admin ID
+IAM Dashboard > left sidebar "Users" > Create user "iamadmin"
+- Give Access to Console
+- Create an IAM user (2nd option, 1st option to be covered later)
+- Custom PW
+- Give admin permissions "Attach policies directly" > check "AdministratorAccess"
+- Create user
+- Test login
 
