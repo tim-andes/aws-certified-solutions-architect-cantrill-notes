@@ -277,3 +277,7 @@ Test that this is successful with COMMAND 'aws s3 ls --profile [CLI profile name
 #### Configure for Production
 COMMAND: 'aws configure --profile iamadmin-production'
 COMMAND to test: 'aws s3 ls --profile iamadmin-production'
+
+SECURITY REMINDER: Never share your SECRET KEY. If leaked, delete and create new set of keys and re-configure in CLI
+
+TIP: If after you Configure CLI with credentials, you can delete the credential files (CSVs)
