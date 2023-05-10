@@ -224,3 +224,24 @@ IAM Dashboard > left sidebar "Users" > Create user "iamadmin"
 
 ## DEMO Adding an IAM Admin to PRODUCTION ACCOUNT
 Same as previous section.
+
+## IAM Access Keys
+Access AWS via command line or APIs. This is done using IAM access keys.
+
+### IAM Access Keys
+- long term credential (don't change or rotate regularly)
+- IAM user has 1 username and 1 PW (cannot have more than 1). Password on IAM user is actually optional.
+- Credential Leak: If someone knows your username (public) and password (private)
+- Unlike username/PW, IAM user can have TWO access keys
+- Access key actions: create, delete, made inactive, made active. Default: Active state
+- Access keys are formed from two parts: 
+1) Access Key ID 
+2) Secret Access Key
+--AWS provides both when key is created.
+- Once the key is generated, you CANNOT access the Secret Access Key part again
+- If leaked/lost, you need to delete ID and Secret Access Key and recreate completely
+- If made inactive or deleted, CLI will stop working until re-active or new key is created
+- Rotating Access Keys: delete old one make new one and replace old one
+- NOT recommended: Don't give Root user Access Keys
+- IAM Roles DO NOT use access keys
+
