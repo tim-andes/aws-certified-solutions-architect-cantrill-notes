@@ -23,3 +23,39 @@ Imagine you have two laptops at home and you want to LAN game between the two. Y
 Physical Medium: can be Copper (electrical), fiber (light), of WiFi (RF). 
 
 A Layer 3 device has the capabilities of all layers under it (3, 2, and 1). A Layer 1 device only has the capabilities of Layer 1, as no layers are below it.
+
+There are no individual device addresses at Layer 1. Anything received on any port is transmitted out on every other port (including errors and collisions). If multiple devices transmit on the same level 1 physical medium, a collision occurs and corrupts data. The more layer 1 devices connected, the more likely a collision.
+
+Layer 1 is "dumb". 1 broadcast and 1 collision domain, not very scalable. No access control. No uniquely identifiable devices. so no device-to-device communication.
+
+### Layer 2 - Data Link (DL)
+Data Link adds lots of intelligence to layer 1, allowing for more effective communication. DL all higher layers rely on Layer 2 as it supports the transfer of data.
+
+Rather than physical wavelengths or voltages, but uses "frames". Devices at L2 have a unique hardware (MAC) address. Frames can be addressed to a destination or to a broadcast.
+
+Frame is a container of sorts.
+- First is PREAMBLE (let's device know this is start of the frame
+- Destination and Source MAC addresses
+- EtherType: which layer 3 protocol is putting its data in a frame
+- Payload: The data the frame carries from source to destination
+- Frame Check Sequence (FCS): Confirm it corruption has occurred
+
+Mac Header = Destination and Source MAC address, and EtherType
+
+In order to have active Layer 2 network, you need Layer 1 active and working. Layer 2 checks for carriers, if no carriers, Frame is sent to Layer 1 for transmission. Carrier detected? Wait, as another device is transmitting.
+
+CSMA: Carrier Sense Multiple Access. Detects data to avoid collision.
+
+Encapsulation: When data is wrapped in by a Frame. As data is passed down OSI model, many different components encapsulate the data.
+
+Collision Detection at layer 2. If both devices check for carrier which doesn't exist, then both L2's instruct transmission via layer 1, a collision can occur. If collision is detected, jam signal is sent and a random backoff occurs. Backoff = time + random. It increases if another collision occurs.
+
+Hub = layer 1 device. Dumb, send data to all ports.
+Switch = layer 2 device. Maintains MAC address table to learn what's connected to each port. Intelligent; store and forward Frames appropriately, based on MAC address table. Won't forward collisions. Each port becomes a separate collision domain.
+
+- Identifiable devices
+- Media Access Control (sharing)
+- Collision Detection
+- Unicast 1:1
+- Broadcast 1:ALL
+- Switches
