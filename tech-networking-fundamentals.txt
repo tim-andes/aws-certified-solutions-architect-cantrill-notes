@@ -59,3 +59,47 @@ Switch = layer 2 device. Maintains MAC address table to learn what's connected t
 - Unicast 1:1
 - Broadcast 1:ALL
 - Switches
+
+### Layer 3 - Network
+Requires 1 or more Layer 2 networks to function. Layer 3 gets data from one location to another. With streaming, data moved from server hosting video to local device.
+
+#### Why is Layer 3 needed?
+If we have two local area networks with geographic separation (east/west coast US separation). LAN1 and LAN2 are isolated Layer 2 local networks right now. You *could* use point to point physical links across the distance, but this is costly. Layer 2 protocols can be different so connecting to L2 networks can be challenging. We need something in common between the two L2's. To move data between two local networks... inter-networking ==> internet. IP addresses can be assigned as a way to connect separated L2 networks.
+
+- Routers are the hardware that L3 uses to encapsulate data in an IP packet.
+
+- IP allows you to connect to remote networks, allowing you to cross over intermediary networks in between.
+
+Packet: Data unit used in IP. Similar to Frames (L2). Every packet has a Source IP and Destination IP address.
+
+- Two versions of IP in use. Version 4 and Version 6.
+-- Destination/Source IP addresses are larger in v6 to allow for more.
+
+#### L3: IP Addressing (IPv4)
+Structure of an IP address. This section focuses on v4.
+
+IP Address
+133 . 33 . 3 . 7
+- Dotted decimal notation from 0 - 255
+- All IP addresses formed of two different partsL 1) Network (133.33), 2) Hosts (3.7)
+- You can see if two IP addresses are on same network if the first half matches (both being 133.33)
+- 4 sets of 8 bits, 32 bits total for IP address. Each number in IP Address is an octet
+- /16 prefix. First 16 bits are network, last 16 bits are host
+- Static IP: assigned by humans. DHCP: Machine assigned IPs
+- IP addresses need to be unique, esp on local network
+
+Subnet Masks: ID's host and network parts of IP addresses. So it can know when to send data on same local network, or use a router to transport across different networks. Configured on L3 along with IP addresses. Allows an IP device to know if IP is on same network or not. If not on same network, data is sent to Default Gateway (router)
+- e.g. 255.255.0.0 is a subnet mask, and is the same as the /16 prefix (when broken down into binary)
+
+#### L3: Route Tables & Routes
+How a router decides where to send data.
+
+Every router has at least 1 route table. This is how a router knows where to send data. Two fields: 1) destination field 2) Next Hop/Target. The larger the prefix, the more specific the route (/0, /16, /32). Routers prefer more specific routes.  
+
+/24 = first 24 bits for network, last 8 bits are for host.
+
+Default Route: 0.0.0.0/0 = matches if nothing else does.
+
+IMPORTANT: When ISP router is forwarding packet to AWS router, it's forwarding it at Level 2; wrapped in a Frame. How do we determine MAC address of AWS router? Address Resolution Protocol
+
+
