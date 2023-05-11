@@ -40,7 +40,7 @@ Frame is a container of sorts.
 - Payload: The data the frame carries from source to destination
 - Frame Check Sequence (FCS): Confirm it corruption has occurred
 
-Mac Header = Destination and Source MAC address, and EtherType
+Mac Header = Source MAC address + Destination MAC address + EtherType
 
 In order to have active Layer 2 network, you need Layer 1 active and working. Layer 2 checks for carriers, if no carriers, Frame is sent to Layer 1 for transmission. Carrier detected? Wait, as another device is transmitting.
 
@@ -102,4 +102,10 @@ Default Route: 0.0.0.0/0 = matches if nothing else does.
 
 IMPORTANT: When ISP router is forwarding packet to AWS router, it's forwarding it at Level 2; wrapped in a Frame. How do we determine MAC address of AWS router? Address Resolution Protocol
 
+#### L3: Address Resolution Protocol
+Used when Layer 3 packet needs to be encapsulated in a Frame and sent to MAC address. You don't know the MAC address, but you need to get it. This is where ARP comes in. 
+- ARP will give you MAC address with given IP address
+- ARP broadcasts on Layer 2
 
+#### L3: IP Routing
+Lengthy example, not a very great visual. Recommend looking up another video on YouTube for IP Routing Explanation
