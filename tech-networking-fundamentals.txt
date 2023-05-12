@@ -143,10 +143,28 @@ We will cover the basics of NAT, including how it works, its different types, an
 - Translates Private IPv4 addresses to Public and back as they cannot communicate otherwise. This is what gets Private IPs on the internet
 -- Publically routable addresses (must be unique)
 -- Private addresses (don't need to be unique, can be used multiple places)
+- Router is an example of a NAT device
 
-#### Types of NATs
-- Static NAT: 1 private to 1 (fixed) public address (IGW). Gives private address access to internet in both directions
-- Dynamic NAT: Pool of public IP addresses for private IP's to use. Generally used with large number of private IP addresses but have less Public Addresses than private
-- Port Address Translation (PAT): Many private to 1 public (NATGW). This is what your home router does with multiple devices. Uses ports to ID devices
--- This is the method that NAT instances use in AWS
+#### Types of NATs (3)
+1 - Static NAT: 1 private to 1 (fixed) public address (IGW, Internet Gateway). Gives private address access to internet in both directions
+2 - Dynamic NAT: Pool of public IP addresses for private IP's to use. Generally used with large number of private IP addresses but have less Public Addresses than private. Private IPs must use the Public IP allocations at DIFFERENT times; they cannot overlap. External access may fail if there are no IPs in the public pool
+3 - Port Address Translation (PAT): Many private to 1 public (AWS NATGW). This is what your home router does with multiple devices. Uses ports to ID devices
+-- This is the method that NAT instances use in AWS NATGateway (NATGW)
+-- Uses both IP addresses &  Ports to allow multiple devices to use same IP
+-- MANY:1, PrivateIP:PublicIP Architecture
+
 - NAT only makes sense for IPv4. IPv6 has enough addresses, as is (no need for NAT in IPv6)
+
+### IP Address Space & Subnetting (IPv4)
+Originally this was directly managed by IANA (Internet Assigned Numbers Authority)
+- Parts now delegated to regional authorities
+- There are about 4.3B IPv4 addresses
+
+#### Address Space Classing
+Class A Address Space: 0.0.0.0 -> 127.255.255.255 (for huge business/early internet)
+Class B Address Space: 128.0.0.0 -> 191.255.255.255 (for larger businesses that didn't need Class A)
+Class C Address Space: 192.0.0.0 -> 223.255.255.255 (for smaller businesses not large enough for B or A)
+Class D & Class E: D for Multicast, E is Reserved
+
+#### Private IP Adresses
+Defined by a standard RFC1918
