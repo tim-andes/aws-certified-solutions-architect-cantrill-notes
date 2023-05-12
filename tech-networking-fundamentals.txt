@@ -113,6 +113,10 @@ Lengthy example, not a very great visual. Recommend looking up another video on 
 ### Layer 4 & 5 - Transport & Session
 Layer 4 allows you to create Segments with a sequence number in order to maintain the order (L3 can't control order of packets)
 
+
+NOTE: Course is no longer broken down by Layers
+
+
 #### TCP - Transmission Control Protocol
 - connection between client and server used to exchange data
 - established between two devices using a 'random port' on a client and a 'known port' on the server
@@ -168,3 +172,77 @@ Class D & Class E: D for Multicast, E is Reserved
 
 #### Private IP Adresses
 Defined by a standard RFC1918
+
+When possible, allocate non-overlapping ranges across your networks.
+
+##### IPv4 Address Space
+See Class A - E above. 4,294,967,296 total IPs in IPv4. Too few which is why IPv6 was created (340 trillion trillion trillion addresses)
+
+##### IP Subnetting (IPv4)
+Subnetting takes a large network and breaks into smaller networks.
+
+CIDR (Classless Inter-Domain Routing) - Let's us take networks and break them down, determining size of network (ex. /16 prefix)
+/8 is the same as a class A network
+/16 is smaller network within Class A network
+- The larger the prefix value, the smaller the network
+
+If you have a large network, you can subnet them. /16 => 2 * /17, split network in 2. One /16 network is the same as 2 /17 networks.
+-- Now we have two /17 networks. We can split one of these into 2 * /18. Now we have 3x: /17, /18. and /18 networks.
+--- To get to 4 networks, split the remaining /17 network into another two /18 networks, for four total
+-- /32 represents a single IP address
+- While unusual, it is possible to have odd numbered split networks
+
+Entire internet is a /0 network. This is why 0.0.0.0 matches the entire internet.
+
+Eg. 10.16.0.0/16 = 10.16.0.0 => 10.16.255.255 -- Start to End of Network
+- If you create /17 subnets from this...
+-- 10.16.0.0/17 (1) = 10.16.0.0 => 10.16.127.255
+-- 10.16.128.0/17 (2) = 10.16.128.255 => 10.16.255.255
+- And so on. Think of it as splitting network ranges in half each time.
+
+### DDOS Attacks - Distributed Denial of Service Attacks
+A Distributed Denial of Service (DDoS) attack is a type of cyber attack where multiple compromised devices, often from different locations, are used to flood a targeted website or network with traffic, causing the website or network to become unavailable to its users
+
+#### VLAN - Virtual Local Area Networking
+Avoids forcing physical networking throughout an organization.
+
+Frame Tagging (802.1Q & 802.1AD) - used for VLAN ID or VID
+- 802.1Q allows multiple VLANs over the same L2 physical network
+- If two 802.1Q VLANs over different connected networks have the same VLAN, 802.1AD adds new fields to VLAN to make same VLAN #'s unique
+- One Switch can host multiple Broadcast Domains
+- Trunk Port: Connection between 2 802.1Q capable devices
+- Devices on different VLANs cannot communicate without a Layer 3 Device (router)
+
+VLANs allow you to create separate L2 network segments to allow for Isolation
+VLANs offer separate broadcast domains
+802.1Q == VLANs
+802.1AD (nested Q-in-Q VLANs)
+Q-in-Q used in larger networks. .1Q for smaller networks.
+
+### Decimal to Binary Conversion (IP Addressing)
+In computer networking, IP (Internet Protocol) addresses are used to identify and communicate with devices on a network. IP addresses are typically represented in decimal notation, with four decimal numbers separated by periods (e.g. 192.168.1.1). However, computers process and transmit data in binary form, which is a sequence of 0s and 1s. To enable communication between devices, IP addresses must be converted from decimal to binary form, and vice versa. In this lesson, we will explore how to convert IP addresses from decimal to binary form and from binary to decimal form.
+** for IPv4 Addressing
+
+Eg. 133.33.33.7 -> Dotted decimal notation, which is what a human sees
+- Computer sees 10000101.00100001.00100001.00000111
+
+#### Decimal to Binary
+Eg. 133.33.33.7 to binary. 
+HINT: Use binary table https://www.networkacademy.io/ccna/ip-subnetting/converting-ip-addresses-into-binary
+- 133, 33, 33, 7 are numbers each between 0 - 255. Tackle these sets of number individually. Each number in IP is 8 bits.
+-- 133. If this number is less than Binary Position Value, write a 0. If equal or larger, minus binary position from your decimal number, add 1 in binary column (133 - 128 = 5. 
+-- Position two is 5. 5 is less than 64, so write a 0. Position 3-5 are also less than 5. Put 0's
+-- Position 6. Remaining value is 5, Binary Position Value is 4. 5 - 4 = 1. Put a 1 in position 6
+
+BINARY VALUE of 133: [ 1 ][ 0 ][ 0 ][ 0 ][ 0 ][ 1 ][ 0 ][ 1 ]
+BINARY VALUE of 33: [ 0 ][ 0 ][ 1 ][ 0 ][ 0 ][ 0 ][ 0 ][ 1 ]
+BINARY VALUE of 33: [ 0 ][ 0 ][ 1 ][ 0 ][ 0 ][ 0 ][ 0 ][ 1 ]
+BINARY VALUE of 7: [ 0 ][ 0 ][ 0 ][ 0 ][ 0 ][ 1 ][ 1 ][ 1 ]
+
+#### Binary to Decimal
+Eg. 10000101.00100001.00100001.00000111
+- Break into 4 sections. Work left to right. Still using conversion table
+1. 10000101. Match digit with corresponding position on table. [128][0][0][0][0][4][0][1] = 133
+2. 00100001. [0][0][32][0][0][0][0][1] = 33
+3. 00100001. [0][0][32][0][0][0][0][1] = 33
+4. 00000111. [0][0][0][0][0][4][2][1] = 7
