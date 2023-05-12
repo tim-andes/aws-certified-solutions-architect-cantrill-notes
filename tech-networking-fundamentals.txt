@@ -109,3 +109,44 @@ Used when Layer 3 packet needs to be encapsulated in a Frame and sent to MAC add
 
 #### L3: IP Routing
 Lengthy example, not a very great visual. Recommend looking up another video on YouTube for IP Routing Explanation
+
+### Layer 4 & 5 - Transport & Session
+Layer 4 allows you to create Segments with a sequence number in order to maintain the order (L3 can't control order of packets)
+
+#### TCP - Transmission Control Protocol
+- connection between client and server used to exchange data
+- established between two devices using a 'random port' on a client and a 'known port' on the server
+- connection is reliable provided via segments encapsulated in IP packets. Orders segments with their sequence numbers
+- also has error checking and retransmission
+- bidirectional connections
+- creates a 'channel' to exchange data, but really it's just a collection of segments; no real channel
+- Ephemeral Port: client source port (or High Ports). Needs separate rules compared to Well Known Port
+- Well Known Port: server port. Needs separate rules compared to Ephemeral Port
+
+##### Flags Field in TCP
+Contains actual flags which can be set to influence the connection.
+FIN - used to close
+ACK - used for acknowledgments
+SYN - sequence numbers
+1) "Hey, let's talk": Send segment to server with SYN (initial sequence number is ISN, or 'cs'; sequence set)
+2) "Sure, let's talk": SYN-ACK - server receives communication from client, receives cs, sets ACK to cs+1, sends cs+1 and ss
+3) "Awesome, go!": Send segment with ACK, send to ss+1
+4) Connection established, client can send data
+
+##### Firewalls on Ephemeral Port side
+- Stateless Firewall: Doesn't understand state of a connection. Two rules 1) OUT: allow outbound segments (initiating traffic) 2) IN: allow response (response traffic). In AWS, a Nework Access Control List (ACL) is a stateless firewall.
+- Stateful Firewall: Sees OUT and IN as the same thing; if OUT allowed, IN is auto-alowed (and vice versa). In AWS, this is how a Security Group works
+
+### Network Address Translation (NAT)
+We will cover the basics of NAT, including how it works, its different types, and the benefits and drawbacks of using NAT.
+- NAT is a process designed to address growing shortages of IPv4 addresses
+- Translates Private IPv4 addresses to Public and back as they cannot communicate otherwise. This is what gets Private IPs on the internet
+-- Publically routable addresses (must be unique)
+-- Private addresses (don't need to be unique, can be used multiple places)
+
+#### Types of NATs
+- Static NAT: 1 private to 1 (fixed) public address (IGW). Gives private address access to internet in both directions
+- Dynamic NAT: Pool of public IP addresses for private IP's to use. Generally used with large number of private IP addresses but have less Public Addresses than private
+- Port Address Translation (PAT): Many private to 1 public (NATGW). This is what your home router does with multiple devices. Uses ports to ID devices
+-- This is the method that NAT instances use in AWS
+- NAT only makes sense for IPv4. IPv6 has enough addresses, as is (no need for NAT in IPv6)
