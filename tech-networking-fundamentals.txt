@@ -309,3 +309,72 @@ DOES
 Layer 7 firewalls, also known as application-layer firewalls, are a type of firewall that provides advanced security features by inspecting and filtering data at the application layer of the OSI (Open Systems Interconnection) model. Traditional firewalls, such as packet filtering or stateful inspection firewalls, operate at the network and transport layers and are only capable of filtering traffic based on IP addresses, port numbers, and protocol types. In contrast, layer 7 firewalls have the ability to analyze the content of network traffic, including application protocols such as HTTP, FTP, and SMTP, and can make more granular decisions about which traffic should be allowed or blocked.
 - Normal Firewalls (Layer 3/4/5): Sees two flows of info: Request and Response. As this is Layer 3/4, the request/response are seen as separate. If you add session capability, request/response now seen as one session. They can't see into the data, it's just an opaque layer as the data is Level 7 (HTTP).
 - Layer 7 Firewalls can see the data above layer 3/4/5. It can identify abnormal requests. Keeps all Layer 3/4/5 elements, but can react to L7 elements
+
+#### IP Sec VPN Fundamentals
+IPSEC, or Internet Protocol Security, is a suite of protocols used to secure Internet Protocol (IP) communications by authenticating and encrypting each IP packet. IPSEC is widely used to secure Virtual Private Networks (VPNs), remote access connections, and other types of network traffic.
+
+##### Fibre Optic Cables
+- Alternative way to transmit data VS copper cables. Fiber optic cables transmits light over glass/plastic medium (VS electric over copper). Fiber also resistance to electromagnetic interference and less prone to water ingress. Fiber is more consistent; better for higher speeds, larger distances, etc.
+- Physical construction is cable and connector. 
+- Fiber diameter expressed as X/Y eg. 9/125. X is diameter of core, Y is diameter of cladding (both in microns). Light bounces off inside of core, which is why its diameter is important. Core/cladding are for the data transmission. The buffer is a boundary surrounding the core for protection
+- Single Mode and Multi-Mode Fiber
+-- Single Mode. Small core, 8-9 microns, yellow jacket usually. Little bounce, little distortion. Best for high speed over long distance. Laser optics
+-- Multi-mode. Bigger core, orange or aqua color jacket. Bigger core means wider range of light to use, and more bouncing. Different colors of light can be sent simultaneously. Creates more distortion over distance. Best for speed/cost effectiveness. LED optics
+- Fiber Optic transceivers. How to connect to fiber. These are what generates and sends the light to/from fiber. Data -> Light -> Data
+-- Transceivers also Mult- or Single-mode. Optimised for a cable type, need same kind at both ends
+
+##### Encryption 101
+Encryption is the process of converting data into a form that is unreadable to unauthorized users
+- Encryption Approaches: 2
+-- 1. Encryption at Rest. One party. Eg. Local laptop encrypting/decrypting data as it's written / read from disc. Used in cloud environments.
+-- 2. Encryption In Transit. Protecting data as transferred between two places. Multiple individuals/systems involved Eg. Laptop to bank and back (applying encryption wrapper). 
+
+- Concepts
+-- Plain text (document, image, app), algorithm (plain text + encryption key = encrypted data), key (a 'password'), ciphertext created from all the previous stuff. Decrypt: ciphertext + key = plain text. 
+
+- Symmetric
+Same key used for both encryption and decryption processes. Transferring this key is the problem here.
+
+- Asymmetric
+Keys used in asymmetric encryption are also asymmetric
+-- Asym keys are formed of twp parts: Public and Private keys. Only private key can decrypt data. No issue with public key being stolen as it is made to be accessible. Asym used with two parties involves where the two parties have never physically met before. Computationally more difficult than symmetric.
+
+- Signing
+Uses asymmetric keys to verify identity. Encryption doesn't prove identity, which is why Signing exists. Message gets signed with private key for verification.
+
+- Steganography
+It's obvious when data is encrypted; you can't hide it. Steganography is a process which addresses this -- hiding something in something else. Eg. cat data hidden in puppy image
+
+#### Envelope Encryption
+Envelope encryption is a technique used to secure data by encrypting it with multiple layers of keys
+
+KMS (Key Management Services) - Used to encrypt data less than 4kb in size (other keys). Key Encryption Key (KEK). DEKs (Data Encryption Key) are created by KMS but not managed by KMS. KEK Asym or Sym. DEK always symmetric.
+- Asym flexible but slow. Sym fast but difficult to move securely.
+
+#### Hardware Security Modules (HSM)
+Hardware Security Modules (HSMs) are physical devices designed to provide a high level of security and cryptographic processing to protect sensitive data and keys
+- HSM isolated from main infrastructure. For cryptographic operations, you send the operations to the isolated HSM system. Keys created/stored/authenticatednever leave HSM. 
+- Tamper proof and hardened against physical or logical attacks
+- Role Separation (admins w/o full access)
+
+#### Hash Functions & Hashing
+Hash functions are mathematical algorithms that transform input data into a fixed-length string of characters, called a hash or message digest. Hashing is the process of applying a hash function to data to produce a unique and irreversible representation of the original data. Hash functions are widely used in computer security and cryptography for data integrity and authentication, digital signatures, password storage, and more. 
+
+The main characteristics of a hash function are its one-way property, where it is easy to compute the hash value of the input data but computationally infeasible to reconstruct the original data from the hash value, and its collision resistance, where it is highly unlikely for two different inputs to produce the same hash value
+
+#### How it works
+- Data + Hashing Function = Hash
+- Starts with hash function (MD5, SHA2-256)
+- Data1 in -> Hash Function -> Hash1 out. Change 1 pixel in data and re-run, this creates Hash2
+- Hashing is one way. Once you hash an image, you can't unhash it
+- Same data in, same hash value out. But again, a single different byte or pixel creates a new hash
+- MD5 hashing algo is too weak to be used in real-world systems
+- Downloaded data can be verified using hash (to verify data is unaltered)
+- Has the hash itself been altered? Digital Signing addresses this
+
+##### Hashing Weakness
+- Collision. If we hash image of a plane, then take another image and hash both... Should have different hash values. However, if both hash's match... Collision.
+- Don't use MD5
+
+#### Digital Signatures
+Digital signatures are electronic signatures that are used to authenticate the integrity and authenticity of digital messages or documents
