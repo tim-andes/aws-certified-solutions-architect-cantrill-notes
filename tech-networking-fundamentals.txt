@@ -274,3 +274,38 @@ Firewalls are an essential component of network security that help protect again
 There are two primary types of firewalls: stateful and stateless
 - Stateful: A stateful firewall is designed to monitor and track the state of network connections, keeping track of the status of individual network sessions to make more informed decisions about what network traffic to allow or deny
 - Stateless: stateless firewall examines each individual network packet in isolation and makes decisions based on predetermined rules, without any awareness of the state of the network connection
+
+Reminder: TCP (transmission control protocol) transfers IP packets using error correction and ports. REQUEST and RESPONSE: two components of a client-server connection.
+- Request can be inbound or outbound. Response needs to be the inverse.
+
+OUTBOUND VS INBOUND connections are based off perspective. Whether you're looking from eyes of client or server.
+- Eg. User requesting cat photos from catigram.io... OB Request per User, IB Request per Server.
+
+Stateless firewall doesn't understand the state of connections. A Stateless Firewall needs a separate rule for each inbound and outbound response (we see it as a single Connection, but Stateless doesn't see that; the Request and Response each need a separate rule). Inverse rule is required for the response in Stateless.
+
+Stateful firewall is intelligent enough to identify the REQUEST and RESPONSE components of a connection as being RELATED. In this way, only the Request has to be ALLOWED or NOT, then the Response is automatically ALLOWED or NOT. This reduces admin overhead and chance of mistakes.
+
+#### JumboFrames & MTU
+What is a JumboFrame? Max V2 Frame size is 1500 bytes. Anything bigger is a JumboFrame (but generally max size 9000 bytes).
+
+Imagine 4 EC2 instances. A/B and C/D connected. A/B standard frames, C/D JumboFrames
+- Frame Payload and Frame Overhead (1500 bytes normal, 9000 bytes jumbo)
+- Data split between frames. There's always space between frames (times when nothing is transmitted; downtime). With normal frames, you have more overhead with increased frames, and more wasted time on medium between increased frames. With JumboFrames, less combined Overhead and less downtime.
+- To avoid Fragmentation, JumboFrames need to be the same size. Every step must also support JumboFrames.
+
+##### Areas of AWS that do and don't support JumboFrames
+DOES NOT:
+- Traffic outside single VPC
+- Traffic over an inter-region VPC peering connection
+- Traffic over VPN connections
+- Traffic over an internet gateway
+
+DOES
+- Same region peering
+- Direct Connect
+- Transit Gateway (up to 8500 bytes)
+
+#### Application Firewalls (Layer 7 Firewalls)
+Layer 7 firewalls, also known as application-layer firewalls, are a type of firewall that provides advanced security features by inspecting and filtering data at the application layer of the OSI (Open Systems Interconnection) model. Traditional firewalls, such as packet filtering or stateful inspection firewalls, operate at the network and transport layers and are only capable of filtering traffic based on IP addresses, port numbers, and protocol types. In contrast, layer 7 firewalls have the ability to analyze the content of network traffic, including application protocols such as HTTP, FTP, and SMTP, and can make more granular decisions about which traffic should be allowed or blocked.
+- Normal Firewalls (Layer 3/4/5): Sees two flows of info: Request and Response. As this is Layer 3/4, the request/response are seen as separate. If you add session capability, request/response now seen as one session. They can't see into the data, it's just an opaque layer as the data is Level 7 (HTTP).
+- Layer 7 Firewalls can see the data above layer 3/4/5. It can identify abnormal requests. Keeps all Layer 3/4/5 elements, but can react to L7 elements
