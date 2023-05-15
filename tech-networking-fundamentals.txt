@@ -246,3 +246,31 @@ Eg. 10000101.00100001.00100001.00000111
 2. 00100001. [0][0][32][0][0][0][0][1] = 33
 3. 00100001. [0][0][32][0][0][0][0][1] = 33
 4. 00000111. [0][0][0][0][0][4][2][1] = 7
+
+#### SSL & TLS
+Secure Socket Layer (SSL) and Transport Layer Security (TLS) are two cryptographic protocols used to provide secure communication over the internet. SSL was developed by Netscape in the mid-1990s and TLS is its successor. These protocols are used to secure web traffic, email, instant messaging, and other types of internet traffic. SSL and TLS use a combination of symmetric and asymmetric encryption to encrypt data, ensuring that information transmitted over the internet is secure and cannot be intercepted by unauthorized parties.
+- TLS is newer and more secure version of SSL
+
+TLS ensures privacy; communications are encrypted. Asymmetric and then symmetric encryption. Aim for symmetric encryption. Part of TLS process is moving from asymmetric to symmetric encryption. Also verifies ID's of server or client/server. Also protects against alteration.
+- Phases 1) Cipher Suites 2) Authentication 3) Key Exchange
+1) Cypher Suites - Set of protocols upon TCP connection. Client/server need to agree on cipher suite to use
+2) Authentication - Ensure server certificate is authentic. Certificate Authority issues these signed certificates
+3) Key Exchange - Where we move from assymetric to symmetric encryption (becomes faster). Client generates pre-master key, encrypts it with servers public key and sends to server. The server decrypts the pre-master key using its private key.
+
+#### BGP (Border Gateway Protocol)
+Border Gateway Protocol (BGP) is a routing protocol used to exchange routing information between different networks on the internet. BGP is the protocol that enables the internet to function as a global network of interconnected networks. BGP is responsible for choosing the best path for network traffic to follow from one network to another, and for announcing that path to other routers on the internet
+- BGP as a system is made up of self-managing networks known as Autonomous Systems (AS). AS's are black boxes that abstract away the detail of the network; BGP just needs to know network, as a whole, exists
+- Each AS is allocated a number called ASN's. 16 bits in length. Allocated by IANA. Numbers 64,512 - 65,534 are private
+- Operates over TCP port 179; it's reliable
+- Not automatic, it's manually configured
+- BGP is a path-vector protocol. It exchanges the BEST PATH between peers (aka shortest path), this path is called the ASPATH. This path is then 'trusted' and trust can be shared (AS's share trusted routes)
+- iBGP and eBGP (internal BGP and external BGP). Either within an AS or between AS's
+- AS Path Prepending can be used to artificially make one path look longer than another
+
+In summary, an AS will advertise all the shortest paths it knows to all its peers, as the AS prepends its own AS number onto the path, this creates a source-to-destination path which BGP routers can learn and propogate.
+
+#### Stateful VS Stateless Firewalls
+Firewalls are an essential component of network security that help protect against unauthorized access and attacks. 
+There are two primary types of firewalls: stateful and stateless
+- Stateful: A stateful firewall is designed to monitor and track the state of network connections, keeping track of the status of individual network sessions to make more informed decisions about what network traffic to allow or deny
+- Stateless: stateless firewall examines each individual network packet in isolation and makes decisions based on predetermined rules, without any awareness of the state of the network connection
