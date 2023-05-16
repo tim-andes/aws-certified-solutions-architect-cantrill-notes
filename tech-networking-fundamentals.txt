@@ -378,3 +378,43 @@ The main characteristics of a hash function are its one-way property, where it i
 
 #### Digital Signatures
 Digital signatures are electronic signatures that are used to authenticate the integrity and authenticity of digital messages or documents
+- Can sign using a Private Key for verification
+- Two benefits when used with Hashing: verifies INTEGRITY of data and AUTHENTICITY of data (verify WHAT and WHO)
+
+#### DNS - What does DNS do?
+The Domain Name System (DNS) is a core part of most applications and IT systems
+
+##### Functionality
+If you visit netflix.com, the computers communicating don't use the namespace "netflix.com". Instead, this name is linked to an IP. DNS is what connects names to IPs. Basically, DNS is a huge DB that converts names to IP addresses
+
+TIP: You MUST understand DNS to work in networking / AWS
+
+##### Why do we need lots of DNS servers?
+Problems with 1 (or a few) DNS servers: 
+- Obvious risk problems. Bad actors could attack infrastructure
+- Scaling problem (almost everyone uses DNS globally)
+-- This demands a hierarchical structure
+
+##### DNS Terms
+DNS Zone. A database containing records (URLs etc)
+ZoneFile. The "file" storing the zone on disk
+Name Server (NS). DNS server which hosts 1 or more zones and stores 1 or more ZoneFiles
+Authoritative. Contains real/genuine records (the boss)
+Non-authoritative / Cached. Copies of records/zones stored elsewhere to speed things up
+
+##### Hierarchical Design of DNS
+- Starts with DNS Root (the boss)
+- Root Zone - Contains high level info on top level domains (TLD), but no details. Root Zone points at name servers hosting TLD zones (which are run by registries like verisign). TLD stores high level info only on domains in that TLD. TLD points at NameServers. These NameServers are authoritative of the domains contained. Authoritative name servers point to the domain zones and zonefiles, which are subsequently authoritative. The zone prior knows a bit about the zone nested in it.
+
+##### How DNS works
+Core functionality of DNS: You have a person/device/service and you need to get the IP address of a domain. DNS's job allows you to locate the specific zone that can provide an authoritative response for your request (like visiting netflix.com)
+
+How a query works:
+1 - Querying for netflix.com
+2 - First DNS local cache and host file of local machine is checked
+3 - If local is unaware of query, we move to DNS Queries Resolver (type of DNS server within router or internet provider). This also has a local cache to check on. Results from here are non-authoritative
+4 - Next is that the Queries Resolver queries Root Zone for netflix.com. Root Zone looks at NameServer Records and gets details from there
+5 - Resolver can now query one of the .com TLD Name Servers. Details of DNS record from Netflix NS is returned to Resolver
+6 - Now, Resolver queries netflix.com DNS Name Server. This can return an authoritative result. Result caches this result and returns result through to client
+- End to end, this process is called 'walking the tree'
+
