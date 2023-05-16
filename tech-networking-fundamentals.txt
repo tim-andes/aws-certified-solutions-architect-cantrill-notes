@@ -384,29 +384,29 @@ Digital signatures are electronic signatures that are used to authenticate the i
 #### DNS - What does DNS do?
 The Domain Name System (DNS) is a core part of most applications and IT systems
 
-##### Functionality
+##### DNS 101: Functionality
 If you visit netflix.com, the computers communicating don't use the namespace "netflix.com". Instead, this name is linked to an IP. DNS is what connects names to IPs. Basically, DNS is a huge DB that converts names to IP addresses
 
 TIP: You MUST understand DNS to work in networking / AWS
 
-##### Why do we need lots of DNS servers?
+##### DNS 101: Why do we need lots of DNS servers?
 Problems with 1 (or a few) DNS servers: 
 - Obvious risk problems. Bad actors could attack infrastructure
 - Scaling problem (almost everyone uses DNS globally)
 -- This demands a hierarchical structure
 
-##### DNS Terms
+##### DNS 101: DNS Terms
 DNS Zone. A database containing records (URLs etc)
 ZoneFile. The "file" storing the zone on disk
 Name Server (NS). DNS server which hosts 1 or more zones and stores 1 or more ZoneFiles
 Authoritative. Contains real/genuine records (the boss)
 Non-authoritative / Cached. Copies of records/zones stored elsewhere to speed things up
 
-##### Hierarchical Design of DNS
+##### DNS 101: Hierarchical Design of DNS
 - Starts with DNS Root (the boss)
 - Root Zone - Contains high level info on top level domains (TLD), but no details. Root Zone points at name servers hosting TLD zones (which are run by registries like verisign). TLD stores high level info only on domains in that TLD. TLD points at NameServers. These NameServers are authoritative of the domains contained. Authoritative name servers point to the domain zones and zonefiles, which are subsequently authoritative. The zone prior knows a bit about the zone nested in it.
 
-##### How DNS works
+##### DNS 101: How DNS works
 Core functionality of DNS: You have a person/device/service and you need to get the IP address of a domain. DNS's job allows you to locate the specific zone that can provide an authoritative response for your request (like visiting netflix.com)
 
 How a query works:
@@ -418,3 +418,18 @@ How a query works:
 6 - Now, Resolver queries netflix.com DNS Name Server. This can return an authoritative result. Result caches this result and returns result through to client
 - End to end, this process is called 'walking the tree'
 
+#### DNS 101: Registering a new domain
+Process requires a few key entities: person registering, domain registrar, DNS hosting provider, TLD registry (Verisign), .com TLD Zone (managed by Verisign)
+1 - pay for domain via domain registrar
+2 - If registrar and hosting provider are same company, create a zone and get an NS
+3 - If registrar and hosting provider are different, you'll be asked for NS zone info (which is configured separately)
+4 - Register domain, supply Name Server info to TLD registry (Verisign)
+5 - Verisign adds Name Server to the .com TLD zone, making domain live
+
+Registrar VS Hosting Provider:
+- Registrar has one purpose: let you purchase domains
+- Hosting Provider operate DNS name servers which can host DNS zones. Allows you to manage content of those zones.
+-- Some companies are either Registrars or HP's, some are both
+
+#### DNS 101: DNSSEC
+DNSSEC strengthens authentication in DNS using digital signatures based on public key cryptography. With DNSSEC, it's not DNS queries and responses themselves that are cryptographically signed, but rather DNS data itself is signed by the owner of the data
