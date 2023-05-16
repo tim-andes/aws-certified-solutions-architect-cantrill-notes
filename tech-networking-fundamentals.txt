@@ -433,3 +433,15 @@ Registrar VS Hosting Provider:
 
 #### DNS 101: DNSSEC
 DNSSEC strengthens authentication in DNS using digital signatures based on public key cryptography. With DNSSEC, it's not DNS queries and responses themselves that are cryptographically signed, but rather DNS data itself is signed by the owner of the data
+- Two improvements over DNS: 1) origin authentication (is the data from the correct entity), 2) data integrity protection (has the data been modified)
+-- by creating cryptographically verifiable DNS Chain of Trust
+-- DNSSEC is additive to DNS, not replacing DNS. DNS-only device won't receive DNSSEC results
+
+##### How DNSSEC Works within a Zone
+How it allows a DNSSEC to validate a resource within a zone (data integrity)
+
+TERM: Resource Records Set (RRSE). icann.org zone has the following:  Resource Records (cname, A record, AAAA record, 4 MX records, mail exchange) -- 4 total resource record sets: cname, A, AAAA, MX. RRSETs are used within DNSSEC. DNSSEC looks at record sets, not individual records.
+- RRSIG stores a digital signature for RRSET: Zone Signing Key (ZSK). This public/private key set is separate from the zone. ZSK is record #256
+-- Uses digital signing and hashing
+
+TERM: Key Signing Key (KSK, record #257). Ensures that a Zone Signing Key is trusted. The Private KSK creates an RRSIG from DNSKey (ZSK)
