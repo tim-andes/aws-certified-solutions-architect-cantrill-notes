@@ -441,7 +441,80 @@ DNSSEC strengthens authentication in DNS using digital signatures based on publi
 How it allows a DNSSEC to validate a resource within a zone (data integrity)
 
 TERM: Resource Records Set (RRSE). icann.org zone has the following:  Resource Records (cname, A record, AAAA record, 4 MX records, mail exchange) -- 4 total resource record sets: cname, A, AAAA, MX. RRSETs are used within DNSSEC. DNSSEC looks at record sets, not individual records.
-- RRSIG stores a digital signature for RRSET: Zone Signing Key (ZSK). This public/private key set is separate from the zone. ZSK is record #256
+- RRSIG stores a digital signature for RRSET: Zone Signing Key (ZSK). This public/private key set is separate from the zone. ZSK is record #256. RRSIG validates RRSETS.
 -- Uses digital signing and hashing
 
 TERM: Key Signing Key (KSK, record #257). Ensures that a Zone Signing Key is trusted. The Private KSK creates an RRSIG from DNSKey (ZSK)
+
+#### DNS 101: DNSSEC Chain of Trust
+How the chain of TRUST is created between PARENT and CHILD zones within DNS
+
+TERM: Delegated Signer (DS): Contains a HASH of the child domain's public KSK. Links the parent trust to the child.
+- Root Zone Private Key / Signing Keys are explicitly trusted
+- DNS Resolver can walk through the zones until establishing trust (from Root through to bottom)
+
+#### DNS 101: DNSSEC Root Signing Ceremony
+Controlling the keys of the internet. In case of Root Zone, there is no parent zone to provide trust -- we need a way to create this TRUST ANCHOR
+- Key to internet: Private "." DNS Root Key Signing Key
+-- This key is explicitly trusted by everything
+- Ultimately, you're trying to get Root Zone RRSIG DNS Key
+
+### CONTAINERS & VISUALIZATION
+
+#### Kubernetes (K8)
+Kubernetes, also known as K8s, is an open-source system for automating deployment, scaling, and management of containerized applications
+
+##### K8: Recovery Point Objective (RPO)
+RPO is the max amount of data over time that can be loss before the loss exceeds what org can tolerate. Expressed in minutes or hours.
+- Successful backups are known as Recovery Points
+- Backups should occur as often or more than an RPO. Eg. If RPO is 6 hours, backups should occur at least once every 6 hours
+- The lower the RPO, the more costly (more backups required)
+
+##### K8: Recovery Time Objective (RTO)
+RTO is the maximum tolerable length of time that a system can be down after a failure or disaster occurs
+
+End to End Recovery: Recovery time of a system begins at the moment of failure and is only FIXED when handed back to business in a fully tested state
+
+### DATA FORMATS & CONFIG FORMATS
+
+#### YAML 101
+YAML (short for "YAML Ain't Markup Language") is a lightweight, human-readable data serialization format that is often used for configuration files and data exchange between applications.
+- Unordered collection of key:value pairs
+- Indentations/spaces matter in YAML
+
+YAML supports complex data structures, including lists, dictionaries, and nested structures, and it can be used with a wide range of programming languages and tools
+
+Dictionary: Unordered data structure; key:value pair collection. Think key:value pairs with nested ones inside
+
+#### JSON 101
+JSON (short for "JavaScript Object Notation") is a lightweight data interchange format that is commonly used for data exchange between applications
+
+In JSON, a dictionary is called an Object. A list is called an Array.
+
+### CLOUD COMPUTING 101
+
+#### What is cloud computing?
+Cloud computing is a model for enabling ubiquitous, convenient, on-demand network access to a shared pool of configurable computing resources (e.g., networks, servers, storage, applications, and services) that can be rapidly provisioned and released with minimal management effort or service provider interaction. - National Institute of Standards and Technology (NIST) definition
+
+To be cloud computing, meet these 5 characteristics / criteria:
+1 - On-demand Self-service. Provision capabilities as needed without requiring human interaction
+2 - Broad Network Access. Capabilities available over the network and accessed through the standard mechanisms
+3 - Resource Pooling. There is a sense of location independence, no control / knowledge over exact location of resources. Resources pooled to serve multiple consumers using a multi-tenant model
+4 - Rapid Elasticity. Capabilities can be elastically provisioned and released to scale rapidly outward / inward with demand. To the consumer, the resources avilable for provisioning appear to be unlimited
+5 - Measured Service. Resource usage can be monitored, controlled, reported, and billed
+
+#### Public vs Private vs Multi vs Hybrid Cloud
+Public, private, hybrid, and multi-cloud are all viable options
+- Public. Cloud available to the public.
+- Private. Run from business on-premise *real* cloud.
+- Hybrid. Private and public cloud cooperating together in a single environment (from same vendor usually). Not to be confused with 'hyrid environments / networking' (which is public cloud with legacy on-premise stuff)
+- Multi-cloud. Using multiple public cloud environments (eg. AWS + Azure). Stay away from 'single management window/single pane of glass'; abstracts features abstracting down to common feature sets
+
+#### Cloud Service Models Cloud Service Models (IAAS, PAAS, SAAS)
+Terms & Concepts:
+- Infrastructure Stack: Facilities, infrastructure, servers, virtualization, O/S, Container, runtime, Data, Application
+- Unit of Consumption: What you use/pay for. This is what makes each service model below, different. Eg Virtual machine
+- Infrastructure as a Service (IaaS): Provider manages facilities, infrastructure, servers, virtualization. You manage the rest. Unit of consumption is O/S or Virtual Machine
+-- AWS EC2 uses IaaS
+- Platform as a Service (PaaS): Provider manages facilities, infrastructure, servers, virtualization, O/S, Container, runtime. You consume the runtime environment.
+- Software as a Service (SaaS): Provider manages facilities, infrastructure, servers, virtualization, O/S, Container, runtime, Data. You consume the application.
