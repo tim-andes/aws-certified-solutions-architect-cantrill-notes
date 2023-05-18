@@ -486,3 +486,6 @@ Eg. Template that creates EC2 resource. Resources in CFN Template are called Log
 - If you delete a CFN Stack, its logical resources are deleted and CFN subsequently deletes the physical resources
 
 # EXAM: In a CFN Template, if you have the AWSTemplateFormatVersion item, the Description MUST follow directly after in your YAML/JSON template file
+
+### DEMO: Simple Automation w/ CFN; Creating EC2 with CFN
+
