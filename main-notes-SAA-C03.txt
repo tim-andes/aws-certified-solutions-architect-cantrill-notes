@@ -459,3 +459,8 @@ Amazon S3 > Buckets > click the bucket you want > Objects, click Upload > Select
 
 Note on creating a folder: it doesn't actually create a folder, it creates an object that appears to be a folder. They are just emulated using prefixes Eg. archive/koalazzz.jpg -> Not actually a file, but named to look like it
 - Without versioning enabled, same name files can overwrite each other. With Versioning, they can't
+
+#### DEMO: Delete Buckets in S3
+Two step process:
+1. Empty the bucket > select Bucket, click Empty
+2. Re-select Bucket, click Delete
