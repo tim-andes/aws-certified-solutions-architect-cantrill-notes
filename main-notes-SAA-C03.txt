@@ -445,4 +445,17 @@ Containers created in a specific AWS region; default place to go to in order to 
 # EXAM: Where to store data? S3 should be default answer 
 
 ### DEMO: Creating an S3 Bucket
+Create, interact with bucket, upload to bucket, interact with uploaded objects
+- As S3 is Global, you can't select a Region in advance
 
+STEPS: Move to S3 Console > click 'Create bucket' > name 'koalacampaign987654123' (must be globally unique) > select Region (default N.VA) > untick "Block *all* Public Access (this just enables you to Enable public access later) > click "Create Bucket" 
+
+#### Amazon Resource Name (ARN): All resources in AWS have a unique identifier, the ARN. 
+To see bucket ARN, Amazon S3 > Buckets > click the bucket you want > 'Properties' tab > Amazon Resource Name 
+
+#### DEMO: Upload files to Bucket
+Amazon S3 > Buckets > click the bucket you want > Objects, click Upload > Select Files > Use default settings > click Upload
+- Now, you'll see these files in the Object tab
+
+Note on creating a folder: it doesn't actually create a folder, it creates an object that appears to be a folder. They are just emulated using prefixes Eg. archive/koalazzz.jpg -> Not actually a file, but named to look like it
+- Without versioning enabled, same name files can overwrite each other. With Versioning, they can't
