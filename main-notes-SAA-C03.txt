@@ -399,3 +399,50 @@ https://learn.cantrill.io/courses/1820301/lectures/41301621
 3. Copy the command at the bottom of the SSH Client tab "ssh -i "A4L.pem" ec2-user@ec2-54-89-175-122.compute-1.amazonaws.com", verify fingerprint with "yes"
 - Note: If using MacOS/Linux and "Permission Denied": paste in terminal "chmod 400 A4L.pem"
 - More key file permissions help: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connection-prereqs.html#connection-prereqs-private-key
+
+### S3 Basics: Simple Storage Service
+Global Storage Platform - regional based/resilient. Access from anywhere.
+- Public service, can cope with unlimited data & multi-users
+- Perfect for hosting large amounts of data
+- Economical and accessed via UI/CLI/API/HTTP
+
+#### S3 Delivers 2 things: Objects and Buckets
+
+##### S3 Objects
+What is an Object? An object is a file and any optional metadata that describes the file.
+
+Two components and some associated metadata: 
+1. Object Key. identifies object in a bucket
+2. Value. data or contents of the object. Object size can range from 0 bytes to 5 terabytes (TB) in size.
+Metadata: Version ID, Metadata, access control, subresources
+
+NOTE: S3 = Default Storage Service in AWS
+
+##### S3 Buckets
+Containers created in a specific AWS region; default place to go to in order to configure S3
+- Data inside a bucket has a primary home region. Never leaves this region unless configured to do so
+- Blast radius of a failure is limited to a region
+- Buckets can hold an unlimited number of objects; infinitely scalable
+- S3 bucket has no complex structure; flat-structure; everything stored at same level; all stored at Root level (if you list out on Command, it'll look like there are folders, but there aren't Eg. /old/photo1.jpg). Folders are called 'prefixes' in S3.
+
+
+# EXAM: Bucket name must be Globally Unique. Error where you can't create a bucket? Prolly not a unique name
+
+# EXAM: More bucket name restrictions: 3-63 characters, all lowercase, no underscores, not formatted like IP addresses
+
+# EXAM: Bucket limits: soft limit of 100 buckets per AWS account, hard limit of 1000 buckets (hard limit increased by connecting with Support). If you have more than 1000 users, you can't use 1 bucket per user, but you can use prefixes within a bucket to let multiple users use one bucket.
+
+# EXAM: Unlimited Objects in a bucket, ranging from 0 bytes to 5TB in size
+
+# EXAM: Object Structure: Key = Name, Value = Data
+
+#### S3 Patterns and Anti-Patterns
+- S3 is an Object Store system, NOT File System and NOT Block System
+- S3 has no File System, it's flat. It's not Block storage, so you can't mount it as K:\ or /images
+- Great for 'offload'
+- S3 should be your default INPUT and/or OUTPUT to MANY AWS products
+
+# EXAM: Where to store data? S3 should be default answer 
+
+### DEMO: Creating an S3 Bucket
+
