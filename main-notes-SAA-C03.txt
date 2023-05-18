@@ -281,3 +281,59 @@ COMMAND to test: 'aws s3 ls --profile iamadmin-production'
 SECURITY REMINDER: Never share your SECRET KEY. If leaked, delete and create new set of keys and re-configure in CLI
 
 TIP: If after you Configure CLI with credentials, you can delete the credential files (CSVs)
+
+
+## AWS FUNDAMENTALS
+
+### AWS Public VS Private Services
+Architecture of both Public/Private Services. "Private"/"Public" refer to networking only. Private runs within VPC, Public is s3
+- Both require Permissions / Configuration
+- 1. Public Internet Zone
+- 2. AWS Private Zone: VPC's are Virtual Private Clouds. VPCs are isolated unless configured otherwise. Can attach IGW (internet gateway) for access to internet
+- 3. Third zone, AWS Public Zone (runs between Public and Private zones). It's a network connected to the Public internet
+
+### AWS Global Infrastructure
+AWS have created a global public cloud platform which consists of isolated 'regions' connected together by high speed global networking.
+
+Two types of Deployment at global level: 1) AWS Regions, 2) AWS Edge Locations (doesn't directly map to continent or country)
+#### AWS Region: Geographically spread. Full compute, storage, DB, AI, Analytics
+-- Three main benefits
+--- 1. Geographically separate for physical reslience. Isolated Fault Domain
+--- 2. Geopolitical Separation. Different governance
+--- 3. Location Control. Performance
+-- Inside regions: You can use Region Code or Region Name. Eg Sygney Australia. RC: ap-southeast-2, RN: Asia Pacific (Sydney)
+
+#### AWS Availability Zone
+Located inside regions. Eg. for Sydney AU: ap-southeast-2a, ap-southeast-2b, ap-southeast-2c. If an issue is only in 1 availability zone (AZ), you'll still have functioning services in the other AZs
+
+#### AWS Edge Location: Local distribution points closest to user. Content distribution services, edge computing. Eg. Netflix storing content close as possible to user. Edge locations for fast/efficient data transfer because they're closer to the user. Uses CloudFront
+
+#### AWS AZ VS Edge Location
+An Availability Zone is an isolated location within an AWS region. An edge location delivers cached content to the closest location to reduce latency for users.
+
+NOTE: Visit: infrastructure.aws
+
+Service Resilience 
+- Globally Resilient: Operates globally with a single DB and replicated across multiple regions. World would need to fail to experience a full outage here. Eg. IAM
+- Regionally Resilient: Operate in single region with one dataset in a region. Replicate data to AZs for resilience.
+- Availability Zone Resilient: Prone to failure as they have less redundancies.
+
+### AWS Default Virtual Private Cloud (VPC)
+A Virtual Network inside AWS. VPCs are regional services; regionally resilient. They operate from multiple AZ's in a region. 
+- A VPC is 1 account and 1 region
+- Private and isolated unless configured otherwise
+- Default VPC (max 1 per region, pre-configured) and Custom VPCs (can have many)
+- Used to connect AWS private networks to on-premise network. Or connecting during multi-cloud deployments
+
+#### Default VPC
+There can only be one default VPC per region, and they can be deleted and recreated from the console UI. Unless configured otherwise, VPC is entirely private/isolated. 
+- VPC CIDR: Start and end range of IP addresses VPC can use. If anything needs (and is allowed to) communicate with VPC, it needs to communicate to the VPC CIDR
+- Default VPC only gets 1 CIDR IP range. Can't change it.
+- Default provides Internet Gateway (IGW), Security Group, and NACL
+- VPC can be subdivided into subnetworks. Each subnet in VPC is located in one AZ. Default VPC has one subnet in each AZ by default
+-- Each subnet uses part of the VPC CIDR range
+-- Default VPC CIDR: always 172.31.0.0/16
+-- Assigns public IPv4 addresses
+--- /20 subnet in each AZ in the region. The higher the /#, the smaller the network. /17 is half the size of /16
+
+They always have the same IP range and same '1 subnet per AZ' architecture.
