@@ -464,3 +464,25 @@ Note on creating a folder: it doesn't actually create a folder, it creates an ob
 Two step process:
 1. Empty the bucket > select Bucket, click Empty
 2. Re-select Bucket, click Delete
+
+### CloudFormation (CFN) Basics
+A tool which lets you create, update, delete infrastructure in AWS using Templates
+- At its base, CFN uses templates. Can create/update/delete templates
+- Template written in YAML or JSON
+
+#### What makes a template? Components
+- All templates have a list of resources. This is the only mandatory item 
+- Description. Free text field for the author to provide details on template. (If you have AWSTemplateFormatVersion, Description MUST follow it in YAML/JSON
+- Metadata. Can control the UI (groupings, order, labels, descriptions), as well as other things (to be covered later)
+- Parameters. Value parameters, default values, etc.
+- Mappings. Create lookup tables.
+- Conditions. Allows decision making in the template. Step 1 create condition, Step 2 use condition 
+- Outputs. Once template is finished it can present outputs like admin or setup adddress, instance ID
+
+#### How does CFN use Templates?
+Eg. Template that creates EC2 resource. Resources in CFN Template are called Logical Resources. 
+- When template is given to CFN, CFN creates a stack which is a living and active representation of a Template. Stack is created with CFN does something with a template.
+- For any logical resources in the stack, CFN makes a corresponding physical resourse in your AWS account. It's CFNs job to keep logical and physical resources in sync
+- If you delete a CFN Stack, its logical resources are deleted and CFN subsequently deletes the physical resources
+
+# EXAM: In a CFN Template, if you have the AWSTemplateFormatVersion item, the Description MUST follow directly after in your YAML/JSON template file
