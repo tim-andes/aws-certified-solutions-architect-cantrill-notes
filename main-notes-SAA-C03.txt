@@ -78,7 +78,7 @@ AWS accounts are really good at containing what's inside the accounts; bad emplo
 
 By default, all access to an AWS account is denied except for the root user.
 
-# TIP: Create new accounts for the course, don't use existing AWS accounts. The longer an AWS account exists, the more potential for configuratoin errors.
+# TIP: Create new accounts for the course, don't use existing AWS accounts. The longer an AWS account exists, the more potential for configuration errors.
 
 
 ## DEMO: Creating the GENERAL AWS Account: https://learn.cantrill.io/courses/1820301/lectures/41301459
@@ -112,7 +112,7 @@ Definition: Factors - Different pieces of evidence which prove identity
 - Inherent - Something you are: fingerprint, biometrics, etc.
 - Location - Physical location, which network (corp or wifi)
 
-More factors means more security and harder to fake. Also means less convenient. Trying to strike a balance between security and convenience.
+More factors means more security and harder to fake. Also means less convenient. We're trying to strike a balance between security and convenience.
 
 With AWS: 1. first, username and PW 2. MFA OTP (physical MFA or virtual via app ie. Google Authenticator)
 
@@ -191,7 +191,7 @@ IAM has 3 main jobs:
 ### Other IAM Key Points
 - No cost for IAM
 - Global service / Global Resilience (copes with failure of large parts of the AWS system)
-- IAM only controls with its identities can do. Allow or Deny identities in account
+- IAM only controls what its identities can do. Allow or Deny identities in account
 - No direct control on external accounts or users. It only controls local accounts or users
 - Identity federation (to be covered later) and MFA
 
@@ -288,6 +288,7 @@ TIP: If after you Configure CLI with credentials, you can delete the credential 
 ### AWS Public VS Private Services
 Architecture of both Public/Private Services. "Private"/"Public" refer to networking only. Private runs within VPC, Public is s3
 - Both require Permissions / Configuration
+3 Zones:
 - 1. Public Internet Zone
 - 2. AWS Private Zone: VPC's are Virtual Private Clouds. VPCs are isolated unless configured otherwise. Can attach IGW (internet gateway) for access to internet
 - 3. Third zone, AWS Public Zone (runs between Public and Private zones). It's a network connected to the Public internet
@@ -320,7 +321,7 @@ Service Resilience
 
 ### AWS Default Virtual Private Cloud (VPC)
 A Virtual Network inside AWS. VPCs are regional services; regionally resilient. They operate from multiple AZ's in a region. 
-- A VPC is 1 account and 1 region
+- A VPC is 1 account and 1 region, cann't be spread across multiple accounts/regions
 - Private and isolated unless configured otherwise
 - Default VPC (max 1 per region, pre-configured) and Custom VPCs (can have many)
 - Used to connect AWS private networks to on-premise network. Or connecting during multi-cloud deployments
@@ -336,26 +337,29 @@ There can only be one default VPC per region, and they can be deleted and recrea
 -- Assigns public IPv4 addresses
 --- /20 subnet in each AZ in the region. The higher the /#, the smaller the network. /17 is half the size of /16
 
-They always have the same IP range and same '1 subnet per AZ' architecture.
+Default VPCs always have the same IP range and same '1 subnet per AZ' architecture.
 
 ##### Default VPC - Create / Delete
-To locate: AWS Dashboard > Search "VPC" > Your VPCs
+
+To Locate: AWS Dashboard > Search "VPC" > Your VPCs
+
 To Delete: check Default VPC > actions dropdown "Delete" > follow prompt
+
 To Create Default VPC: If you've deleted Default VPC. In Your VPCs > Actions dropdown > Create Default VPC
 
 ### Elastic Compute Cloud (EC2) Basics
 Basically the default compute service of AWS. It allows you to provision Virtual Machines known as Instances with resources you select and an operating system of your choosing.
-- EC2 is IaaS, Infr-as-a-service. Unit of consumption is the Instance. Instance is a configured O/S
+- EC2 is IaaS, Infrastructure-as-a-service. Unit of consumption is the Instance. Instance is a configured O/S
 - Private service by default, uses VPC networking
 - Public access must be configured. The VPC it's running within must support Public access (if using custom VPC, you need to configure this in VPC)
 - EC2 is AZ Resilient
 - When launching an Instance, you can choose size and capability
 - On-Demand Billing, by second or hour
-- Storage Types: Local on-host storage, or network storage Elastic Block Store (EBS)
+- Storage Types: Local on-host storage, or network storage via Elastic Block Store (EBS)
 
 #### EC2 instance has attribute called State
 States to Know: Running, Stopped, Terminated
-- When instance is launched and provisioned, it moves to Running. If instance shut down it is Stopped
+- When instance is launched and provisioned, it moves to Running. If instance is shut down, it is Stopped
 - Instance can be terminated, but this cannot be reversed
 
 These States influence the charges for an instance. 
@@ -363,7 +367,7 @@ These States influence the charges for an instance.
 - Regardless of Running or Stopped, storage is still allocated and you'll still be charged for EBS storage even if instance is stopped
 - To guarantee 0 cost on instance, you must Terminate. Termination is irreversible
 
-#### Components for instance charge: running the instance, storage the instance uses, extras for commercial SW instance is launched with
+#### Components for instance charge: running the instance, storage the instance uses, extras for any commercial software the instance is launched with
 
 #### AMI: Amazon Machine Image
 Image of an EC2 instance
@@ -388,3 +392,10 @@ https://learn.cantrill.io/courses/1820301/lectures/41301621
 1. Create SSH Key Pair: Navigate to EC2 Console (search bar) > left sidebar > Network & Security > Key Pairs) > click "Create Key Pair"
 - Note: For creating key pair, Private key file format choises are .pem and .ppk. For MacOS/Linux, always use .pem, if using modern Windows you can choose .pem. Older Windows or Putty terminal app, choose .ppk
 2. Configure: Left sidebar "Instances" > click "Launch Instances" > select O/S (Amazon Linux) > select keypair login (A4L) > Network Settings: select Create Security Group > name/description "MyFirstInstanceSG" > leave Inbound security groups rules as defaults > Launch EC2 Instance
+
+### DEMO: Connect to Terminal of an EC2 Instance
+1. In EC2 Dashboard, Right Click your EC2 instance, select "Connect" > SSH Client
+2. Open your local Terminal / Command Prompt and change directories to wherever your SSH private file key is (likely Downloads, it's a .pem file created previously)
+3. Copy the command at the bottom of the SSH Client tab "ssh -i "A4L.pem" ec2-user@ec2-54-89-175-122.compute-1.amazonaws.com", verify fingerprint with "yes"
+- Note: If using MacOS/Linux and "Permission Denied": paste in terminal "chmod 400 A4L.pem"
+- More key file permissions help: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connection-prereqs.html#connection-prereqs-private-key
