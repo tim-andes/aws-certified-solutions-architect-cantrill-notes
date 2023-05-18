@@ -337,3 +337,5 @@ There can only be one default VPC per region, and they can be deleted and recrea
 --- /20 subnet in each AZ in the region. The higher the /#, the smaller the network. /17 is half the size of /16
 
 They always have the same IP range and same '1 subnet per AZ' architecture.
+
+##### Create VPC
