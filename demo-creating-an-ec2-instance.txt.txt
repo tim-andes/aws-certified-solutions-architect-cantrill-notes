@@ -1,1 +1,6 @@
+### DEMO: Create an EC2 Instance
+https://learn.cantrill.io/courses/1820301/lectures/41301621
 
+1. Create SSH Key Pair: Navigate to EC2 Console (search bar) > left sidebar > Network & Security > Key Pairs) > click "Create Key Pair"
+- Note: For creating key pair, Private key file format choises are .pem and .ppk. For MacOS/Linux, always use .pem, if using modern Windows you can choose .pem. Older Windows or Putty terminal app, choose .ppk
+2. Configure: Left sidebar "Instances" > click "Launch Instances" > select O/S (Amazon Linux) > select keypair login (A4L) > Network Settings: select Create Security Group > name/description "MyFirstInstanceSG" > leave Inbound security groups rules as defaults > Launch EC2 Instance
