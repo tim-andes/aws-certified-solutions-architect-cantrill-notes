@@ -418,7 +418,7 @@ Metadata: Version ID, Metadata, access control, subresources
 
 NOTE: S3 = Default Storage Service in AWS
 
-##### S3 Buckets
+##### S3 Buckets (Simple Storage Service)
 Containers created in a specific AWS region; default place to go to in order to configure S3
 - Data inside a bucket has a primary home region. Never leaves this region unless configured to do so
 - Blast radius of a failure is limited to a region
@@ -442,7 +442,7 @@ Containers created in a specific AWS region; default place to go to in order to 
 - Great for 'offload'
 - S3 should be your default INPUT and/or OUTPUT to MANY AWS products
 
-# EXAM: Where to store data? S3 should be default answer 
+# EXAM: Where to store data in AWS? S3 should be default answer 
 
 ### DEMO: Creating an S3 Bucket
 Create, interact with bucket, upload to bucket, interact with uploaded objects
@@ -470,7 +470,9 @@ A tool which lets you create, update, delete infrastructure in AWS using Templat
 - At its base, CFN uses templates. Can create/update/delete templates
 - Template written in YAML or JSON
 
-#### What makes a template? Components
+From the Documentation: AWS CloudFormation is a service that helps you model and set up your AWS resources so that you can spend less time managing those resources and more time focusing on your applications that run in AWS. You create a template that describes all the AWS resources that you want (like Amazon EC2 instances or Amazon RDS DB instances), and CloudFormation takes care of provisioning and configuring those resources for you
+
+#### What makes a template? Components:
 - All templates have a list of resources. This is the only mandatory item 
 - Description. Free text field for the author to provide details on template. (If you have AWSTemplateFormatVersion, Description MUST follow it in YAML/JSON
 - Metadata. Can control the UI (groupings, order, labels, descriptions), as well as other things (to be covered later)
@@ -489,3 +491,12 @@ Eg. Template that creates EC2 resource. Resources in CFN Template are called Log
 
 ### DEMO: Simple Automation w/ CFN; Creating EC2 with CFN
 
+"CloudFormation" or CFN in Search > click "Create Stack" > Template is ready > Upload a Template File > use Demo file (ec2instance.yaml) > click "Next" > Name: "cnfdemo1" > leave the rest default > "Next" > skip config "Next" > Review cfndemo1: Capabilities, check the box 
+- Template auto-creates an s3 bucket when you upload a Template
+- YAML file: 
+-- LatestAmiID: Instead of giving latest AMI ID, you can make Type a "latest version" AMI
+-- CloudFormation Functions are used within YAML Outputs to get values like InstanceID, Availability Zone (AZ), Public IP of EC2, etc. Eg. !Ref, !GetAtt
+-- Resources Component is the main one in the file. In this temmplate, an instance role and instance role profile are being created (SessionManagerRole, SessionManagerInstanceProfile) -- covered later. 
+-- Also being created in the Resources portion of the template: EC2 instance, InstanceSecurityGroup. Port 22 (SSH)/Port 80 (HTTP)
+-- Resources: EC2Instance: Properties: InstanceType: "t2.micro" -- Free tier elligible
+- After Submitting stack to be created, you'll see that each Resource being created is done so by an Event, "CREATE_IN_PROGRESS", "CREATE_COMPLETE"
