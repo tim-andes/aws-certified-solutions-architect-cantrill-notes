@@ -524,6 +524,7 @@ Eg. Template that creates EC2 resource. Resources defined in CFN Templates are c
 - No need to SSH in now
 - Two logical resources in YAML template configure this ability
 
+
 ## CloudWatch Basics
 CloudWatch is a core supporting service within AWS which provides metric, log and event management services. Collects / manages operational data on your behalf.
 
@@ -539,6 +540,7 @@ CloudWatch is a core supporting service within AWS which provides metric, log an
 - Dimensions: Generally, a metric is a collection (Eg. CPU utilization comes from all EC2 instances, not just one). You can use dimensions to single out resources to see their individual metrics. "Separate datapoints for different things or perspectives within the same metric"
 - Alarms: Taking actions based on metrics. States: OK or ALARM (ALARM can be SNS Notification or Action), and INSUFFICIENT DATA (when there's not yet enough data)
 
+
 ## DEMO: Monitoring with CloudWatch
 https://learn.cantrill.io/courses/1820301/lectures/41301629
 1. Create EC2 Instance: Nav to EC2 service > Launch Instance Defaults for all, but you can pay to Enable Detailed CloudWatch Monitoring
@@ -552,10 +554,12 @@ https://learn.cantrill.io/courses/1820301/lectures/41301629
 
 Detailed CloudWatch Monitoring: Enables you to monitor, collect, and analyze metrics about your instances through Amazon CloudWatch. Additional charges apply if enabled. If no value is specified the value of the source template will still be used. If the template value is not specified then the default API value will be used.
 
+
 ## Shared Responsibility Model
 Vendor and User shared responsibilities. This applies from a security perspective so you know which elements you and the vendor manage.
 - Customer is responsible for security 'in' the cloud: client-side data encryption, server-side encryption, networking traffic protection, O/S, platform, IAM, apps
 - AWS responsible for security 'of' the cloud 
+
 
 ## High-Availability (HA) vs Fault-Tolerance (FT) vs Disaster Recovery (DR)
 ### High-Availablily - Aims to ensure an agreed level of operational performance, usually uptime, for a higher than normal period. Doesn't aim to stop failure, but online and providing services as often as possible. Fix should be as quick as possible, often with automation to bring systems back into service quickly; maximizing a system's online time.
@@ -565,6 +569,7 @@ Vendor and User shared responsibilities. This applies from a security perspectiv
 - Cost of fault tolerance can be expensive because of redundancies and failure toleration via duplicate system components
 - Example: Plane operates with Fault Tolerance (more engines, electronic systems etc); can't tolerate failure in flight
 ### Disaster Recovery - Post-disaster recovery plan. A set of policies, tools, and procedures to enable recovery or continuation of vital technology infrastructure and systems following a natural or human-induced disaster. When disaster occurs, you want to avoiding losing irreplaceable items.
+
 
 ## Route53 (R53) Fundamentals
 AWS's managed DNS product. Global service, single database; no need to pick region in console UI. Globally resilient.
@@ -584,6 +589,7 @@ DNS Zones and Hosting for those zones. Hosted zone created if domain available (
 Search / Nav to R53 console > Registered Domains > click "Register Domains" > Search for domain > Select domain you want > Proceed to Checkout (choose duration, auto-renew) > fill out Contact Info > Pricing (up front cost + monthly hosted fee) > click "Submit" > await domain registry
 - Transfer Lock: Security feature, domain can't be transferred away from R53 without disabling this lock
 - If you delete and recreate HZ, you'll be allocated 4 new Name Servers (would need to update some stuff if you weren't using R5#)
+
 
 ## DNS Record Types
 - Nameserver Records (NS). Allows delegation to occur in DNS. Eg. .com zone
@@ -606,6 +612,7 @@ QUIZ: Which type of organisation has relationships with the .org TLD zone manage
 Numeric value that can be set on DNS records. Getting result from authoritative source is an authoritative answer. If a 3600 TTL value is set, results of query are stored in resolver server for 3600 seconds (1 hour), creating a non-authoritative answer for delivery -- during this time, another query would receive this cached non-authoritative answer.
 - Low value means more queries against your server. High value less queries but less control
 - TIP: If doing any work to change DNS values, it's recommended that you lower the TTL value in advance (days/weeks in advance)
+
 
 ## IAM Identity Policies
 Policies attached to identities in AWS. 
@@ -634,6 +641,7 @@ Priorities:
 -- Low Management Overhead
 When to use Inline Policies? For Special or exceptional Allows or Deny's
 
+
 ## IAM Users and ARNs (Amazon Resource Name)
 ### IAM Users: An identity used for anything requiring long-term AWS access eg. Humans, apps, service accounts. If you can picture one thing; named thing, 99% of the time use IAM
 - Starts with the principal; an entity trying to access AWS account (ppl, svc, group of  these_
@@ -657,7 +665,8 @@ arn:aws:s3:::catgifs/* -> references objects IN the bucket (thse two ARNs do not
 # EXAM: IAM User can be a member of 10 groups maximum
 System with more than 5,000 identities? Can't use IAM user for each identity. IAM Roles & Identity Federation fixes this (more later)
 
-## DEMO - Simple Identity Permissions in AWS
+
+## DEMO - Simple Identity Permissions Policies in AWS
 Assign some permissions to an IAM identity
 - 1-click deployment https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0052-aws-mixed-iam-simplepermissions/demo_cfn.yaml&stackName=IAM
 -- Create IAM user Sally and two s3 buckets
@@ -675,6 +684,7 @@ Steps:
 1. Delete Managed Policy: IAM > Users > Sally > Permissions > remove "AllsAllS3ExceptCats"
 2. s3 > select "catpics"/"animalpics" buckets > click "Empty" > type "permanently delete", submit
 3. CFN > Stacks > Delete Stack. NOTE: If you don't see this stack, check your region to make sure youre in N.Virginia
+
 
 ## IAM Groups
 IAM groups are containers for IAM users. Makes managing IAM users easier.
@@ -695,6 +705,65 @@ Eg. If Sally is a part of 2 IAM Groups, each with an attached policy, and she ha
 
 ### Resource Policy: Controls access to a specific resource, allowing/denying identities to access that bucket. Does this by referencing this ID's with ARNs
 
+
 ## DEMO - Permissions control using IAM Groups
 How groups can be used to hold permissions for group members
 
+1. After prep steps complete, remove catpic permissions from Sally IAM > Users > Sally > Permissions > check cat Policy, "Remove"
+2. IAM > User Groups > click "Create group" > name "developers" > select policy name "IAMGROUPS-AllowAllS3ExceptCats-7OLPCURC1UQF"
+3. IAM > User Groups > tab Users > Add Users > select Sally > Add Users
+
+### IAM Groups DEMO: Tidy Up:
+1. IAM > User Groups > Developers > Remove AllowAllS3ExceptCats policy
+2. IAM > Users Groups > delete Developers
+3. Empy s3 Buckets . s3 > Buckets > click and Empty cat/animals buckets
+4. CloudFormation > Stacks > delete IAMGROUPS
+
+
+## IAM Roles - The Tech
+- Principal: Physical person, app, device, or process which wants to Authenticate with AWS.
+- IAM User: If you can think of a single entity as a principal, then prolly use IAM User
+- IAM Roles: If you don't know the number of principals. Or more than 5,000 principals.
+- A Role doesn't represent 'you', it represents a level of access inside an AWS account. Permissions borrowed for a short period of time
+- Roles can be referenced within Resource Policies.
+
+### IAM Roles Policies - Two Types
+1. Trust Policy - The trust policy specifies which trusted account members are allowed to assume the role.
+2. Permissions Policy - The permissions policy grants the user of the role the needed permissions to carry out the intended tasks on the resource. 
+- Temporary Security Credentials: Given when a Role gets assumed by something that is allowed to assume it. These are like access keys, but time limited.
+-- Generated by STS, Secure Token Service. "sts:AssumeRole"
+-- Checked against Permissions Policy
+
+
+## IAM Roles: When to use IAM Roles
+Examples for selecting when and when to not use IAM Roles.
+
+- Example 1. Common use of Roles are for AWS Services themselves
+-- Eg. AWS Lambda. Lambda function has no permissions by default, so it needs permissions to do things when it runs. Running Lambda Function is called "function invocation"/"function execution". We need to give this function permissions with access keys and there's a better way than hardcoding keys into script. To provide these permissions, we create an IAM Role called "Lambda Execution Role", which has a Trust Policy/Permissions Policy
+-- This is good for a role because you'd have to hardcode into the function otherwise (security risk/update issues). Roles provide TSC (Temp security credentials)
+-- For a given Lambda Function, you could have 0 to unknown number of copies running. Therefore, it makes sense to be a Role.
+
+- Example 2. Emergency or out-of-the-usual situations
+-- Eg. Group Helpdesk team given Read-Only access to a customer's AWS account to watch performance. Anything past read-only handled by a Senior team. However, if a customer calls at a time when Senior team is unavailable, the Helpdesk team may need more than read-only; Break Glass Situation. "Break glass for excepted access".
+-- An emergency role can be assumed when Helpdesk user needs to "Break glass for more than read-only access"
+
+- Example 3. Adding AWS to existing corporate environment
+-- Eg. You have an existing physical network with an existing identity provider, Microsoft Active Directory. External Accounts / Identities cannot be used to directly access AWS Resources. For a corporate with more than 5,000 staff, you can't assign each employee an IAM (MAX 5000). Roles can re-use IAM Users
+-- Allow IAM Role to be assumed by one of the External Entities (the identities in Microsoft Active Directory)
+--- When Role is assumed, Temporary Security Credentials are used
+
+TERM: ID Federation: Giving permissions to an external ID provider and allowing externals to assume a Role
+TERM: Web Identity Federation. Eg. When you are given the option to login with Google, Facebook, etc (these are Web Identities), then use these to assume an IAM Role for AWS access.
+-- Advantages: No AWS credentials on the external entity. Makes use of existing accounts. Scales to hundreds of millions of users and beyond.
+
+EXAM: How you can architect solutions that will work for mobile apps: Use ID Federation
+EXAM: External Accounts / External Identities cannot be used to directly access AWS Resources. They must assume a Role to gain access.
+
+### IAM Roles: When to use Roles: Cross-Account Access
+Eg. Two AWS accounts. Your Account and Partner Account
+- Your account offers an application which processes scientific data and they want you to store data in Partner Account's s3 bucket. Your account has 1000s of ID's and they don't want this data in their account.  
+- In this situation, use a Role in the Partner Account. Any objects uploaded by this Role into the Partner Account means the Partner Account owns these objects
+- Roles can be used cross-account to access individual resources, or access to whole accounts
+
+
+## Service-linked Roles & PassRole
