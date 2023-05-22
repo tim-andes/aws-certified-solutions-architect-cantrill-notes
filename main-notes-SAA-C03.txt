@@ -499,4 +499,41 @@ Eg. Template that creates EC2 resource. Resources in CFN Template are called Log
 -- Resources Component is the main one in the file. In this temmplate, an instance role and instance role profile are being created (SessionManagerRole, SessionManagerInstanceProfile) -- covered later. 
 -- Also being created in the Resources portion of the template: EC2 instance, InstanceSecurityGroup. Port 22 (SSH)/Port 80 (HTTP)
 -- Resources: EC2Instance: Properties: InstanceType: "t2.micro" -- Free tier elligible
-- After Submitting stack to be created, you'll see that each Resource being created is done so by an Event, "CREATE_IN_PROGRESS", "CREATE_COMPLETE"
+- After Submitting stack to be created, you'll see that each Resource being created is done so by an Event, "CREATE_IN_PROGRESS", "CREATE_COMPLETE". This whole process takes some time before all of cnfdemo1 is showing CREATE_COMPLETE
+
+#### EC2 Session Manager: EC2 Dashboard > Connect to Instance > Session Manager
+- No need to SSH in now
+- Two logical resources in YAML template configure this ability
+
+## CloudWatch Basics
+CloudWatch is a core supporting service within AWS which provides metric, log and event management services. Collects / manages operational data on your behalf.
+
+### Three jobs:
+1. Metrics. AWS Products, Apps, on-premises. Some metrics require extra installed CloudWatch Agent
+2. CloudWatch Logs. AWS Products, Apps, on-premises. Almost anything logged can be ingested by Logs
+3. CloudWatch Events. AWS Services & Schedules. If an AWS service does something, this will generate an event that can perform another action. Or you can set up a chrono-repeating event through here.
+
+### Core Concepts
+- Namespace: Container for monitoring data. There is a naming ruleset for naming. All AWS data foes into a special namespace AWS/[service]
+- Metric: Collection of related data points in a time-ordered structure
+- Datapoints: A single unit of a metric; consists of timestamp and a value
+- Dimensions: Generally, a metric is a collection (Eg. CPU utilization comes from all EC2 instances, not just one). You can use dimensions to single out resources to see their individual metrics. "Separate datapoints for different things or perspectives within the same metric"
+- Alarms: Taking actions based on metrics. States: OK or ALARM (ALARM can be SNS Notification or Action), and INSUFFICIENT DATA (when there's not yet enough data)
+
+## DEMO: Monitoring with CloudWatch
+https://learn.cantrill.io/courses/1820301/lectures/41301629
+1. Create EC2 Instance: Nav to EC2 service > Launch Instance Defaults for all, but you can pay to Enable Detailed CloudWatch Monitoring
+2. Create CloudWatch alarm: Nav to CloudWatch dashboard > All Alarms > Create Alarm
+3. Select Metric > EC2 > Browse Tab (make sure you know last 4 of Instance ID number) > Last 4 of ID number, check box for CPUUTilization metric
+4. Metrics / Contitions: Conditions: Static, Whenever CPU Util is Greater/Equal 15% > "Next" > Remove Notification > Alarm Name "cloudwatchtestHIGHCPU" > Next/Create Alarm
+5. Back to EC2, connect to EC2 with Instance Connect
+6. Need to install Stress app > command: sudo yum install stress -y
+7. Stress Test: command: stress -c 1 -t 3600. Make sure CloudWatch alarm is OK status before entering this command. 
+8. Clean up: Delete CloudWatch Alarm and Terminate EC2 instance. Delete EC2 Security Group 
+
+Detailed CloudWatch Monitoring: Enables you to monitor, collect, and analyze metrics about your instances through Amazon CloudWatch. Additional charges apply if enabled. If no value is specified the value of the source template will still be used. If the template value is not specified then the default API value will be used.
+
+## Shared Responsibility Model
+Vendor and User shared responsibilities. This applies from a security perspective so you know which elements you and the vendor manage.
+- Customer is responsible for security 'in' the cloud: client-side data encryption, server-side encryption, networking traffic protectoin, O/S, platform, IAM, apps
+- AWS responsible for security 'of' the cloud 
