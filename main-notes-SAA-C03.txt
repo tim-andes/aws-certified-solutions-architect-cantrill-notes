@@ -293,6 +293,10 @@ Architecture of both Public/Private Services. "Private"/"Public" refer to networ
 - 2. AWS Private Zone: VPC's are Virtual Private Clouds. VPCs are isolated unless configured otherwise. Can attach IGW (internet gateway) for access to internet
 - 3. Third zone, AWS Public Zone (runs between Public and Private zones). It's a network connected to the Public internet
 
+#### AWS Public Service: What is true of an AWS Public Service? 1. Located in the AWS Public Zone 2. Anyone can connect, but permissions are required to access the service
+#### AWS Private Service: What is true of an AWS Private Service? 1. Located in a VPC 2. Accessibly from the VPC it is located in 3. Accessible from other VPCs or on-premise networks as long as private networking is configured
+
+
 ### AWS Global Infrastructure
 AWS have created a global public cloud platform which consists of isolated 'regions' connected together by high speed global networking.
 
@@ -337,7 +341,7 @@ There can only be one default VPC per region, and they can be deleted and recrea
 -- Assigns public IPv4 addresses
 --- /20 subnet in each AZ in the region. The higher the /#, the smaller the network. /17 is half the size of /16
 
-Default VPCs always have the same IP range and same '1 subnet per AZ' architecture.
+QUIZ: How many subnets are in a default VPC? Default VPCs always have the same IP range and same '1 subnet per AZ' architecture. # Subnets = # AZ's in region
 
 ##### Default VPC - Create / Delete
 
@@ -374,10 +378,20 @@ Image of an EC2 instance
 - Can create EC2 instance
 - Can be created FROM an EC2 instance
 
-AMI contains attached permissions. Controls which accts can/can't use AMI:
+##### AMI contains attached permissions. Controls which accts can/can't use AMI:
 - Public Type - Everyone allowed
 - Owner - Implicit Allow
 - Explicit - Allow specific AWS accounts
+
+
+##### AMI includes the following:
+- One or more Amazon Elastic Block Store (Amazon EBS) snapshots, or, for instance-store-backed AMIs, a template for the root volume of the instance (for example, an operating system, an application server, and applications).
+- Launch permissions that control which AWS accounts can use the AMI to launch instances.
+- A block device mapping that specifies the volumes to attach to the instance when it's launched.
+
+##### NOT stored in AMI:
+- Instance Settings
+- Network Settings
 
 Root Volume: AMI contains boot volume of instance, boots O/S
 
@@ -444,6 +458,11 @@ Containers created in a specific AWS region; default place to go to in order to 
 
 # EXAM: Where to store data in AWS? S3 should be default answer 
 
+# QUIZ: What is true of Simple Storage Service (S3)
+- S3 is an AWS Public Service
+- S3 is an Ojbect Storage System
+- Buckets can store an unlimited amount of data
+
 ### DEMO: Creating an S3 Bucket
 Create, interact with bucket, upload to bucket, interact with uploaded objects
 - As S3 is Global, you can't select a Region in advance
@@ -482,9 +501,9 @@ From the Documentation: AWS CloudFormation is a service that helps you model and
 - Outputs. Once template is finished it can present outputs like admin or setup adddress, instance ID
 
 #### How does CFN use Templates?
-Eg. Template that creates EC2 resource. Resources in CFN Template are called Logical Resources. 
+Eg. Template that creates EC2 resource. Resources defined in CFN Templates are called Logical Resources. 
 - When template is given to CFN, CFN creates a stack which is a living and active representation of a Template. Stack is created with CFN does something with a template.
-- For any logical resources in the stack, CFN makes a corresponding physical resourse in your AWS account. It's CFNs job to keep logical and physical resources in sync
+- For any logical resources in the stack, CFN makes a corresponding physical resourse in your AWS account. It's CFNs job to keep logical and physical resources in sync. Physical resource: A resource created by creating a CloudFormation Stack
 - If you delete a CFN Stack, its logical resources are deleted and CFN subsequently deletes the physical resources
 
 # EXAM: In a CFN Template, if you have the AWSTemplateFormatVersion item, the Description MUST follow directly after in your YAML/JSON template file
@@ -550,18 +569,18 @@ Vendor and User shared responsibilities. This applies from a security perspectiv
 ## Route53 (R53) Fundamentals
 AWS's managed DNS product. Global service, single database; no need to pick region in console UI. Globally resilient.
 
-### Two main services:
+### R53: Two main services:
 1. Register Domains
 2. Host Zones... managed nameserves
 
-### Architecture
+### R53: Architecture
 Register domains. To do this, it has relationships with all major domain registries (.com, .io, .net, etc)
 1. Check if domain available 2. Zone File created for registering domain (DNS DB for domain) 3. Allocates managed nameservers for this zone (usually 4) 4. get nameserver records added to top level domain zone
 
-### Zones
+### R53: Zones
 DNS Zones and Hosting for those zones. Hosted zone created if domain available (and allocates 4 NS's to host zone). HZ can be Public, Private (linked to VPCs, for sensitive DNS records). Hosted Zones stores records (recordsets).
 
-## DEMO: Register Domain - animals4life.org
+## DEMO: R53 Register Domain - animals4life.org
 Search / Nav to R53 console > Registered Domains > click "Register Domains" > Search for domain > Select domain you want > Proceed to Checkout (choose duration, auto-renew) > fill out Contact Info > Pricing (up front cost + monthly hosted fee) > click "Submit" > await domain registry
 - Transfer Lock: Security feature, domain can't be transferred away from R53 without disabling this lock
 - If you delete and recreate HZ, you'll be allocated 4 new Name Servers (would need to update some stuff if you weren't using R5#)
@@ -574,3 +593,108 @@ Search / Nav to R53 console > Registered Domains > click "Register Domains" > Se
 - TXT Records. Add arbitrary text to a domain; add additional functionality. Eg. Prove domain ownership. 
 
 EXAM: CNAMEs cannot point directly at an IP address, only other names.
+
+QUIZ: How many DNS Root Servers Exist? 13
+QUIZ: Who managers DNS Root Servers? 12 Large Organizations
+QUIZ: Who managers DNS Root Zone? IANA
+QUIZ: A Record = IPv4, AAAA Record = IPv6
+QUIZ: Which DNS Record type is how the root zone delegates control of .org to the .org registry
+QUIZ: Which type of organisation maintains the zones for a TLD (e.g .ORG)? Registry
+QUIZ: Which type of organisation has relationships with the .org TLD zone manager allowing domain registration? Registrar
+
+### TTL - Time To Live
+Numeric value that can be set on DNS records. Getting result from authoritative source is an authoritative answer. If a 3600 TTL value is set, results of query are stored in resolver server for 3600 seconds (1 hour), creating a non-authoritative answer for delivery -- during this time, another query would receive this cached non-authoritative answer.
+- Low value means more queries against your server. High value less queries but less control
+- TIP: If doing any work to change DNS values, it's recommended that you lower the TTL value in advance (days/weeks in advance)
+
+## IAM Identity Policies
+Policies attached to identities in AWS. 
+1. Understand their architecture 2. Gain ability to read/understand a policy 3. Learn to read/write your own
+
+IAM Policy is a set of security statements to AWS, granting or denying product/features. 
+- IAM Identity Policy Document: 1 or more statements, created using JSON
+-- Statement Id or Sid: Let's you identify a statement and what it does
+-- Action: Can be specific individual action, a wild card, or list of multiple independent actions
+-- Resources: Wild cards, lists of individual resources (using ARN name)
+-- Effect: Allow or Deny
+
+Action and Resource within IAM Policy must match for statement to execute.
+
+### How to Handle Overlap Type Situations
+Priorities:
+1. Explicit DENY: Overrules everything.
+2. Explicit ALLOW: Allows access to all actions on any S3 resource (overrules all but Explicit DENY).
+3. Default DENY (Implicit): No explicit DENY or ALLOW, so this takes effect. IAM ID's are generally restricted access by default.
+- DENY, ALLOW, DENY
+
+### Two types of Policies
+- Inline Policies - JSON policies applied to each IAM account individually. (Manually applying policies to each Identity)
+- Managed Policies - Created as their own object. You can attach this policy to more than one identity. Best for Common Access Rights
+-- Reusable
+-- Low Management Overhead
+When to use Inline Policies? For Special or exceptional Allows or Deny's
+
+## IAM Users and ARNs (Amazon Resource Name)
+### IAM Users: An identity used for anything requiring long-term AWS access eg. Humans, apps, service accounts. If you can picture one thing; named thing, 99% of the time use IAM
+- Starts with the principal; an entity trying to access AWS account (ppl, svc, group of  these_
+- Authenticate principal. Principal needs to prove identity against IAM (using Username/PW (humans usually) or Access Keys (app or human in CLI))
+- Principal becomes Authenticated Identity
+- Authorization for actions via IAM Policy (statements)
+
+### ARN (Amazon Resource Name):
+Uniquely identify resources within any AWS accounts. ARNs are used in IAM policies and have a defined format
+
+### ARN Format
+arn:partition:service:region:account-id:resource-id
+arn:partition:service:region:account-id:resource-type/resource-id
+arn:partition:service:region:account-id:resource-type:resource-id
+
+Note: s3 is globally unique, so no need to specify region...
+arn:aws:s3:::catgifs -> references s3 bucket ITSELF
+arn:aws:s3:::catgifs/* -> references objects IN the bucket (thse two ARNs do not overlap)
+
+# EXAM: MAX 5,000 IAM Users per account
+# EXAM: IAM User can be a member of 10 groups maximum
+System with more than 5,000 identities? Can't use IAM user for each identity. IAM Roles & Identity Federation fixes this (more later)
+
+## DEMO - Simple Identity Permissions in AWS
+Assign some permissions to an IAM identity
+- 1-click deployment https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0052-aws-mixed-iam-simplepermissions/demo_cfn.yaml&stackName=IAM
+-- Create IAM user Sally and two s3 buckets
+
+IAM PW - Min. 8 characters. Uppercase, lowercase, numbers
+
+Steps:
+1. open first link, create PW, create stack
+2. Login to new IAM Sally with incognito window, change PW, check ec2 and s3 that the permissions are limited
+3. Using the lesson's attached .zip, open s3_fulladmin.json and copy the code to clipboard
+4. In ADMIN account > IAM dashboard > User: Sally > Permissions > "Add permissions" > Create inline policy > JSON tab, paste copied text > name "s3admininline" and click "Create policy"
+5. In s3, you can prove permissions by uploading merlin/thor.jpg through Sally IAM account
+
+### DEMO - Delete all CFN / IAM info above
+1. Delete Managed Policy: IAM > Users > Sally > Permissions > remove "AllsAllS3ExceptCats"
+2. s3 > select "catpics"/"animalpics" buckets > click "Empty" > type "permanently delete", submit
+3. CFN > Stacks > Delete Stack. NOTE: If you don't see this stack, check your region to make sure youre in N.Virginia
+
+## IAM Groups
+IAM groups are containers for IAM users. Makes managing IAM users easier.
+- Groups can have both Inline and Managed policies attached
+- Soft limit: 300 Groups per account (you can get Support to increase this)
+- Groups are NOT a True Identity; they can't be referenced as a PRINCIPAL in a policy (you can grant access to users, not groups)
+
+EXAM: You can't login to IAM Groups; no credentials/login of their own
+EXAM: IAM User can be a member of up to 10 IAM Groups (hard limit)
+EXAM: AWS Account has a 5,000 IAM user limit (hard limit)
+- There is no effective limit for the number of Users in a single IAM Group
+EXAM: There is no "All Members" group by default. In IAM, you could create and add all Users to a group
+EXAM: Groups CANNOT have nesting. No Groups within Groups
+EXAM: Groups are NOT a True Identity; they can't be referenced as a PRINCIPAL in a policy (you can grant access to users, not groups)
+
+Eg. If Sally is a part of 2 IAM Groups, each with an attached policy, and she has an attached policy, she has 3 policies which become Merged Policies
+- For figuring out overlapping, combined all policies and tally Allows/Deny's and undergo the same DENY-ALLOW-DENY pattern
+
+### Resource Policy: Controls access to a specific resource, allowing/denying identities to access that bucket. Does this by referencing this ID's with ARNs
+
+## DEMO - Permissions control using IAM Groups
+How groups can be used to hold permissions for group members
+
