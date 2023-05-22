@@ -535,5 +535,42 @@ Detailed CloudWatch Monitoring: Enables you to monitor, collect, and analyze met
 
 ## Shared Responsibility Model
 Vendor and User shared responsibilities. This applies from a security perspective so you know which elements you and the vendor manage.
-- Customer is responsible for security 'in' the cloud: client-side data encryption, server-side encryption, networking traffic protectoin, O/S, platform, IAM, apps
+- Customer is responsible for security 'in' the cloud: client-side data encryption, server-side encryption, networking traffic protection, O/S, platform, IAM, apps
 - AWS responsible for security 'of' the cloud 
+
+## High-Availability (HA) vs Fault-Tolerance (FT) vs Disaster Recovery (DR)
+### High-Availablily - Aims to ensure an agreed level of operational performance, usually uptime, for a higher than normal period. Doesn't aim to stop failure, but online and providing services as often as possible. Fix should be as quick as possible, often with automation to bring systems back into service quickly; maximizing a system's online time.
+- System availability is in the form of percentage uptime. Three 9's -- Up 99.9% of the time==8.77 hours/year downtime. Five 9's==5.26 minutes/year down time
+- Costs required to implement: design decisions and automation
+### Fault Tolerance - The property that enables a system to continue operating properly in the event of the failure of some (one or more faults within) of its components. Fault tolerance systems work through failure with no disruption; operating through failure.
+- Cost of fault tolerance can be expensive because of redundancies and failure toleration via duplicate system components
+- Example: Plane operates with Fault Tolerance (more engines, electronic systems etc); can't tolerate failure in flight
+### Disaster Recovery - Post-disaster recovery plan. A set of policies, tools, and procedures to enable recovery or continuation of vital technology infrastructure and systems following a natural or human-induced disaster. When disaster occurs, you want to avoiding losing irreplaceable items.
+
+## Route53 (R53) Fundamentals
+AWS's managed DNS product. Global service, single database; no need to pick region in console UI. Globally resilient.
+
+### Two main services:
+1. Register Domains
+2. Host Zones... managed nameserves
+
+### Architecture
+Register domains. To do this, it has relationships with all major domain registries (.com, .io, .net, etc)
+1. Check if domain available 2. Zone File created for registering domain (DNS DB for domain) 3. Allocates managed nameservers for this zone (usually 4) 4. get nameserver records added to top level domain zone
+
+### Zones
+DNS Zones and Hosting for those zones. Hosted zone created if domain available (and allocates 4 NS's to host zone). HZ can be Public, Private (linked to VPCs, for sensitive DNS records). Hosted Zones stores records (recordsets).
+
+## DEMO: Register Domain - animals4life.org
+Search / Nav to R53 console > Registered Domains > click "Register Domains" > Search for domain > Select domain you want > Proceed to Checkout (choose duration, auto-renew) > fill out Contact Info > Pricing (up front cost + monthly hosted fee) > click "Submit" > await domain registry
+- Transfer Lock: Security feature, domain can't be transferred away from R53 without disabling this lock
+- If you delete and recreate HZ, you'll be allocated 4 new Name Servers (would need to update some stuff if you weren't using R5#)
+
+## DNS Record Types
+- Nameserver Records (NS). Allows delegation to occur in DNS. Eg. .com zone
+- A Records / AAAA Records. Map host names to IP addresses. A record = IPv4, AAAA = IPv6
+- CNAME Record. Canconical name. Let's you create equivalent of DNS shortcuts; host-to-host records. CNAMEs reduce admin overhead. 
+- MX Record. For email. How a server can find the mail server (SMTP) for a specific domain.
+- TXT Records. Add arbitrary text to a domain; add additional functionality. Eg. Prove domain ownership. 
+
+EXAM: CNAMEs cannot point directly at an IP address, only other names.
