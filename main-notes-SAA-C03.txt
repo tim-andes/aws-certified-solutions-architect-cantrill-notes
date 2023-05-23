@@ -627,14 +627,14 @@ IAM Policy is a set of security statements to AWS, granting or denying product/f
 -- Resources: Wild cards, lists of individual resources (using ARN name)
 -- Effect: Allow or Deny
 
-Action and Resource within IAM Policy must match for statement to execute.
+NOTE: Action and Resource within IAM Policy must match for statement to execute.
 
 ### How to Handle Overlap Type Situations
 Priorities:
 1. Explicit DENY: Overrules everything.
 2. Explicit ALLOW: Allows access to all actions on any S3 resource (overrules all but Explicit DENY).
 3. Default DENY (Implicit): No explicit DENY or ALLOW, so this takes effect. IAM ID's are generally restricted access by default.
-- DENY, ALLOW, DENY
+- DENY (explicit), ALLOW (explicit), DENY (implicit)
 
 ### Two types of Policies
 - Inline Policies - JSON policies applied to each IAM account individually. (Manually applying policies to each Identity)
@@ -863,3 +863,95 @@ TIP: SCPs DON'T GRANT any permissions, they just establish boundaries / limit pe
 - Deny List. Allow be Default and block certain services (Deny List is Default list, and default policy attached is FullAWSAccess)
 
 To implement Allow Lists, 1. Remove AWS FullAccess Policy, 2. Add Allowed services into a new SCP
+
+Best practice is Deny List for less admin overhead.
+
+### SCP: Identity Policies in Accounts VS SCPs
+EXAM: There is an overlap of permissions between these two types of policies. The OVERLAPPED permissions are what are actually active
+
+
+## DEMO - Using Service Control Policies (SCP)
+Update the structure within the organization, add hierarchy (Root, Dev OU, Prod OU) - and apply an SCP to the PRODUCTION account to test their capabilities
+- Follows the same DENY-ALLOW-DENY IDP pattern
+
+1. Create OU: Be in Admin account > AWS Organizations > check Root container box, "Actions: Create New" > Org Unit Name "PROD" > Create OU.
+2. Create OU: Repeat above for DEV
+3. Move relevant accounts to new OUs: check Production account, dropdown "Move" > Select respective OU (PROD/DEV) > Move AWS Account
+4. Add SCP to Production Account: Switch Role: PROD > nav to s3 > Create Bucket > name (must be globally unique) "catpics3453451" > region: us-e-1 > upload attached photo (proving we have admin access)
+5. Restrict with SCP. Switch Back > AWS Orgz > Policies > click SCP, enable SCP > Create Policy > copy .json text content from lesson file denys3.json > replace JSON with copied text > name "Allow All Except S3" > create policy
+6. AWS Orgz > AWS Accounts > click PROD OU > tab "Policies" > Attach Allow All Except S3 Policy
+7. Detach FullAWSAccess. AWS Orgz > Account PROD > tab "Policies" > select "attached directly" FullAWSAccess > Detach > Detach Policy
+8. We reverted everything back to normal (re-attached Full Access policy to PROD OU, emptied s3 bucket, deleted s3 bucket
+
+
+## Cloudwatch Logs
+- CloudWatch Logs is a public service which can accept logging data, store it and monitor it
+- It is often the default place where AWS Services can output their logging
+- CloudWatch Logs is a public service and can also be utilised in an on-premises environment and even from other public cloud platforms
+- Built-in AWS Service integrations: EC2, VPC Flow Logs, Lambda, CloudTrail, R53, and more
+- Unified Cloudwatch Agent: How anything outside AWS can log data to Cloudwatch
+- Metric Filter: Can generate metrics based on logs
+
+### Cloudwatch - What it looks like
+First, it's a Regional Service. Starting point: Logging Sources; external compute, DB's, external APIs, AWS services. Log Events are created from data from logging sources. Log Events are stored inside Log Stream (an ordered sequence of log events from the same source). Then a Metric Filter takes Log Group/Stream data, distills metrics which can bet set with alarm notifications
+
+### Cloudwatch - Vocab
+- Log Group: Container for multiple log streams for the same type of logging. Log Group also stored config settings (retention, permissions)
+- Log Stream: An ordered sequence of log events from the same source. Log Streams inherit Log Group config settings.
+- Log Events: Created from data from logging sources
+- Logging Sources: external compute, DB's, external APIs, AWS services
+
+
+## CloudTrail
+- CloudTrail Is a product which logs API actions/calls and account events. Eg. Stop instance, change security group, delete s3 bucket--all logged.
+- Very often used to diagnose security or performance issues, or to provide quality account level traceability
+- Enabled by default in AWS accounts and logs free information with a 90 day retention
+- It can be configured to store data indefinitely in S3 or CloudWatch Logs
+
+### CloudTrail - Vocab
+- CloudTrail Event: When CloudTrail logs API calls/activities, it logs them as CloudTrail Events; a record of an activity in an AWS account (action taken by user, role, or service)
+- Event History: Record of activity, default stored for 90 days. Enabled by default, no cost for the 90 day history
+- Trail: In order to customize CloudTrail service, you need to create 1 or more "Trails". Unit of configuration within CloudTrail. Logs events for the AWS region it's created in.
+- One-Region Trail: Only EVER in the region it's created in. Only logs events for this region
+- All-Regions Trail: Collection of Trails within every AWS Region, but logged as one trail. If AWS adds new regions, they get automatically added to All Region Trails
+- Global Service Events: A very small number of services log events globally to ONE region (us-east-1). Eg. IAM, STS, CloudFront. A Trail needs this enabled in order to log these events. Should be enabled in the created Trail by default 
+
+EXAM: CloudTrail is a Regional Service. A Trail logs events for the AWS region it's created in
+
+### CloudTrail - Event Types (3)
+1. Management Events: Provide information about mgmt operations performed on resources in your AWS account; AKA Control Plane Operations. Eg. Creating VPC, terminating EC2 instance
+2. Data Events: Contain information about resource operations performed on or in a resource. Eg. Objects loaded to s3, accessed from s3, lambda function being invoked
+3. Insight Events (discussed later)
+NOTE: By default, CloudTrail only logs Management Events
+
+### CloudTrail - Trails
+- One-Region Trail: Only EVER in the region it's created in. Only logs events for this region
+- All-Regions Trail: Collection of Trails within every AWS Region, but logged as one trail. If AWS adds new regions, they get automatically added to All Region Trails
+NOTE: Small number of services log events globally to ONE region (us-east-1). Eg. IAM, STS, CloudFront. These are called Global Service Events. So, Trails are either logged within the region they were created in, or to us-east-1 if it's a Global Service Event
+-- All events are captured by a Trail (management events by default, data events if manually enabled)
+-- A Trail stores events in an s3 bucket by default. Logs generated and stored in an s3 bucket can be stored indefinitely; charged for storage in s3. Trail event files are small JSON files, however
+-- Alternative to previous bullet, CloudTrail can integrate with CloudWatch Logs and deposit logged data there. Advantage here is being able to use CloudWatch Logs features
+
+## CloudTrail - Continued
+- Recent addition to CloudTrail, you can now create Organizational Trail. This means, if created from mgmt account, it can store all info from all accounts in the Org. Making it a single management point for all API and account events across every account in the Org.
+- CloudTrail is enabled by default on AWS accounts. Free 90 day event history retention; no storage in s3 unless you configure a Trail
+- Trails are how you can config s3 and CW Logs
+- By default, only Management Events are logged in CloudTrail (creating, stopping, terminating instance, console login, any AWS interaction). Data events need to be enabled, but come at an extra cost
+
+EXAM: Global Service Events: While most AWS services log data to the same region that service is in, there are a few True Global Services that are logged as GSE's in us-east-1; a Trail must be enabled to capture GSE data
+EXAM: CloudTrail is NOT real-time. CT typically delivers log files within 15 minutes of the account activity occurring. CloudTrail is not the product choice you want if you need real time logging.
+
+## CloudTrail Pricing - https://aws.amazon.com/cloudtrail/pricing/
+- 90 day Event History is Free
+- Get 1 copy of Management Events free in every region in each AWS account
+- Beyond that, Management Events: $2.00 / 100,000 events (after the first free copy)
+- Data Events: $0.10 / 100,000 events
+- CloudTrail Insights $0.35 / 100,000 events analyzed
+
+## DEMO - Implementing an Organizational Trail
+This CloudTrail will be configured for all regions and set to log global services events.
+We will set the trail to log to an S3 bucket and then enhance it to inject data into CloudWatch Logs.
+
+NOTE: You can create individual trails in accounts, but it's always more efficient to use an Organizational Trail.
+
+1. iamadmin login > 
