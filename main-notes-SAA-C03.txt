@@ -768,4 +768,98 @@ Eg. Two AWS accounts. Your Account and Partner Account
 - Roles can be used cross-account to access individual resources, or access to whole accounts
 
 
-## Service-linked Roles & PassRole
+## Service-linked Roles (SLR) & PassRole (PR)
+A service-linked role is a unique type of IAM role that is linked directly to an AWS service. Service-linked roles are predefined by the service and include all the permissions that the service requires to call other AWS services on your behalf. The linked service also defines how you create, modify, and delete a service-linked role. A service might automatically create or delete the role. It might allow you to create, modify, or delete the role as part of a wizard or process in the service. Or it might require that you use IAM to create or delete the role.
+
+### SLR: Key Difference between SLR and normal IAM Roles
+- You can't delete a service linked role until it's no longer required / used within that AWS service
+
+### SLR: Permissions needed to create - Policy
+Key elements: top statement is Allow, action iam:CreateServiceLinkedRole, resource is NOT guessable--see link below
+- https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html
+
+### SLR: Role Separation
+One group given ability to create roles, other group gets ability to use the SL Role
+
+### PR: PassRole Permissions
+To use pre-existing role with a service without having to create / edit a new role, you need to provide PassRole Permissions.
+
+To pass a role (and its permissions) to an AWS service, a user must have permissions to pass the role to the service. This helps administrators ensure that only approved users can configure a service with a role that grants permissions. To allow a user to pass a role to an AWS service, you must grant the PassRole permission to the user's IAM user, role, or group.
+- "Pass the role permissions" 
+- A method inside AWS that gives you the ability to implement Role Separation
+-- An important AWS security architecture
+
+
+## AWS Organizations
+A product that allows larger businesses to manage multiple AWS accounts in a cost-effective way with little to no management overhead
+
+Large orgs need to manage many AWS accounts (100s or more). Without AWS Orgz, these accounts would each have their own pool of IAM users and separate payment methods. Beyond 5-10 accounts, this becomes unwieldy.
+
+### AWS Org - How it's created
+First, take a single / standard AWS account (not within an org) and with this create an AWS Organization. The Org isn't created IN the account, you're just using the account to create the AWS Org. This standard AWS account that created the Org then becomes the Management Account for the org (previously Master Account).
+
+Using this management account, you can invite other standard AWS Accounts into the org. As they are existing accounts, they need to approve the Org invites. If they approve, they become part of the Org. Once these Standard Accounts join the Org, they become Member Accounts
+
+### AWS Org - Hierarchy of Containers (which contain Members and other containers
+Structure in AWS Orgs is hierarchical (upside-down tree). Top of hierarchy is Root Container of Organization (not to be confused with Account Root User)--this is a container for AWS Accounts, Mgmnt and Member Accounts. This Org Root container also can contain other containers, known as Organizational Units (OU's): can contain AWS accounts or other Organizational Units
+
+#### Types of Accounts relating to AWS Orgs
+- Management Account / Master Account. Account that created the AWS Organization and invites Account Members
+- Standard Account. A standard AWS account that is not part of an AWS Org
+- Member Account. A standard AWS account that joined an AWS Org
+NOTE: Only ONE Management Account per AWS Org
+
+### AWS Org - Management Account
+- Only ONE Management Account per AWS Org
+- Account that creates the Org
+- Account that handles Consolidated Billing
+
+#### AWS Org - Consolidated Billing
+Consolidated Billing. Eg. AWS Org with 4 accounts: 1 Mgmt and 3 Members that would each have their own billing information. However, since they're in an AWS Org, the individual billing methods are REMOVED for member accounts. Instead, billing is passed through to Management Account of the AWS Org (AKA Payer Account)
+- Payer Account - Management Account that contains the payment method for an AWS Organization
+- This helps remove Financial Management Overhead
+- Bulk discounts; consolidation of reservations and volume discounts
+
+#### AWS Org - Service Control Policies (SCP)
+Allows you to restrict what Member Accounts can do.
+
+#### AWS Org - New Account within Org
+For new account, you just need a valid, unique email address. This way, there is no invite process (like there is with having pre-existing accounts join an AWS Org).
+
+### AWS Org Changes Best Practice for User Logins / Permissions
+With Orgs, you don't need IAM users inside every AWS Account. Instead, use Roles to allow IAM Users to access other accounts. 
+- Best practice is single account to handle all logins
+- Large enterprise may use Identity Federation to pull in on-premise identities for logging in to login account
+- Role Switch: Once Member accounts are logged in, they can Role Switch from login account into other Member Accounts
+
+## DEMO - AWS Organizations
+Steps:
+1. The GENERAL account will become the MANAGEMENT / MASTER account for the organisation
+2. We will invite the PRODUCTION account as a MEMBER account and create the DEVELOPMENT account as a MEMBER account.
+3. Finally - we will create an OrganizationAccountAccessRole in the production account, and use this role to switch between accounts.
+
+1. Nav to AWS Organization > "Create an Organization"
+2. In Incognito Window, log in to the Production Account admin, copy Account ID > back to General AWS Management Account window > "Add an AWS account" > Invite Existing Account > Paste in ID / add message > Send Invitation
+3. In Production Admin account > nav to AWS Organizations > Invitations > Accept Invitation
+4. Manually adding a Role to an invited account > In Prod account nav to IAM > Roles > Create Role > Type of Entity: AWS Account > get account ID of General AWS Org Account > select Another AWS Account > Paste Account ID > Add Permissions: AdministratorAccess > Next > name "OrganizationAccountAccessRole" > Create Role. In IAM > Roles >  OrganizationAccountAccessRole > Trust Relationships, you'll see the General Account ID referenced as a Trusted Entity
+5. Role Switch: From General to Production Account. Copy Production ID > Main Dropdown "Switch Role" > click "Switch Role" > paste Prod ID > name of Role created "OrganizationAccountAccessRole" > Display Name "Prod" > select color Red > Create / Switch Role. You'll see Display name "Prod" on top right menu drop down. You can also SWITCH BACK
+
+6. Create new Account within Org. AWS Orgz > Add Account > Create an AWS Account > name "OrganizationAccountAccessRole" > Create 
+7. After new Account created, copy its account ID > dropdown Switch Role > switch to DEV role
+
+
+## Service Control Policies (SCPs)
+- A feature of AWS Organizations which allow restrictions to be placed on MEMBER accounts in the form of permissions boundaries. Establish which permissions can be granted in an account.
+- SCPs can be applied to the organization, to OU's or to individual accounts
+- Member accounts can be effected, the MANAGEMENT account cannot. But, it can indirectly attach to Account Root User
+- SCPs DON'T GIVE permission - they just control what an account CAN and CANNOT grant via identity policies
+- SCP is a JSON document
+- SCPs inherit down the Org tree. Eg. If attached to Root Container, all Org accounts affected. If attached to OU, it affects the OU and all units / members within
+
+TIP: SCPs DON'T GRANT any permissions, they just establish boundaries / limit permissions
+
+### SCP: Allow / Deny Lists
+- Allow List. Block by Default and allow certain services
+- Deny List. Allow be Default and block certain services (Deny List is Default list, and default policy attached is FullAWSAccess)
+
+To implement Allow Lists, 1. Remove AWS FullAccess Policy, 2. Add Allowed services into a new SCP
