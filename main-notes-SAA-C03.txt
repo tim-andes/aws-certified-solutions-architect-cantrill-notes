@@ -921,7 +921,7 @@ EXAM: CloudTrail is a Regional Service. A Trail logs events for the AWS region i
 ### CloudTrail - Event Types (3)
 1. Management Events: Provide information about mgmt operations performed on resources in your AWS account; AKA Control Plane Operations. Eg. Creating VPC, terminating EC2 instance
 2. Data Events: Contain information about resource operations performed on or in a resource. Eg. Objects loaded to s3, accessed from s3, lambda function being invoked
-3. Insight Events (discussed later)
+3. Insight Events (discussed later): Identify unusual activity, errors, or user behavior in your account
 NOTE: By default, CloudTrail only logs Management Events
 
 ### CloudTrail - Trails
@@ -948,10 +948,13 @@ EXAM: CloudTrail is NOT real-time. CT typically delivers log files within 15 min
 - Data Events: $0.10 / 100,000 events
 - CloudTrail Insights $0.35 / 100,000 events analyzed
 
-## DEMO - Implementing an Organizational Trail
+## DEMO - Implementing an Organizational Trail (CloudTrail)
 This CloudTrail will be configured for all regions and set to log global services events.
 We will set the trail to log to an S3 bucket and then enhance it to inject data into CloudWatch Logs.
 
 NOTE: You can create individual trails in accounts, but it's always more efficient to use an Organizational Trail.
+NOTE: By default when you create a Trail, it creates a Trail for all AWS Regions in your account
 
-1. iamadmin login > 
+EXAM: s3 bucket names MUST be GLOBALLY UNIQUE
+
+1. iamadmin login > CloudTrail > Trails > Create trail > Trail name "Animals4lifeOrg" > check "Enable for all accounts in my org" > uncheck Enable under "Log file SSE-KSM encryption (use this in production, not in this practice) > Enable CloudWatch Logs > CW Logs Role name "CloudTrailRoleForCloudWatchLogs_Animals4Life" > Next > select Event types to log: check Management Events > 
