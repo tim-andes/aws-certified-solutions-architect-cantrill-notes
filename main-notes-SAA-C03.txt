@@ -576,14 +576,14 @@ AWS's managed DNS product. Global service, single database; no need to pick regi
 
 ### R53: Two main services:
 1. Register Domains
-2. Host Zones... managed nameserves
+2. Host Zones... managed nameservers
 
 ### R53: Architecture
 Register domains. To do this, it has relationships with all major domain registries (.com, .io, .net, etc)
-1. Check if domain available 2. Zone File created for registering domain (DNS DB for domain) 3. Allocates managed nameservers for this zone (usually 4) 4. get nameserver records added to top level domain zone
+1. Check if domain available 2. Zone File created for registering domain (DNS DB for domain) 3. Allocates managed nameservers for this zone (usually 4). get nameserver records added to top level domain zone
 
 ### R53: Zones
-DNS Zones and Hosting for those zones. Hosted zone created if domain available (and allocates 4 NS's to host zone). HZ can be Public, Private (linked to VPCs, for sensitive DNS records). Hosted Zones stores records (recordsets).
+DNS Zones and Hosting for those zones. Hosted zone created if domain available (and allocates 4 NS's to host zone). HZ can be Public or Private (linked to VPCs, for sensitive DNS records). Hosted Zones stores records (recordsets).
 
 ## DEMO: R53 Register Domain - animals4life.org
 Search / Nav to R53 console > Registered Domains > click "Register Domains" > Search for domain > Select domain you want > Proceed to Checkout (choose duration, auto-renew) > fill out Contact Info > Pricing (up front cost + monthly hosted fee) > click "Submit" > await domain registry
@@ -594,19 +594,21 @@ Search / Nav to R53 console > Registered Domains > click "Register Domains" > Se
 ## DNS Record Types
 - Nameserver Records (NS). Allows delegation to occur in DNS. Eg. .com zone
 - A Records / AAAA Records. Map host names to IP addresses. A record = IPv4, AAAA = IPv6
-- CNAME Record. Canconical name. Let's you create equivalent of DNS shortcuts; host-to-host records. CNAMEs reduce admin overhead. 
+- CNAME Record. Canonical name. Let's you create equivalent of DNS shortcuts; host-to-host records. CNAMEs reduce admin overhead. 
 - MX Record. For email. How a server can find the mail server (SMTP) for a specific domain.
 - TXT Records. Add arbitrary text to a domain; add additional functionality. Eg. Prove domain ownership. 
 
 EXAM: CNAMEs cannot point directly at an IP address, only other names.
 
+QUIZ: What is a CloudFormation Logical Resource? A resource defined in a CFN Template
 QUIZ: How many DNS Root Servers Exist? 13
-QUIZ: Who managers DNS Root Servers? 12 Large Organizations
-QUIZ: Who managers DNS Root Zone? IANA
+QUIZ: Who manages DNS Root Servers? 12 Large Organizations
+QUIZ: Who manages DNS Root Zone? IANA
 QUIZ: A Record = IPv4, AAAA Record = IPv6
-QUIZ: Which DNS Record type is how the root zone delegates control of .org to the .org registry
+QUIZ: DNS Record type is how the root zone delegates control of .org to the .org registry
 QUIZ: Which type of organisation maintains the zones for a TLD (e.g .ORG)? Registry
 QUIZ: Which type of organisation has relationships with the .org TLD zone manager allowing domain registration? Registrar
+QUIZ: How many subnets in a default VPC? Equal to the number of Availability Zones in the region the VPC in located in
 
 ### TTL - Time To Live
 Numeric value that can be set on DNS records. Getting result from authoritative source is an authoritative answer. If a 3600 TTL value is set, results of query are stored in resolver server for 3600 seconds (1 hour), creating a non-authoritative answer for delivery -- during this time, another query would receive this cached non-authoritative answer.
