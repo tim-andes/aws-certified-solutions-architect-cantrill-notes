@@ -1099,3 +1099,36 @@ Accessing S3 is generally done via APIs. Static Website Hosting is a feature of 
  6. You can now visit your website
  Extra: If you Registered a domain in R53, you can customize your URL. R53 > Hosted Zones > access your domain > Create Record > select Simple Routing > Record Name Eg. "top10".animals4life.io > choose Endpoint "Alias to S3 website endpoint" > Region: us-east-1 > S3 endpoint, select your bucket > click "Define simple record" > Create Records. Now Cantrill can go to top10.animals4life.io. Remember: Domain name and bucket name must match exactly to do this
  7. Clean Up: Empty bucket, delete bucket
+ 
+ 
+ ## Object Versioning & MFA Delete (EXAM)
+- Object versioning is a feature which can be enabled on an S3 bucket - allowing the bucket to store multi versions of objects
+- These objects can be referenced by their version ID to interact directly - or omit this to reference the latest version of an object
+- Objects aren't deleted - object deletion markers are put in place to hide objects.
+- Object Versioning starts off in a Disabled state. Once enabled, you CANNOT disable it again. Instead, you can Suspend it. A suspended bucket can be re-enabled. 
+
+EXAM: A bucket with Object Versioning enabled can NEVER be disabled again
+
+Without versioning, Objects are identified solely by the Object's name, which is unique in the bucket. If you modify an object, the original version of the object is replace. Versioning lets you store multiple versions of objects within a bucket/ 
+- Operations which would modify an Object instead creates a new version
+- Another attribute on an Object in a Bucket (other than Key (name)) is 'id'. A bucket without Versioning has Object id's of 'null'
+-- With Versioning enabled, id's are active. Modifying an object will create a new object with a new id. The newest Object version is called the Current or Latest Version
+-- If an object is accessed without indicating to S3 which version is required, the Latest Version will be returned. You can access versions by specifying the id
+
+### Object Versioning: Versioning Impacts Deletions
+With Versioning enabled, if we indicate to S3 we want to delete the object without giving Version ID, S3 will create a new version of the object with a Delete Marker. In reality, the Object is just hidden. You CAN delete a Delete Marker, which re-activates previous versions.
+- To truly delete a particular object, you need to specify the id
+
+### Object Versioning: REMINDERS: 
+- Versioning CANNOT be disabled after activating, only suspended (and suspending doesn't remove old versions, so you're still billed for all of it)
+- Space is consumed by all versions of the object and you are billed for ALL versions
+- Only way to return to 0 cost is to delete the bucket and re-add all content to another bucket that doesn't have Versioning enabled
+
+### MFA Delete
+Something enabled withing the Versioning config in a bucket. This makes MFA required to change a bucket's versioning state (To change from Enabled to Suspended, etc). 
+- MFA is required to Delete Versions. When performing API calls to change/delete Version, you need to provide serial number of MFA token AND code, concatenated
+
+
+## DEMO S3 Versioning
+
+
