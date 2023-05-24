@@ -636,9 +636,10 @@ Priorities:
 3. Default DENY (Implicit): No explicit DENY or ALLOW, so this takes effect. IAM ID's are generally restricted access by default.
 - DENY (explicit), ALLOW (explicit), DENY (implicit)
 
-### Two types of Policies
+### Three types of Policies
 - Inline Policies - JSON policies applied to each IAM account individually. (Manually applying policies to each Identity)
 - Managed Policies - Created as their own object. You can attach this policy to more than one identity. Best for Common Access Rights
+-- AWS managed or Customer managed
 -- Reusable
 -- Low Management Overhead
 When to use Inline Policies? For Special or exceptional Allows or Deny's
@@ -693,6 +694,7 @@ IAM groups are containers for IAM users. Makes managing IAM users easier.
 - Groups can have both Inline and Managed policies attached
 - Soft limit: 300 Groups per account (you can get Support to increase this)
 - Groups are NOT a True Identity; they can't be referenced as a PRINCIPAL in a policy (you can grant access to users, not groups)
+- Can hold Identity Permissions
 
 EXAM: You can't login to IAM Groups; no credentials/login of their own
 EXAM: IAM User can be a member of up to 10 IAM Groups (hard limit)
@@ -968,3 +970,50 @@ EXAM: s3 bucket names MUST be GLOBALLY UNIQUE
 
 NOTE: s3 charges based on storage. If CloudTrail is enabled, the logs will accumulate possibly past Free Tier
 - To Avoid logging events and incurring charges: Go to Trails, "Stop Logging"
+
+
+## AWS Control Tower
+AWS Control Tower offers a straightforward way to set up and govern an AWS multi-account environment, following prescriptive best practices. AWS Control Tower orchestrates the capabilities of several other AWS services, including AWS Organizations, AWS Service Catalog, and AWS IAM Identity Center (successor to AWS Single Sign-On), to build a landing zone in less than an hour. Resources are set up and managed on your behalf.
+
+AWS Control Tower orchestration extends the capabilities of AWS Organizations. To help keep your organizations and accounts from drift, which is divergence from best practices, AWS Control Tower applies preventive and detective controls (guardrails). For example, you can use guardrails to help ensure that security logs and necessary cross-account access permissions are created, and not altered.
+- Think of Control Tower as another evolution of AWS Organizations
+
+### CT: Parts of Control Tower
+- Landing Zone: Multi-account environment (what most people interact with). SSO/ID Fed, Centralized Logging, Auditing
+- Guard Rails: Detect/Mandate rules/standards across all accounts
+- Account Factory: Automates and standardizes new account creation
+- Dashboard: Single page oversight of entire environment/org
+
+#### CT: Landing Zone
+A well-architected multi-account environment. Home Region is the one you deploy into and is always available.
+- Built with AWS Orgz, Config, CloudFormation
+- Security OU: Log Archice and Audit Accounts (CloudTrail / Config Logs)
+- Sandbox OU: For testing and for less rigid security situations
+- IAM ID Center (prev. AWS SSO): SSO, multiple accounts, ID Federation (using on-premise identity stores)
+- Monitoring and Notifications: CloudWatch and SNS
+- Service Catalog: End User account provisioning
+
+#### CT: Guard Rails
+- Rules for multi-account governance.
+- Three types: Mandatory, Strongly Recommended, Elective
+- GR functions in 2 Ways: 
+-- Preventative - Stop you from doing things (AWS Org SCP). Enforced or not enabled. Eg. Allow/deny regions, disallow bucket policy changes (prevent things from happening)
+-- Detective - Compliance checks (AWS Config Rules) for maintaining Best Practices. Types: Clear, in violation, not enabled. Eg. Detect if CloudTrail is enabled (identify things happening)
+
+#### CT: Account Factory
+- Automated account provisioning. Cloud Admins or End Users (w/ appropriate permissions)
+- Guardrails automatically added
+- Give admin permissions to a named user (IAM ID)
+- Standard Account & Network standard configuration. Eg. IP addressing using VPC
+- Allows accounts to be closed or repurposed
+- Can be fully integrated with a business's Software Development Lifecycle
+
+## AWS Control Tower (continued)
+- Under Control Tower, AWS Organizations creates two Organizational Units (OU): Foundational/Security and Sandbox OU's
+- Within Foundational/Security OU, two accounts are created: Audit and Log Archive accounts
+- Account Factory: Create/configure/delete accounts using Templates: Account Baseline (template) and Network Baseline (template)
+- For Guardrails, AWS uses AWS Congfig and SCP
+- Drift: Divergence from best practices
+
+
+## S3 Security (Resource Policies & ACLs)
