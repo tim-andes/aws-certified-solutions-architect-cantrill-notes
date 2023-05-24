@@ -360,6 +360,7 @@ Basically the default compute service of AWS. It allows you to provision Virtual
 - When launching an Instance, you can choose size and capability
 - On-Demand Billing, by second or hour
 - Storage Types: Local on-host storage, or network storage via Elastic Block Store (EBS)
+- By default, AWS has a [soft] limit of 20 instances per region
 
 #### EC2 instance has attribute called State
 States to Know: Running, Stopped, Terminated
@@ -914,8 +915,8 @@ First, it's a Regional Service. Starting point: Logging Sources; external comput
 - CloudTrail Event: When CloudTrail logs API calls/activities, it logs them as CloudTrail Events; a record of an activity in an AWS account (action taken by user, role, or service)
 - Event History: Record of activity, default stored for 90 days. Enabled by default, no cost for the 90 day history
 - Trail: In order to customize CloudTrail service, you need to create 1 or more "Trails". Unit of configuration within CloudTrail. Logs events for the AWS region it's created in.
-- One-Region Trail: Only EVER in the region it's created in. Only logs events for this region
-- All-Regions Trail: Collection of Trails within every AWS Region, but logged as one trail. If AWS adds new regions, they get automatically added to All Region Trails
+-- One-Region Trail: Only EVER in the region it's created in. Only logs events for this region
+-- All-Regions Trail: Collection of Trails within every AWS Region, but logged as one trail. If AWS adds new regions, they get automatically added to All Region Trails
 - Global Service Events: A very small number of services log events globally to ONE region (us-east-1). Eg. IAM, STS, CloudFront. A Trail needs this enabled in order to log these events. Should be enabled in the created Trail by default 
 
 EXAM: CloudTrail is a Regional Service. A Trail logs events for the AWS region it's created in
@@ -929,7 +930,7 @@ NOTE: By default, CloudTrail only logs Management Events
 ### CloudTrail - Trails
 - One-Region Trail: Only EVER in the region it's created in. Only logs events for this region
 - All-Regions Trail: Collection of Trails within every AWS Region, but logged as one trail. If AWS adds new regions, they get automatically added to All Region Trails
-NOTE: Small number of services log events globally to ONE region (us-east-1). Eg. IAM, STS, CloudFront. These are called Global Service Events. So, Trails are either logged within the region they were created in, or to us-east-1 if it's a Global Service Event
+NOTE: Small number of services log events globally to ONE region (us-east-1). Eg. IAM, STS, CloudFront. These are called Global Service Events. So, Trails are either logged within the region they were created in, or to us-east-1 if it's a Global Service Event. Or to all regions if All-Region Trail
 -- All events are captured by a Trail (management events by default, data events if manually enabled)
 -- A Trail stores events in an s3 bucket by default. Logs generated and stored in an s3 bucket can be stored indefinitely; charged for storage in s3. Trail event files are small JSON files, however
 -- Alternative to previous bullet, CloudTrail can integrate with CloudWatch Logs and deposit logged data there. Advantage here is being able to use CloudWatch Logs features
@@ -987,7 +988,7 @@ AWS Control Tower orchestration extends the capabilities of AWS Organizations. T
 #### CT: Landing Zone
 A well-architected multi-account environment. Home Region is the one you deploy into and is always available.
 - Built with AWS Orgz, Config, CloudFormation
-- Security OU: Log Archice and Audit Accounts (CloudTrail / Config Logs)
+- Security Organizational Unit (OU): Log Archive and Audit Accounts (CloudTrail / Config Logs)
 - Sandbox OU: For testing and for less rigid security situations
 - IAM ID Center (prev. AWS SSO): SSO, multiple accounts, ID Federation (using on-premise identity stores)
 - Monitoring and Notifications: CloudWatch and SNS
@@ -997,8 +998,8 @@ A well-architected multi-account environment. Home Region is the one you deploy 
 - Rules for multi-account governance.
 - Three types: Mandatory, Strongly Recommended, Elective
 - GR functions in 2 Ways: 
--- Preventative - Stop you from doing things (AWS Org SCP). Enforced or not enabled. Eg. Allow/deny regions, disallow bucket policy changes (prevent things from happening)
--- Detective - Compliance checks (AWS Config Rules) for maintaining Best Practices. Types: Clear, in violation, not enabled. Eg. Detect if CloudTrail is enabled (identify things happening)
+-- Preventative: Stop you from doing things (AWS Org SCP). Enforced or not enabled. Eg. Allow/deny regions, disallow bucket policy changes (prevent things from happening)
+-- Detective: Compliance checks (AWS Config Rules) for maintaining Best Practices. Types: Clear, In Violation, Not Enabled. Eg. Detect / confirm if CloudTrail has been enabled on  your account (identify things happening)
 
 #### CT: Account Factory
 - Automated account provisioning. Cloud Admins or End Users (w/ appropriate permissions)
@@ -1010,10 +1011,91 @@ A well-architected multi-account environment. Home Region is the one you deploy 
 
 ## AWS Control Tower (continued)
 - Under Control Tower, AWS Organizations creates two Organizational Units (OU): Foundational/Security and Sandbox OU's
-- Within Foundational/Security OU, two accounts are created: Audit and Log Archive accounts
+- Within each Foundational OU and Security OU, two accounts are created in each: Audit and Log Archive accounts
 - Account Factory: Create/configure/delete accounts using Templates: Account Baseline (template) and Network Baseline (template)
 - For Guardrails, AWS uses AWS Congfig and SCP
 - Drift: Divergence from best practices
 
 
 ## S3 Security (Resource Policies & ACLs)
+Bucket Policies: Type of AWS Resource Policy
+
+EXAM: s3 is PRIVATE by default
+- only ID with any initial access is Account Root User of account which owns the s3 Bucket
+- Any other permissions must be explicity granted through a few ways:
+-- s3 Bucket Policy, a form of Resource Policies. RP's: These are attached to Resources, not Identities
+-- Resource Policies (RP) provide a resource perspective on permissions. Control access on a Resource
+--- Controlling who can access a resource
+- Unlike IDP, RP's have presence of an explicit Principal Component.
+
+NOTE: You can only attach IDP's to ID's in your OWN account. Only controlling security inside account
+- Resource policies can be attached to its own account or DIFFERENT accounts. Inside this RP, you can reference any identities (whether in same or different account)
+
+- RPs can ALLOW/DENY anonymous principals -- even those not authenticated by AWS; anonymous access
+
+### S3 Sec: TL;DR Bucket Policies can grant access for other AWS accounts, and anonymous access 
+
+RP's have one major difference to Identity Policies: The presence of an explicit Principal Component.
+- The Principal part of an RP defines which Principals are affected by the policy (who is impacted?)
+
+TERM: Principals. A person or application that uses the AWS account root user, an IAM user, or an IAM role to sign in and make requests to AWS. Principals include federated users and assumed roles.
+- if a Resource Policy applies to you, you are the Principal
+- Eg. "Principal": "*", --> Star is wildcard, which means ANY principal; applies to anyone accessing the Bucket
+
+### S3 Sec: Other s3 Bucket Policy features / functions
+Ex 1. Used to control who can access objects, even blocking specific IP addresses
+Ex 2. Can Deny a Principal who isn't using MFA from accessing a Bucket
+- Additional Examples: https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html
+
+NOTE: There can only be ONE Policy on a bucket. But, this policy can have multiple statements.
+
+### S3 Sec: Another Form - Access Control Lists (ACLs) - LEGACY
+- Legacy (Use Bucket or Identity Policies instead). This is because ACLs are inflexible; no conditions, for example. Can only do 5 things.
+- ACL is a subresource
+
+### S3 Sec: Block Public Access Settings
+Added in response to lots of public PR disasters; bad bucket configuration leading to data leaks. Until BPA, public/anons could access Bucket. BPA has setting which override Bucket Policies, BUT they apply to just Public Access
+- These settings created when making Bucket, but can be adjusted later
+
+EXAM: Identity Policies: Controlling different resources / prefer IAM / Same account only policies
+EXAM: Resource Policies: For just controlling S3 / for anonymous or cross-account access
+EXAM: Access Control Lists: NEVER unless required, as they are Legacy. AWS recommends against use of ACLs
+
+
+## S3 Static Hosting
+Accessing S3 is generally done via APIs. Static Website Hosting is a feature of the product which lets you define a HTTP endpoint, set index and error documents and use S3 like a website.
+ - S3 Static Hosting allows access to s3 via HTTP - Eg. Blogs
+ - Usage: First enable, and in doing so, you have to set INDEX and ERROR documents
+ - Index page is entry point to most websites
+ - Error Document: When you access a page that isn't there, or other type of service side error that's when Error Doc is shown
+ -- Index and Error docs need to be html documents as s3 Static Hosting reads HTML files
+ - When Static Hosting is enabled, a static website hosting endpoint is created. Name of endpoint is based on bucket name and region
+ -- Want a custom Domain? (via R53)... if so, bucket name matters. Name of Bucket MUST match domain name
+ --- Eg. Want a site called top10.animals4life.org? Name your bucket "top10.animals4life.org"
+ 
+ ### S3 Static Hosting: What else is S3 Static Hosting Good for (other than hosting static websites?
+ - Example 1: Offloading. If you have a site with lots of images hosted by compute service, you can offload the media to an S3 bucket w/ static hosting to save money (compute is usually pricier). Offload large data to S3.
+ - Example 2: Out-of-band pages. In IT, this means method of accessing something outside of the main way. Example: You want to perform server maintenance and the server needs to go down. You can put an "Under Construction" static page in S3 to put up when production server is down.
+ 
+ ## S3 Pricing
+ Pricing for S3 forms of a number of major components:
+ - Cost to Store Data: per gigabyte per month charge
+ - Data Transfer Free: for every Gb of data transferred out of S3, per gigabyte charge
+ - Data Requests: GET, POST, list, port. Cost per 1,000 operations
+ 
+### S3: What's FREE?
+ - 5Gb monthly storage
+ - 20,000 GET requests
+ - 2,000 PUT requests
+ 
+ 
+## DEMO Creating a Static Website with S3
+ 1. Create S3 Bucket > bucket name "[custom-globally-unique]" > uncheck "Block All Public Access" and acknowledge > Create Bucket
+ 2. Enable Static Website Hosting > access new bucket > Properties tab > scroll to bottom, Edit Static Website Hosting, Enable > Hosting Type: Static > Index Document "index.html" > Error Document "error.html" > In properties, scroll down and copy new static URL
+ 3. Upload some Objects to the bucket > Objects tab, "Upload" > Upload index.html, error.html, and "img" folder
+ 4. Paste copied URL into browser
+ - You'll get a 403 Forbidden error (Access Denied) - Remember, S3 buckets are private by Default. We need to add permissions for anonymous/public users to visit site (no method to provide creds to S3)
+ 5. Give Permissions to un-authenticated uses to acess bucket > Access S3 bucket > Permissions tab > Bucket Policy > Edit > Grab JSON from .zip > Paste in, but replace the "Resource" value BEFORE the "/*" (mine now looks like "Resource":["arn:aws:s3:::top10catsever876.com/*"]) > Save
+ 6. You can now visit your website
+ Extra: If you Registered a domain in R53, you can customize your URL. R53 > Hosted Zones > access your domain > Create Record > select Simple Routing > Record Name Eg. "top10".animals4life.io > choose Endpoint "Alias to S3 website endpoint" > Region: us-east-1 > S3 endpoint, select your bucket > click "Define simple record" > Create Records. Now Cantrill can go to top10.animals4life.io. Remember: Domain name and bucket name must match exactly to do this
+ 7. Clean Up: Empty bucket, delete bucket
