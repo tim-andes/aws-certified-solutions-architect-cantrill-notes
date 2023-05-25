@@ -1141,3 +1141,9 @@ This lesson looks at a 'Animal of the week' website, and how to use versioning t
 6. Delete Marker: Untoggle Show Versions within winkie.jpg Object > select winkie.jog > Delete > toggle on Show Versions > see Delete Marker > select Delete Marker and Delete
 7. Delete Latest Version to Perma-Delete: acbucket Objects > toggle on Show Versions > select Latest Version of winkie.jpg > Delete
 - NOTE: Whenever working with specific Versions of an object, this permanently deletes and makes next most recent version the new Latest / Current Version
+8. Clean Up: Empty acbucket > Delete acbucket
+
+REMEMBER: Versioning Enabled can incur significantly higher costs than Versioing turned off.
+
+
+## S3 Performance Optimization
