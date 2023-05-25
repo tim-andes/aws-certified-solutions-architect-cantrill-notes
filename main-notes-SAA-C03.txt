@@ -1109,9 +1109,9 @@ Accessing S3 is generally done via APIs. Static Website Hosting is a feature of 
 
 EXAM: A bucket with Object Versioning enabled can NEVER be disabled again
 
-Without versioning, Objects are identified solely by the Object's name, which is unique in the bucket. If you modify an object, the original version of the object is replace. Versioning lets you store multiple versions of objects within a bucket/ 
+Without versioning, Objects are identified solely by the Object's name, which is unique in the bucket. If you modify an object, the original version of the object is replaced. Versioning lets you store multiple versions of objects within a bucket/ 
 - Operations which would modify an Object instead creates a new version
-- Another attribute on an Object in a Bucket (other than Key (name)) is 'id'. A bucket without Versioning has Object id's of 'null'
+- Another attribute on an Object in a Bucket (other than Key (name)) is 'id'. A bucket without Versioning enabled has Object id's of 'null'
 -- With Versioning enabled, id's are active. Modifying an object will create a new object with a new id. The newest Object version is called the Current or Latest Version
 -- If an object is accessed without indicating to S3 which version is required, the Latest Version will be returned. You can access versions by specifying the id
 
@@ -1122,7 +1122,7 @@ With Versioning enabled, if we indicate to S3 we want to delete the object witho
 ### Object Versioning: REMINDERS: 
 - Versioning CANNOT be disabled after activating, only suspended (and suspending doesn't remove old versions, so you're still billed for all of it)
 - Space is consumed by all versions of the object and you are billed for ALL versions
-- Only way to return to 0 cost is to delete the bucket and re-add all content to another bucket that doesn't have Versioning enabled
+- Only way to return t reduce cost due to Versioning is to delete the bucket and re-add all content to another bucket that doesn't have Versioning enabled
 
 ### MFA Delete
 Something enabled withing the Versioning config in a bucket. This makes MFA required to change a bucket's versioning state (To change from Enabled to Suspended, etc). 
@@ -1130,5 +1130,14 @@ Something enabled withing the Versioning config in a bucket. This makes MFA requ
 
 
 ## DEMO S3 Versioning
+This lesson looks at a 'Animal of the week' website, and how to use versioning to recover when objects are changed and deleted accidentally or intentionally.
 
-
+1. Create new S3 Bucket: Login to Mgmt/General Admin account > S3 > Buckets > Create Bucket > name [unique] "acbucket23425" > uncheck Block Public Access > Enable Bucket Versioning > Create Bucket
+2. Enable Static Hosting: New bucket > Properties tab > Enable Static Website Hosting (bottom of page) > Index doc "index.html" > error doc "error.html" > Save changes
+- REMEMBER: Just enabling Static Website Hosting is insufficient, you also need to add a Bucket Policy
+3. Add Policy: Access new bucket > Permissions tab > edit Bucket Policy > copy text from bucket_policy.json (from demo .zip) > paste in json, edit Resource to look like " "Resource": "arn:aws:s3:::acbucket23425/*" ", except with your copied Bucket ARN instead
+4. Upload files: acbucket > Upload > file "index.html" and folder "img" > click Upload
+5. Versions: acbucket > Objects tab > toggle Show Versions > access winkie.jpg > Upload > Add Files > version 2/winkie.jpg > Upload > Access winkie.job object and see multiple versions if "Show versions" toggle is enabled
+6. Delete Marker: Untoggle Show Versions within winkie.jpg Object > select winkie.jog > Delete > toggle on Show Versions > see Delete Marker > select Delete Marker and Delete
+7. Delete Latest Version to Perma-Delete: acbucket Objects > toggle on Show Versions > select Latest Version of winkie.jpg > Delete
+- NOTE: Whenever working with specific Versions of an object, this permanently deletes and makes next most recent version the new Latest / Current Version
