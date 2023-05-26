@@ -16,3 +16,4 @@ aws kms decrypt \
     --ciphertext-blob fileb://not_battleplans.enc \
     --output text \
     --query Plaintext | base64 --decode > decryptedplans.txt
+6. Clean Up: Select key > Key Actions: Schedule for deletion (waiting period 7-30 days, input 7) > Confirm > Schedule deletion 
