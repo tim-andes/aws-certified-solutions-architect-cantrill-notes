@@ -1146,10 +1146,18 @@ This lesson looks at a 'Animal of the week' website, and how to use versioning t
 REMEMBER: Versioning Enabled can incur significantly higher costs than Versioing turned off.
 
 
-## S3 Performance Optimization - accidentally deleted notes
-Single PUT Upload
-Multipart Upload
-S3 Transfer Acceleration
+## S3 Performance Optimization
+Single PUT Upload: Up to 5GB Max (don't trust single PUT with this much data), 1 blob of data. Single stream transfer uploaded using s3:PutObject API PUT call. If errors out/fails, full data stream has to restart, making it unreliable. Speed and reliability affected by this sub-optimal transfer. 
+
+Multipart Upload: MINIMUM size 100MB. Improves speed and reliability compared to Single Put Upload. Breaks data stream into parts which can break and restart separately, making it more resilient. Always choose multipart beyond 100MB upload. 
+- Upload can be split into max of 10,000 parts, parts ranging from 5MB -> 5GB. Each part can fail and restart in isolation; risk of uploading large amounts of data is reduce. Transfer rate is increased as you are uploading in parallel, more effectively using internet bandwidth
+- The last remaining part can be less than 5MB
+
+S3 Transfer Acceleration:
+- How Global Transfer works: Data does not travel in the most efficient route, data can take indirect paths and potentially slows down from hop to hop. 
+- S3 Transfer acceleration selects the closest, best-performing AWS Edge location and sends directly to S3 bucket. Edge Location transits data over AWS Global Network instead of via public internet (public internet is flexible and reliable over fast). Internet is like public transit with many layovers, whereas AWS Global Network is like a direct flight.
+- By Default, Transfer Acceleration is Disabled on an S3 Bucket
+- Bucket naming restrictions for Transfer Acceleration: no periods in name, must be DNS compatible
 
 
 ## DEMO S3 Performance
