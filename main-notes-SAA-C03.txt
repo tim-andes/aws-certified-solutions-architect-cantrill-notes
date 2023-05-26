@@ -1232,3 +1232,39 @@ aws kms decrypt \
     --ciphertext-blob fileb://not_battleplans.enc \
     --output text \
     --query Plaintext | base64 --decode > decryptedplans.txt
+6. Clean Up: Select key > Key Actions: Schedule for deletion (waiting period 7-30 days, input 7) > Confirm > Schedule deletion 
+
+
+## SSE-S3 (AES256)
+Step through the various encryption options available within S3 and finish by looking at default bucket encryption settings
+- Server-Side Encryption (SSE).
+-- Important: Buckets are NOT encrypted, Objects are; encryption not defined at Bucket level. Encryption is defined at Object level
+- Client-Side Encryption (CSE). S3 never sees plaintext
+
+### SSE-S3: SSE VS CSE: How data is stored on disk in an encrypted way; encryption at rest
+- Path: Users/App - S3 Endpoint - S3 Storage. 
+-- In transit: On both SSE/CSE, Data in transit between User/S3 Endpoint is encrypted in transit.
+-- At Rest is what we're focusing on. 
+--- In CSE, Objects being uploaded are encrypted by the client before they ever leave. AWS will never see data in plain text form. In CSE, you own keys, process, and tooling
+--- In SSE, even though data is initially encrypted in-transit using HTTPS, the Objects themselves are NOT initially encrypted. From User > S3 Endpoint, data is in its original form. At S3 endpoint, the data gets encrypted and delivered to S3 Storage as ciphertext.
+
+NOTE: AWS has made SSE mandatory, so you can no longer store objects in an unencrypted form on S3. You control what type of SSE is utilized
+
+### SSE-S3: Types of SSE-S3
+- SSE-C: SSE with Customer provided/managed Keys. Customer handles keys, S3 handles enc/dec. In-Transit data encrypted by HTTPS, plaintext otherwise
+- SSE-S3: [The Default] SSE with Amazon S3 Managed Keys. AWS handles both enc/dec and key mgmt. Uses AES-256
+-- Three problems with SSE-S3: 1) Not suitable strongly regulated environments 2) if you need Role Separation, not suitable 3) need to control Key Rotation? not suitable. AKA No Key Control, No Role Separation
+- SSE-KMS: SSE with KMS Keys stored in the AWS Key Management Service. KMS service now managing the keys, meaning you can create a Customer Managed Key; isolated permissions, fully configurable. KMS Generates and delivers DE Keys to S3 (KMS does not store DEKs). Great for controlling Permissions, Role Separation and Key Rotation Control.
+* Difference between methods is what parts of the process you trust S3 with and how encrypt process/key mgmt is handled
+* High Level: Two components to SSE: 1) encrypt/decrypt process, 2) generation/mgmt of crypto keys (these two components handled differently in different SSE types)
+
+### SSE-S3: Resources
+- Visual of SSE Methods and Details: https://imgur.com/a/lCg5gmA
+- https://docs.aws.amazon.com/AmazonS3/latest/user-guide/default-bucket-encryption.html
+- https://docs.aws.amazon.com/kms/latest/developerguide/services-s3.html
+- https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+- https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html
+
+
+## Demo - SSE-S3 - Object Encryption and Role Separation
