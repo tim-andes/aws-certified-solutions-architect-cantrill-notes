@@ -1283,3 +1283,24 @@ EXAM: If you need to fully manage the keys used as part of S3 encryption process
 
 
 ## S3 Bucket Keys
+Amazon S3 Bucket Keys reduce the cost of Amazon S3 server-side encryption using AWS Key Management Service (SSE-KMS). Bucket-level keys for SSE can reduce AWS KMS request costs by up to 99 percent by decreasing the request traffic from Amazon S3 to AWS KMS.
+- Without bucket keys, you make a ton of calls to KMS API. Each object is a separate call for DEK to KMS. Also throttling issues--the generate DEK operation can only be run 5,500, 10,000, or 50,000 times per second--this is shared across regions. AKA Using a single KMS Key results in a scaling limit for PUTS per second per key.
+-- Bucket Keys improve this situation. Instead of KMS Key generating each DEK, it generates a single time-limited bucket key. This bucket key lives in the bucket and for a period of time, generates DEKs... offloads work from KMS to S3, reducing cost and increasing scalability.
+NOTE: Not retroactive, so previously created S3 bucket objects will still be KMS generated DEKs
+- CloudTrail Events will now show the bucket ARN instead of your object ARN
+- Offloading KMS to S3 means fewer CT KMS events in the logs
+- Bucket keys work with same-region and cross-region replication; the object encryption is maintained. When S3 replicates an encrypted object, it generally preserves the encryption settings
+- If replicating plaintext to a bucket using bucket keys, the object is encrypted at the destination side (ETAG changes between source/destination)
+
+
+## S3 Object Storage Classes
+Standard
+S3 Standard-IA
+S3 One Zone-IA
+S3 Glacier
+S3 Glacier Deep Archive
+Intelligent-Tiering
+
+## S3 Object Storage Classes: Resources
+- https://aws.amazon.com/s3/pricing/
+- https://aws.amazon.com/s3/storage-classes/
