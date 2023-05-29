@@ -1445,3 +1445,36 @@ Create 2 S3 buckets - one in N. Virginia, the other in N. California and configu
 6. Create Destination Bucket & Set Permissions/Policy > Create Bucket > name of dest "destinationbucketta[random number]" > AWS Region: us-west-1 > uncheck Block All Public Access > Properties tab, Enable Static website hosting > Hosting type: static > index/error docs "index.html" > Save changes > Permissions tab, edit Bucket policy, paste JSON, update ARN, Save 
 7. Enable Cross-Region Replication (CRR): Source Bucket Management tab > Create replication rule > Enable Versioning > Replication rule name "staticwebsiteDR" > Status "Enabled" > Choose Rule Scope: "Apply to All objects in the bucket" > Destination: Browse S3, find destination bucket, enable versioning > IAM Role: dropdown "create new role" > Create replication rule > Replicate Existing Obejcts? No (as we have no pre-existing objects)
 8. Clean Up: Empty/Delete Destination Bucket > Empty/Delete Source Bucket > IAM: locate role staring with "s3crr_role[...]"
+
+
+# S3 PreSigned URLs
+Presigned URL's are a feature of S3 which allows the system to generate a URL with access permissions encoded into it, for a specific bucket and object, valid for a certain time period
+- PreSigned URLs can be used for downloads (GET) or Uploads (PUT)
+
+Eg. S3 bucket with NO public access configured. Currently, a user would have to authenticate in IAM and be authorized to access resource. If you need to give an unauthenticated user access to the bucket, there are 3 [un-ideal] solutions 1) give mystery user AWS ID 2) give myst.user credentials 3) make object public. 
+- Better solution than all this is PreSigned URLs
+
+NOTE: The PreSigned URL is used, the holder of the URL is interacting with S3 as the person who GENERATED the URL. In the example above, the mystery user would be iamadmin 
+
+EXAM: You can create a URL for an object that you have NO ACCESS TO. But, since you have no access, the PreSigned URL won't either. Not an applicable use case, but possible
+EXAM: When using a PreSigned URL, the permissions are the same as the CURRENT permissions of Identity that generated the PreSigned URL. (So Access Denied could mean the generating ID never had access, or doesn't now)
+EXAM: Don't generate PreSigned URLs using an IAM Role (temp credentials of a Role can expire before temp access to PreSigned URL)
+
+
+ ## DEMO S3 Creating and using PreSigned URLs
+ Create a bucket, upload an object and generate a presignedURL allowing access for any unauthenticated identities.
+ 
+ 1. Create bucket > name "animals4lifemedia[randomnumber]" > Create bucket 
+ 2. Upload object > all5.jpv to new bucket
+ 3. Generate PreSigned ULR > Cloud Shell (terminal icon top right of AWS) > shell command "aws s3 presign s3://animals4lifemedia745675/all5.jpg --expires-in 180"
+ - 180 is in seconds, 3 mins
+ 4. Clean up: Empty/delete bucket
+ 
+ NOTE: Interesting Aspects...
+ 1. Try "aws s3 presign s3://animals4lifemedia745675/all5.jpg --expires-in 604,800"
+ 2. Nav to IAM > Users > iamadmin > Permissions: Add inline policy, copy JSON from lesson > save
+ 3. In CloudShell, try "aws s3 ls", you'll see Access Denied. This Explicit Deny overrules S3 permissions. Refresh PreSigned URL and see that access is now denied as the current permissions of iamadmin are restricted from S3
+ 4. iamadmin currently restricted from S3, but can still generated a PreSigned URL for it, even with no access. 
+ - You can also generate a PreSigned URL on a non-existent object
+ - If you generate a PreSigned URL with an assumed Role, the URL will stop working with the temporary creds for the Role stop working
+ - Can now create PreSigned URL from AWS Dashbord s3 > bucket > object > Object Actions dropdown "Share with a presigned URL"
