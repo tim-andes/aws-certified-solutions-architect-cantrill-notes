@@ -1551,3 +1551,13 @@ https://docs.aws.amazon.com/AmazonS3/latest/dev/creating-access-points.html#acce
 
 
 ## Demo S3 Multi-Region Access Points (MRAP)
+Gain practical experience working with Multi-region access points
+
+Amazon Simple Storage Service (S3) Multi-Region Access Points provide a global endpoint for routing Amazon S3 request traffic between AWS Regions. Each global endpoint routes Amazon S3 data request traffic from multiple sources, including traffic originating in Amazon Virtual Private Clouds (VPCs), from on-premises data centers over AWS PrivateLink, and from the public internet without building complex networking configurations with separate endpoints.
+
+1. Create two buckets: S3 > Create bucket "multi-region-demo-sydney-[random-number]", region ap-southeast-2, Enable Bucket Versioning > Create > Create 2nd bucket "multi-region-demo-canada-[random-number]", region ca-central-1, Enable Bucket Versioning > Create
+2. Create Multi-Region Access Point: S3 > Multi-Region Access Points > Create Multi-Region Access Points > name "reallyreallycriticalcatdata", add the 2 created buckets > Create (MRAP ARN arn:aws:s3::704310952405:accesspoint/m6s3xgw995fsb.mrap)
+*NOTE: You CANNOT add or remove buckets to Multi-Region Access Point after it's cerated
+3. Configure replication between the buckets: Access new MRAP > Replication & Failover tab > template:replicate among all specified buckets, Buckets: check both, Scope: Apply to all objects in bucket > Create replication rules
+4. Test with CloudShell > Switch region to Tokyo > open CloudShell > enter "dd if=/dev/urandom of=test1.file bs=1M count=10" > copy ARN from MRAP dashboard, enter "aws s3 cp test1.file s3://[your-copied-mrap-arn]"
+- Steps 3 and 4 generate a test file for upload, then uploads to the Sydney bucket. Replication of file to Canada bucket may take a few minutes
