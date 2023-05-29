@@ -1346,7 +1346,7 @@ Same 3 zone AZ architecture, 11 9's of durability
 --- 1. Expedited: data available in 1-5 minutes
 --- 2. Standard: available in 3-5 hours
 --- 3. Bulk: 5-12 hours
-- MINIMUM BILLABLE DURATION: 90 Day 
+- MINIMUM BILLABLE DURATION: 90 days
 - MINIMUM BILLABLE SIZE: 40KB
 - No Public Access
 EXAM: First Byte latency = minutes or hours. No public access. Glacier Flexible is for situations where you need to store archival data where frequent/real-time access isn't required (like once a year access)
@@ -1363,7 +1363,7 @@ The cheapest form of S3 storage. The most restrictions.
 EXAM: First byte latency = hours or days. Used for archival data that is very rarely accessed, if ever. Good for data that requires retention length, or secondary long-term backups
 
 ### Intelligent-Tiering
-Different from all previous classes, it contains five different storage tiers.
+Different from all previous classes; it contains five different storage tiers.
 - When you move objects into this class, tier is determined by monitoring the data's usage
 - Tiers:
 -- Frequent Access (less than 30 days between access)
@@ -1371,7 +1371,6 @@ Different from all previous classes, it contains five different storage tiers.
 -- Archive Instant Access (90+ days between access)
 -- Archive Access (90 -> 270)
 -- Deep Archive (180 -> 730)
-
 Instead of a retrieval cost, Intelligent Tiering has a monitoring and automation cost per 1,000 objects (management fee). Only use this when your app can tolerate asynchronous access patterns.
 
 EXAM: Designed for long-lived data where usage is CHANGING or UNKNOWN
@@ -1384,14 +1383,65 @@ EXAM: Designed for long-lived data where usage is CHANGING or UNKNOWN
 ## S3 Lifecycle Configuration
 Step through S3 lifecycle management/configuration/rules both in theory and via an S3 console example
 - You can create lifecycle rules on S3 buckets which can auto-transition or expire objects in a bucket. Great for objects that have a life cycle (activity on object is predictable)
-- Lifecycle Configuration is a set of RULES that consist of ACTIONS. Rules can be applied to a whole Bucket or groups of objects in a bucket if defined by prefix/tags
-- Two types of Actions applied (both work on versions if Versions are enabled on bucket): 
+- Lifecycle Configuration is a set of RULES that consist of ACTIONS. Rules can be applied to a whole Bucket or groups of objects in a bucket if defined by prefixes/tags
+- Two types of Actions applied (both work on versions if Object Versions are enabled on bucket): 
 -- 1. Transition Actions: Change storage class of affected objects
 -- 2. Expiration Actions: Delete objects/object versions
-EXAM: S3 One ZONE-IA CANNOT transition into S3 Glacier-Instant Retrieval. Transition can't go up the waterfall of classes, only down.
+EXAM: S3 ONE ZONE-IA CANNOT transition into S3 Glacier-Instant Retrieval. Transition can't go up the waterfall of classes, only down. See waterfall visual
 EXAM: Smaller objects can cost MORE (minimum size)
 EXAM: If object initially placed in Standard class, there is 30 day minimum period where an object needs to remain on S3 Standard before transition down the waterfall
 EXAM: A SINGLE rule CANNOT transition to Standard-IA or One Zone-IA and THEN to glacier classes within 30 days (duration minimum); must remain in IA class for min 30 days before moving to Glacier
 
 
 ## S3 Replication
+S3 has two replication features which allow objects to be replicated between SOURCE and DESTINATION buckets in the same or different AWS accounts
+
+### S3 Replication - Two Types:
+- Cross-Region Replication (CRR) is the process used when Source and Destination are in different AWS regions
+- Same-Region Replication (SRR) is used when the buckets are in the same region.
+
+### S3 Replication - The Difference:
+With Cross-Region Replication, The Destination Bucket, b/c it's in a different AWS account, doesn't trust the Source account or its IAM Role that gets created for Replication purposes by Source Bucket. If configuring replication between different accounts, you have to create a Bucket Policy in the Destination Bucket which allows the Source IAM role to write/replicate into the Destination bucket.
+
+### S3 Replication - Options:
+1st option: What you replicate. Default is entire Source bucket to Destination bucket (everything in it), OR subset. 
+- For subset, create a rule that adds a filter to filter objects by prefix or tags
+2nd: Storage Class to be used. The Default is to use the same class, but you can choose a cheaper class if this data is secondary.
+EXAM: Default Storage Class to use for S3 Replication is to maintain the same storage class as found on the Source Bucket, but you can override that in the replcation configuration (good if Destination Bucket will contain secondary data)
+3rd: Ownership. Define ownership of objects in the Destination Bucket. Default is that dest buckets are owned by same entity that owns Source - This may not work if Source/Dest buckets are in different accounts (Dest bucket may not be able to read objects if objects are owned by Source).
+4th: Replication Time Control (RTC): Adds guaranteed 15 minute SLA onto this process. This is used to make sure Source/Destination are in sync as closely as possible.
+EXAM: 15 minute replication mentioned on exam? Then you know you need Replication Time Control (RTC)
+
+### S3 Replication - Considerations:
+EXAM:
+- By Default, Replication is NOT retroactive and Versioning needs to be ON. Eg. If you enable Replication on a bucket that already has objects, those objects will not be replicated.
+- Both Source AND Destination bucket need Versioning enabled
+- You can use S3 Batch Replication to replicate pre-existing objects (since Replication is NOT retroactive by default)
+- One-way replication: If you manually add objects to Destination Bucket, they will NOT be replicated to Source
+-- Bi-directional replication is a recently added feature, but is an additional setting that needs to be configured
+- Replication Capability: can handle unencrypted, SSE-S3 & SSE-KMS (with extra config), SSE-C
+- Source Bucket Owner needs Permissions on the objects which will replicate
+- Will NOT replicate: System events, Glacier, or Glacier Deep Archive
+- NO DELETE markers are NOT replicated by Default. You can enable with DeleteMarkerReplication
+
+### S3 Replication - Why Use It?
+- For SRR (same region): For log aggregation, synchronize PROD and TEST accounts, resilience with strict sovereignty requirements (some data cannot leave specific regions)
+- For CRR (cross region): Global resilience improvements, latency reduction
+
+### S3 Replication - Resources:
+- https://docs.aws.amazon.com/AmazonS3/latest/dev/replication.html
+- https://aws.amazon.com/about-aws/whats-new/2019/11/amazon-s3-replication-time-control-for-predictable-replication-time-backed-by-sla/
+
+
+
+## DEMO Cross-Region Replication of an S3 Static Website
+Create 2 S3 buckets - one in N. Virginia, the other in N. California and configure Cross-Region Replication (CRR) between the two.
+
+1. iamadmin account, N.VA region selected
+2. Nav to S3 > Create Source Bucket > Create Bucket > name of source "sourcebucketta[random number]" > region us-east-1 > Create Bucket
+3. Enable Static Website on Source > Properties Tab > Static website hosting: edit: Enable > type: static website > index doc "index.html"/error doc "index.html" > Save changes
+4. Edit Source bucket Permissions for Public Access > Permissions tab > uncheck Block All Public Access > confirm > Save changes
+5. To made Source Bucket public, add policy > Permissions tab > Bucket Policy "edit" > from lesson docs, paste JSON, replace Resource arn before the "/*" > Save
+6. Create Destination Bucket & Set Permissions/Policy > Create Bucket > name of dest "destinationbucketta[random number]" > AWS Region: us-west-1 > uncheck Block All Public Access > Properties tab, Enable Static website hosting > Hosting type: static > index/error docs "index.html" > Save changes > Permissions tab, edit Bucket policy, paste JSON, update ARN, Save 
+7. Enable Cross-Region Replication (CRR): Source Bucket Management tab > Create replication rule > Enable Versioning > Replication rule name "staticwebsiteDR" > Status "Enabled" > Choose Rule Scope: "Apply to All objects in the bucket" > Destination: Browse S3, find destination bucket, enable versioning > IAM Role: dropdown "create new role" > Create replication rule > Replicate Existing Obejcts? No (as we have no pre-existing objects)
+8. Clean Up: Empty/Delete Destination Bucket > Empty/Delete Source Bucket > IAM: locate role staring with "s3crr_role[...]"
