@@ -8,3 +8,11 @@
  6. You can now visit your website
  Extra: If you Registered a domain in R53, you can customize your URL. R53 > Hosted Zones > access your domain > Create Record > select Simple Routing > Record Name Eg. "top10".animals4life.io > choose Endpoint "Alias to S3 website endpoint" > Region: us-east-1 > S3 endpoint, select your bucket > click "Define simple record" > Create Records. Now Cantrill can go to top10.animals4life.io. Remember: Domain name and bucket name must match exactly to do this
  7. Clean Up: Empty bucket, delete bucket
+ 
+ 
+Requirements for S3 bucket to operate as a website:
+- Disable Block Public Access Settings
+- Enable Static Web Hosting
+- Set index/error documents
+- Upload web files
+- Add a bucket policy
