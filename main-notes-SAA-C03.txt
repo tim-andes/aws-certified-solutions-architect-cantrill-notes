@@ -1170,7 +1170,7 @@ Create s3 bucket (no periods in name, DNS naming compatible) > name "testac34645
 
 ## Key Management Service (KMS)
 AWS Key Management Service (AWS KMS) makes it easy for you to create and manage cryptographic keys and control their use across a wide range of AWS services and in your applications. AWS KMS is a secure and resilient service that uses hardware security modules that have been validated under FIPS 140-2, or are in the process of being validated, to protect your keys.
-- Regional & Public Service: every region isolated when using KMS. Note: KMS is capable of mult-izone (covered later)
+- Regional & Public Service: every region isolated when using KMS. Note: KMS is capable of multizone (covered later)
 - Public service, occupies AWS Public Zone and can connect from anywhere with access to this zone, with permissions
 - KMS Mgmt allows you to CREATE, STORE, MANAGE keys
 - Has both Symmetric and Asymmetric keys
@@ -1242,15 +1242,15 @@ Step through the various encryption options available within S3 and finish by lo
 - Client-Side Encryption (CSE). S3 never sees plaintext
 
 ### SSE-S3: SSE VS CSE: How data is stored on disk in an encrypted way; encryption at rest
-- Path: Users/App - S3 Endpoint - S3 Storage. 
+- Path: Users/App <-> S3 Endpoint <-> S3 Storage. 
 -- In transit: On both SSE/CSE, Data in transit between User/S3 Endpoint is encrypted in transit.
--- At Rest is what we're focusing on. 
+-- AT REST is what we're focusing on. 
 --- In CSE, Objects being uploaded are encrypted by the client before they ever leave. AWS will never see data in plain text form. In CSE, you own keys, process, and tooling
 --- In SSE, even though data is initially encrypted in-transit using HTTPS, the Objects themselves are NOT initially encrypted. From User > S3 Endpoint, data is in its original form. At S3 endpoint, the data gets encrypted and delivered to S3 Storage as ciphertext.
 
 NOTE: AWS has made SSE mandatory, so you can no longer store objects in an unencrypted form on S3. You control what type of SSE is utilized
 
-### SSE-S3: Types of SSE-S3
+### SSE-S3 - Types of Server-Side Encryption within S3:
 - SSE-C: SSE with Customer provided/managed Keys. Customer handles keys, S3 handles enc/dec. In-Transit data encrypted by HTTPS, plaintext otherwise
 - SSE-S3: [The Default] SSE with Amazon S3 Managed Keys. AWS handles both enc/dec and key mgmt. Uses AES-256
 -- Three problems with SSE-S3: 1) Not suitable strongly regulated environments 2) if you need Role Separation, not suitable 3) need to control Key Rotation? not suitable. AKA No Key Control, No Role Separation
@@ -1287,20 +1287,111 @@ Amazon S3 Bucket Keys reduce the cost of Amazon S3 server-side encryption using 
 - Without bucket keys, you make a ton of calls to KMS API. Each object is a separate call for DEK to KMS. Also throttling issues--the generate DEK operation can only be run 5,500, 10,000, or 50,000 times per second--this is shared across regions. AKA Using a single KMS Key results in a scaling limit for PUTS per second per key.
 -- Bucket Keys improve this situation. Instead of KMS Key generating each DEK, it generates a single time-limited bucket key. This bucket key lives in the bucket and for a period of time, generates DEKs... offloads work from KMS to S3, reducing cost and increasing scalability.
 NOTE: Not retroactive, so previously created S3 bucket objects will still be KMS generated DEKs
-- CloudTrail Events will now show the bucket ARN instead of your object ARN
+- CloudTrail (CT) Events will now show the bucket ARN instead of your object ARN
 - Offloading KMS to S3 means fewer CT KMS events in the logs
 - Bucket keys work with same-region and cross-region replication; the object encryption is maintained. When S3 replicates an encrypted object, it generally preserves the encryption settings
 - If replicating plaintext to a bucket using bucket keys, the object is encrypted at the destination side (ETAG changes between source/destination)
 
 
 ## S3 Object Storage Classes
-Standard
-S3 Standard-IA
-S3 One Zone-IA
-S3 Glacier
-S3 Glacier Deep Archive
-Intelligent-Tiering
+### S3 Standard
+### S3 Standard-IA
+### S3 One Zone-IA
+### S3 Glacier
+### S3 Glacier Deep Archive
+### Intelligent-Tiering
 
-## S3 Object Storage Classes: Resources
+### Standard
+The Default. Stored objects stored across AT LEAST 3 AZs; can cope with multi-AZ failure; this provides 11 9's of durability (if store 10mil objects, on avg you might lose 1 object every 10,000 years). 
+- Should be used for frequently accessed data that is IMPORTANT and NON-REPLACEABLE
+- Replication uses MD5 Checksums and Cyclic Redundancy Checks (CRCs) to detect and fix data corruption
+- Successful receipt and storage in S3? S3 API endpoint returns 'HTTP/1.1 200 OK'
+- Most balanced class when looking at cost and features
+- First byte latency of milliseconds, objects can be made PUBLICLY AVAILABLE (using S3 permissions or static website hosting site for public internet)
+#### Standard - Billing
+- GB per Month fee for data stored
+- $1 per GB charge for transfer OUT (transfer IN is always free)
+- Price per 1,000 requests
+- NO retrieval fee, NO minimum duration, NO min size
+EXAM: S3 Standard should be used for frequently accessed data that is IMPORTANT and NON-REPLACEABLE
+
+### S3 Standard-IA
+IA = Infrequent Access. This class is designed for infrequently accessed data that needs reliability and durability.
+Data replicated over 3 AZ's. Similar durability and first byte latency. Same checksum and CRCs. Objects can be made publicly available.
+### Standard-IA Billing
+- Big difference from Standard billing: Storage costs are cheaper than S3 standard
+-- New cost component compared to Standard: RETRIEVAL FEE: for every byte retrieved, there is a cost to retrieve IN ADDITION to transfer fee
+- MINIMUM DURATION charge: However long you store this class, you're billed minimum of 30 days
+- MINIMUM CAPACITY charge: Per object, you are charged as if they are each at least 128KB in size; don't use IA to store lots of tiny objects
+- Per request charge, data OUT charge, same as Standard
+- Transfer IN is free
+EXAM: S3 Standard-IA should be used for LONG-LIVED DATA which is IMPORTANT, but access is INFREQUENT
+
+### S3 One Zone-IA
+Similar to Standard-IA in many ways. Cheaper than both Std-IA and Std. The compromise for cost reduction: Data stored using this class is only stored in ONE Availability Zone
+- Still retrieval fee, still 30 day minimum billing (like std-IA), still min cap of 128KB (like std-IA)
+- One Zone-IA does not provide the multi-AZ resilience model, instead, one AZ used within the region; cheaper storage but greater risk of data loss
+- SAME DURABILITY: 11 9's of durability (unless the AZ fails). Data still replicated in the one AZ
+EXAM: Used for LONG-LIVED data that is INFREQUENTLY accessed, but for which is NON-CRITICAL and EASILY REPLACED
+
+### S3 Glacier
+S3 Glacier, instant access to your data; instant retrieval. Like S3 Standard-IA but cheaper storage, more expensive retrieval, longer minimums. Designed for when you need data instantly, but not very often (like once a month).
+- Minimum storage duration charge: 90 days
+
+### S3 Glacier Flexible
+Same 3 zone AZ architecture, 11 9's of durability
+- Trade-off compared to previous classes:
+-- Think of the objects store here as "cold objects"; not ready for use; not immediately available, can't be made public; a RETRIEVAL PROCESS is required
+--- Retrieval Jobs, 3 Types (faster = more $:
+--- 1. Expedited: data available in 1-5 minutes
+--- 2. Standard: available in 3-5 hours
+--- 3. Bulk: 5-12 hours
+- MINIMUM BILLABLE DURATION: 90 Day 
+- MINIMUM BILLABLE SIZE: 40KB
+- No Public Access
+EXAM: First Byte latency = minutes or hours. No public access. Glacier Flexible is for situations where you need to store archival data where frequent/real-time access isn't required (like once a year access)
+
+### S3 Glacier Deep Archive
+The cheapest form of S3 storage. The most restrictions.
+- If Glacier Flexible data is in "chilled" state, Glacier Deep Archive data is "frozen"
+- MINIMUM BILLABLE DURATION: 180 days
+- MINIMUM BILLABLE SIZE: 40KB
+- Objects are not publicly accessible; retrieval job required
+-- Retrieval Jobs:
+-- 1. Standard - 12 hours
+-- 2. Bulk - up to 48 hours
+EXAM: First byte latency = hours or days. Used for archival data that is very rarely accessed, if ever. Good for data that requires retention length, or secondary long-term backups
+
+### Intelligent-Tiering
+Different from all previous classes, it contains five different storage tiers.
+- When you move objects into this class, tier is determined by monitoring the data's usage
+- Tiers:
+-- Frequent Access (less than 30 days between access)
+-- Infrequent Access (30+ days between access)
+-- Archive Instant Access (90+ days between access)
+-- Archive Access (90 -> 270)
+-- Deep Archive (180 -> 730)
+
+Instead of a retrieval cost, Intelligent Tiering has a monitoring and automation cost per 1,000 objects (management fee). Only use this when your app can tolerate asynchronous access patterns.
+
+EXAM: Designed for long-lived data where usage is CHANGING or UNKNOWN
+
+### S3 Object Storage Classes: Resources
 - https://aws.amazon.com/s3/pricing/
 - https://aws.amazon.com/s3/storage-classes/
+
+
+## S3 Lifecycle Configuration
+Step through S3 lifecycle management/configuration/rules both in theory and via an S3 console example
+- You can create lifecycle rules on S3 buckets which can auto-transition or expire objects in a bucket. Great for objects that have a life cycle (activity on object is predictable)
+- Lifecycle Configuration is a set of RULES that consist of ACTIONS. Rules can be applied to a whole Bucket or groups of objects in a bucket if defined by prefix/tags
+- Two types of Actions applied (both work on versions if Versions are enabled on bucket): 
+-- 1. Transition Actions: Change storage class of affected objects
+-- 2. Expiration Actions: Delete objects/object versions
+EXAM: S3 One ZONE-IA CANNOT transition into S3 Glacier-Instant Retrieval. Transition can't go up the waterfall of classes, only down.
+EXAM: Smaller objects can cost MORE (minimum size)
+EXAM: If object initially placed in Standard class, there is 30 day minimum period where an object needs to remain on S3 Standard before transition down the waterfall
+EXAM: A SINGLE rule CANNOT transition to Standard-IA or One Zone-IA and THEN to glacier classes within 30 days (duration minimum); must remain in IA class for min 30 days before moving to Glacier
+
+
+## S3 Replication
