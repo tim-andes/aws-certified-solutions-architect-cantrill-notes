@@ -1598,13 +1598,37 @@ One of the first things to decide on is IP range; the VPC CIDR.
 -- Suggest having at least 2 ranges in each regoin, in each AWS account
 -- Assumed regions for A4L: 3 US, Europe, Australia (5) x2, and 4 AWS accounts. 3US + 1AU + 1EU = 5 Regions, 2 ranges ea. region, total of 10 IP ranges per account. Since there are 4 accounts, 10 ranges x 4 accounts = 40 IP ranges
 
-#### Review: 
+#### IP Range Review: 
 - We're going avoid 10.0 - 10.10 (too commonly used)
 - Start at 10.16 per Cantrill
 - Can't use 10.128 -> 10.255 because Google Cloud uses it
 - Our Range: 10.16 -> 10.127 inclusive
 
+### VPC Sizing
+VPC Sizing Chart: https://imgur.com/a/cJhXTxx
+- Deciding which to use on this chart? Two important Questions:
+-- How many subnets will you need in each VPC?
+-- How many IPs total? How many IPs per subnet?
 
+#### VPC Sizing - How many Subnets?
+- Services inside a VPC use subnets, which are where IP addresses are allocated from
+- VPC Services run from within subnets
+- A subnet is located in ONE availability zone
+
+##### How many Availability Zones will your VPC use? 
+- Start with 3 as DEFAULT, per Cantrill. And add at least 1 spare. DEFAULT: AT MINIMUM, always assume 4 AZ's
+- Within VPCs, you also have tiers. Tiers for different types of infrastructure inside VPC; web tier, application tier, database tier... so 3, plus buffer. DEFAULT: assume 4 tiers.
+-- 4 tiers, 4 AZ's. Each tier has a subnet in each AZ: 4x4 = 16 subnets. Using /16 VPC into 16 subnets, results in 1 smaller network ranges, each being /20. If we did /18 VPC prefix, each subnet would be /22
+TOTAL: 16 subnets with /20 prefix
+
+### VPC Sizing / Structure - Example: Animals4Life (A4L) - CONTINUED - PROPOSAL
+- A4L is a global org and could grow significantly (assume huge level of growth)
+- Use the 10.16 -> 10.127 range (avoiding Google, common ranges, etc)
+- 5 AZs
+-- Start at 10.16 (US1), 10.32 (US2), 10.48 (US3), 10.64 (EU), 10.80 (AU) - each account has 1/4th of the range
+--- total of 16 /16 network ranges for each region.
+- 3 accounts: general, prod, dev. Add 1 more for buffer. 4 accounts total
+-- Each account in each region gets 4 /16 ranges, enough for 4 VPCs per region per account
 
 
 ### VPC Sizing & Structure Resources
