@@ -1372,16 +1372,13 @@ Different from all previous classes; it contains five different storage tiers.
 -- Archive Access (90 -> 270)
 -- Deep Archive (180 -> 730)
 Instead of a retrieval cost, Intelligent Tiering has a monitoring and automation cost per 1,000 objects (management fee). Only use this when your app can tolerate asynchronous access patterns.
-
-EXAM: Designed for long-lived data where usage is CHANGING or UNKNOWN
-
-### S3 Object Storage Classes: Resources
+EXAM: Intelligent-Tiering is designed for long-lived data where usage is CHANGING or UNKNOWN. Ideal for uncertain access and low admin overhead
 - https://aws.amazon.com/s3/pricing/
 - https://aws.amazon.com/s3/storage-classes/
 
 
 ## S3 Lifecycle Configuration
-Step through S3 lifecycle management/configuration/rules both in theory and via an S3 console example
+Allows objects storage classes to be changed and objects deleted automatically. Step through S3 lifecycle management/configuration/rules both in theory and via an S3 console example
 - You can create lifecycle rules on S3 buckets which can auto-transition or expire objects in a bucket. Great for objects that have a life cycle (activity on object is predictable)
 - Lifecycle Configuration is a set of RULES that consist of ACTIONS. Rules can be applied to a whole Bucket or groups of objects in a bucket if defined by prefixes/tags
 - Two types of Actions applied (both work on versions if Object Versions are enabled on bucket): 
@@ -1561,3 +1558,56 @@ Amazon Simple Storage Service (S3) Multi-Region Access Points provide a global e
 3. Configure replication between the buckets: Access new MRAP > Replication & Failover tab > template:replicate among all specified buckets, Buckets: check both, Scope: Apply to all objects in bucket > Create replication rules
 4. Test with CloudShell > Switch region to Tokyo > open CloudShell > enter "dd if=/dev/urandom of=test1.file bs=1M count=10" > copy ARN from MRAP dashboard, enter "aws s3 cp test1.file s3://[your-copied-mrap-arn]"
 - Steps 3 and 4 generate a test file for upload, then uploads to the Sydney bucket. Replication of file to Canada bucket may take a few minutes
+5. See remaining steps in the demo file in this repo
+6. Clean up: s3 MRAP > select MRAP, delete > s3 buckets Empty and Delete
+
+
+# VIRTUAL PRIVATE CLOUD (VPC) BASICS
+
+## VPC Sizing and Structure
+Step through the design choices around VPC design and IP planning. How to design an IP plan for a business; designing a VPC 
+
+One of the first things to decide on is IP range; the VPC CIDR. 
+- IMPORTANT: This planning is critical and is not easy to change later
+- What size should VPC be? How many services need to fit, each service has an IP, each occupies space in VPC
+- Are there any Networks we can't use, or need to interact with?
+- Be mindful of IP ranges other VPC's used in other cloud env's in on-premise networks. Try to avoid IP ranges that other parties use that you might need to interact with
+- Try to predict the future... How things may change
+- VPC structure - Tiers, Resiliency (Availability) Zones
+
+### VPC Sizing / Structure - Example: Animals4Life (A4L).
+*NOTE: REVIEW IP RANGES: Network address, prefix, how they map to range of address
+- 3 offices: London, NY, Seattle (3 IPs)
+- Field workers (laptop, 3G, 4G, satellite, email, chat, file access, etc)
+- Already has 3 existing networks. 192.168.10.0/24, 10.0.0.0/16, 172.31.0.0/16 (new AWS network design cannot use or overlap with these)
+- Access/Migrate data
+-- Avoid the following ranges:
+--- 192.168.10.0/24 range is 192.168.10.0 -> 192.168.10.255
+--- 10.0.0.0 (AWS) 10.0.0.0 -> 10.0.255.255
+--- 172.31.0.0 (Azure) 172.31.0.0 -> 172.31.255.255 (this shares same IP address range as AWS defulat VPC, se we can't use default VPC for anthing production)
+--- 192.168.15.0/24 (London) -> 192.168.15.255
+--- 192.168.20.0/24 (NY) -> 192.168.20.255
+--- 192.168.25.0/24 (Seattle) -> 192.168.15.255
+--- 10.128.0.0/9 (google) -> 10.255.255.255
+^ When designing an IP addressing plan, don't use any of the above 
+
+### What IP ranges? How many networks does A4L need?
+- VPC minimum /26 (16 IP). maximum /16 (65536 IPs)
+- Avoid common ranges to avoid future issues. 10.1 and 10.0 are common, avoid up to 10.10. Start at 10.16 per Cantrill's recommendation
+- How many ranges a business requires? First, how many regions does AWS operate in? Since we're pre-allocating, overestimate for a buffer. A4L we don't really know how many regions they'll operate in, but we can make educated guess then add buffer. 
+-- Suggest having at least 2 ranges in each regoin, in each AWS account
+-- Assumed regions for A4L: 3 US, Europe, Australia (5) x2, and 4 AWS accounts. 3US + 1AU + 1EU = 5 Regions, 2 ranges ea. region, total of 10 IP ranges per account. Since there are 4 accounts, 10 ranges x 4 accounts = 40 IP ranges
+
+#### Review: 
+- We're going avoid 10.0 - 10.10 (too commonly used)
+- Start at 10.16 per Cantrill
+- Can't use 10.128 -> 10.255 because Google Cloud uses it
+- Our Range: 10.16 -> 10.127 inclusive
+
+
+
+
+### VPC Sizing & Structure Resources
+https://aws.amazon.com/answers/networking/aws-single-vpc-design/
+https://cloud.google.com/vpc/docs/vpc
+https://github.com/acantril/aws-sa-associate-saac02/tree/master/07-VPC-Basics/01_vpc_sizing_and_structure
