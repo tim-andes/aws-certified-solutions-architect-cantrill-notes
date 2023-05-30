@@ -1621,7 +1621,7 @@ VPC Sizing Chart: https://imgur.com/a/cJhXTxx
 -- 4 tiers, 4 AZ's. Each tier has a subnet in each AZ: 4x4 = 16 subnets. Using /16 VPC into 16 subnets, results in 1 smaller network ranges, each being /20. If we did /18 VPC prefix, each subnet would be /22
 TOTAL: 16 subnets with /20 prefix
 
-### VPC Sizing / Structure - Example: Animals4Life (A4L) - CONTINUED - PROPOSAL
+### VPC Sizing / Structure - Example: Animals4Life (A4L) - CONTINUED - PROPOSAL:
 - A4L is a global org and could grow significantly (assume huge level of growth)
 - Use the 10.16 -> 10.127 range (avoiding Google, common ranges, etc)
 - 5 AZs
@@ -1629,9 +1629,54 @@ TOTAL: 16 subnets with /20 prefix
 --- total of 16 /16 network ranges for each region.
 - 3 accounts: general, prod, dev. Add 1 more for buffer. 4 accounts total
 -- Each account in each region gets 4 /16 ranges, enough for 4 VPCs per region per account
-
+- /16 per VPC - 3AZ (+1), 3 tiers (+1) = 16 subnets for each VPC
+- /16 splits into 16 subnets = /20 per subnet (4,091 IPs) - May seems excessive, but assume highest possible growth potential
 
 ### VPC Sizing & Structure Resources
 https://aws.amazon.com/answers/networking/aws-single-vpc-design/
 https://cloud.google.com/vpc/docs/vpc
 https://github.com/acantril/aws-sa-associate-saac02/tree/master/07-VPC-Basics/01_vpc_sizing_and_structure
+
+
+## Custom VPCs, includes DEMO
+ Step through the architecture and features of Custom VPCs including the main issues which are raised in the exam
+ - Learn to build a complex, mult-tier VPC
+ 
+ In this multi-tier custom VPC build...
+ - Using VPC us-east-1, 10.16.0.0/16
+ - Inside VPC, 4 tiers in 4 AZs = 16 subnets.
+ - We will create all 4 tiers: reserve, DB, app, web
+ - We will only create 3 AZ's: A, B, C. We will not create subnets in the capacity reserved for the future AZ
+ - We will be creating VPC, subnets, an internet gateway, NAT gateways, bastion host (using bastion host is bad practice - don't do it, not secure), NACLs
+ 
+ 
+ ## DEMO - Custom VPCs - Create VPC - Overview
+ - VPCs are regionally isolated and regionally resilient service. Operates from all AZs in that region.
+ - Nothing is allowed IN or OUT of a VPC without explicit permission; provides isolated blast radius; if you have a proble inside a VPC, the impact is limited to that VPC and/or anything connected
+ - Custom VPCs allow for simple or multi-tier; flexible configuration
+ - Custom VPCs also provide Hybrid Networking
+ - When you create VPC, you can pick DEFAULT or DEDICATED tenancy. AKA shared or dedicated hardware
+ -- If you pick DEFAULT tenancy, you can choose on a per resource basis later on when provisioning resources whether it's shared or dedicated hardware
+ -- If you pick DEDICATED tenancy at VPC level, it's locked in. Any resources created inside the VPC have to be on dedicated hardware (cost premium compared to Default)
+ - By default, VPC uses IPv4 private/public IPs. The private CIDR block is main method of IP communication for VPC, & Puclic IPs (when you want make resources public)
+ - VPC allocated ONE mandatory Private IPv4 CIDR Block
+ -- Primary Block has two main restrictions: min /28 (16 IPs), max /16 (65,536 IPs)
+ -- Optional to add secondary IPv4
+ - Optional: VPC can use IPv6 by assigning /56 IPv6 CIDR to VPC (start appliny IPv6 as default as this is what's being adopted now)
+ -- IMPORTANT: You can't pick a block of IP ranges like IPv4. Your range is either allocated by AWS, or customer can use their OWN IPv6 range 
+ -- IPv6 doesn't have Public/Private concept, the range is all Publicly routable by default
+
+ ### DEMO - Custom VPCs - Create VPC - DNS
+ VPCs also have DNS. provided by R53
+ - DNS is 'Base IP + 2', so if VPC is 10.0.0.0, then DNS IP is 10.0.0.2
+ EXAM: 
+ - Two critical options for how DNS functions in a VPC
+ -- 1. First is a setting called enableDnsHostnames - Gives instances public DNS names
+ -- 2. enableDnsSupport setting. Enables DNS resolution in VPC. Indicates whether DNS is enabled or disabled in VPC. If enabled, instances in VPC can use the DNS IP address
+ 
+ ## DEMO - Custom VPCs - Create VPC
+ Steps through the architecture and features of Custom VPCs including the main issues which are raised in the exam
+ 
+ ### Custom VPCs - Resources
+ - VPC Limits https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html
+ - Architecture https://raw.githubusercontent.com/acantril/aws-sa-associate-saac03/main/0800-VIRTUAL_PRIVATE_CLOUD(VPC)/00_LEARNINGAIDS/VPCStucture-1.png
