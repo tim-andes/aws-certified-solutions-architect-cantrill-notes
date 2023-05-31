@@ -1723,9 +1723,83 @@ Step through the architecture and functionality of Route Tables, Routes, Associa
 - VPC Router routes traffic between subnets. In every subnet, router has IP of network+1 address
 - Every VPC has a VPC Router - Highly Available
 - Controlled by Route Tables which influence what to do with traffic. Each subnet has one
-- VPC created with what's known as a Main Route Table - subnet default (if you don't explicity associate a route table with a subnet, it gets the Main Route Table of the VPC)
+- VPC created with what's known as a Main Route Table - subnet default (if you don't explicity associate a route table with a subnet, it gets the Main Route Table of the VPC). 
+-- A subnet can only have ONE route table associated with it at any one time. But a Route Table can be associated with many subnets
+-- If multiple routes match, the prefix is used as a priority. The higher the prefix value, the more specific the route, the more priority a route has. HOWEVER, Local Routes ALWAYS have priority.
+-- All VPC's have at least one route: the local route. This matches the VPC CIDR Range
+
+EXAM: Route tables are attached to 0 or more Subnets. A Subnet HAS to have a Route Table. It's either main route table of VPC or a custom route table. A route table controls what happens to data as it leaves the subnet(s). Local Routes are always present, un-editable, and match the VPC IPv4 or 6 CIDR range. For anything else, higher prefix values are more specific and have higher priority (except Local Route which always have highest priority)
 
 ### Internet Gateway
-So data can exit-to and enter-from the Public Internet
+IGW is for data to exit-to and enter-from the Public Internet. A REGIONAL RESILIENT gateway attached to a VPC
+
+EXAM: Internet Gateway (IGW) is a REGION RESILIENT gateway attached to a VPC. A VPC can have no IGW's or ONLY 1 IGW. An IGW can be created and not attached to a 
+VPC (but again, it can only EVER be attached to ONE VPC at a time)
+
+- IGW runs within the AWS Public Zone. IGW runs from the border of the Public Zone and VPC
+- Gateways traffic between the VPC and the Internet/AWS Public Zone (S3..SQS..SNS..etc)
+- Managed gateway; AWS handles the performance
+
+#### Using an IGW
+1. Create IGW
+2. Attach IGW to VPC
+3. Create custom Route Table
+4. Associate Route Table to subnets
+5. Then add IPv4 (and optionally IPv6) default routes to the route table with target being IGW
+6. Config subnets to allocate IPv4 addressess (and optionally IPv6 addresses by Default)
+
+### How IPv4 Addressing works inside a VPC
+EXAM EXAM EXAM
+Example: IPv4 EC2 Instance <-> IGW <-> Linux Update Server
+- EC2 instance trying to send updates to Linux server.
+-> The IPv4 instance has the private IP of 10.16.16.20, and IPv4 Public IP of 43.250.192.20. However, this isn't how it really works. what actually happens with public IPv4.. they never touch the actual services in a VPC. When you allocate a public IPv4 address, for example to this EC2 instance, a record is created which the IGW maintains, linking the instances Private IP to it's allocated Public IP
+-> A packet for tranist has Source and Destination IP addresses. At this point, packet is not configured with any public addressing (not currently routable accross public internet, could not currently reach the Linux update srever). Packet leaves instance, follows Default route to IGW. IGW sees packet is from EC2 based on source IP, and IGW knows the associated IPv4 address for this Source IP and changes Source address to IPv4 to be routable across internet. Linux Update server receives packet from Source IPv4 address. On the way back, the inverse happens
+
+EXAM: At no point is the O/S on the EC2 instance aware of the public IP, it just knows of its Private IP (no IGW translation)
+NOTE: Since IPv6 is publicly routable, the O/S on the EC2 instance would know it and it gets passed through IGW to sent without changing to a different IP (unlike IPv4 in the example above)
 
 ### Bastion Hosts (Jumpbox)
+Bastion Hosts = Jumpbox. Entry point for private-only VPCs
+- Instance in a public subnet
+- Architecturally incoming managements connections arrive there
+-- Once connected, can then go on to access internal-only VPC resources
+- Generally the only entry point to a highly secure VPC
+
+
+## DEMO - Configuring A4L public subnets and Jumpbox
+Implement an Internet Gateway, Route Tables and Routes within the Animals4life VPC to support the WEB public subnets. Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
+
+** Jumpboxes are bad - but you need to understand how to spot bad things **
+
+Currently in our VPC, all subnets are private and can't be used for communication with the internet or AWS Public Zone. We're going to reconfig the three "web" subnets to be public.
+
+1. Create IGW: VPC > Internet Gateways > Create internet gateway > name "a4l-vpc1-igw" > Create
+2. Attach IGW to VPC: In a4l-vpc1-igw, Actions dropdown "Attach to VPC" > select your VPC > Attach
+3a. Make subnets Public, create Route Table (two Routes per subnet, IPv6 and IPv4): VPC > Route Tables, Create route table > Name "a4l-vpc1-rt-web" > select a4l VPC > Create
+3b. Make subnets Public, config subnets: Route Table > select a4l rt > Subnet associations tab > Edit subnet associations > select web subnets (A,B,C) > Save > Routes tab
+4. Add additional routes to Route Table (default routes for IPv4/6): VPC > Route Tables > select a4l rt > Routes tab, Edit Routes > Add Route > destination for IPv4 0.0.0.0/0 > target: internet gateway, select yours > Add another route, destination "::/0" (targets all IPv6), target: IGW > Save changes
+5. Allocate resources with IPv4 public addresses: Subnets > select web A > ACtions > Edit Subnet Settings > check "Enable auto-assign public IPv4 address" > Save> Repeat for web B and C
+6. Test configuration: EC2 > Launch Instance > name "A4L-BASTION" > Quickstart: Amazon Linux 2023 > Architecture: 64 bit, instance type: t2 micro, keypair: a4l > Netowkr Settings, VPC: A4L-VPC1, Subnet "sn-web-a", auto assign IPv4/6 "Enable", select "creat esecurity group" and name/description "A4L-BASTION-SG" > Launch Instance
+7. Connect to Instance: Right-click instance, "Connect" > EC2 Connect > Connect > SSH tab, copy ssh command > Open Terminal, CD to Downloads, paste command to connect > Yes for fingerprint thing
+8. Cleanup: Select A4L instance, Instance State: Terminate > VPC, select A4L vpc, Actions > Delete VPC
+
+NOTE: When connecting to EX2 instances that have IPv4 address, you can use EC2 instance connect or Local SSH client
+- Session Manager can connect you if you don't have IPv4 addressing
+
+
+## Stateful vs Stateless Firewalls
+TCP and IP Review: They work together.
+- Transmission Control Protocol. Connection based protocol. When you make a TCP connection, each side is sending IP packets to each other (they have a srouce/destination IP). TCP is a Layer 4 Protocol that lies on top of IP. It adds error correction with the idea of ports. HTTP is TCP Port 80, HTTPS is TCP port 443
+
+EXAM: Every CONNECTION between user/server has two parts: 1. REQUEST (initiation) 2. RESPONSE.
+
+What actually happens:
+Client pick temporary "ephemeral" port 2. client initiates server connection REQUEST using well-known port number (like Port 443 HTTPS) 3. Server RESPONDS using source port of tcp/443 and ephemeral port picked by client 4. 
+- Directionality depends on your perspectiv. What is INBOUND/OUTBOUND -- Source/Dest swap depending on who's perspective. 
+
+### Stateless Firewalls
+Ex. Server is within a stateless firewall; meaning that it doesn't understand the state of connections (it sees REQUEST/RESPONSE as separate parts, so you need 2 rules needed for each connection). 
+- TWO Rules needed for each connetion, 1 IN 1 OUT
+
+
+### Stateful Firewalls
