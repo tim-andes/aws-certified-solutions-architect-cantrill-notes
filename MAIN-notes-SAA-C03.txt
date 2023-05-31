@@ -1592,7 +1592,7 @@ One of the first things to decide on is IP range; the VPC CIDR.
 ^ When designing an IP addressing plan, don't use any of the above 
 
 ### What IP ranges? How many networks does A4L need?
-- VPC minimum /26 (16 IP). maximum /16 (65536 IPs)
+- VPC min /26 (16 IPs). max /16 (65536 IPs)
 - Avoid common ranges to avoid future issues. 10.1 and 10.0 are common, avoid up to 10.10. Start at 10.16 per Cantrill's recommendation
 - How many ranges a business requires? First, how many regions does AWS operate in? Since we're pre-allocating, overestimate for a buffer. A4L we don't really know how many regions they'll operate in, but we can make educated guess then add buffer. 
 -- Suggest having at least 2 ranges in each regoin, in each AWS account
@@ -1906,4 +1906,7 @@ Implement a highly-available regionally resilient NAT Gateway solution within th
 2. Confirm resources done provisioning: CFN > Stacks Resources > A4L Resources tab > Click Instance ID for A4LINTERNATEST > On EC2, Connect to instance with Session Manager -- You'll see no internet connectoin
 NOTE: Session Mgr allows connection to an EC2 instance that has no public internet connectivity
 3. Connect to Internet with NATGW: VPC > NATGQ, Create NATGW > name "a4l-vpc1-natgw-A", subnet sn-web-A, Elastic IP: click 'Allocate' > Create NATGW > Repeat for B, C
-4. 
+4. Configure Routing, Route Table: VPC > Route Tables > Create route table > select VPC a4l-vpc1, name "a4l-vpc1-rt-privateA" > Create > repeat for B,C
+5. Create Default route in each RT: select RT "privateA" > Routes tab > Edit routes > Add route > DST 0.0.0.0/0, target NATGW A > Save Changes > Repeat for B, C 
+6. Associate Route Table with subnets: VPC Route Tables, select web-A, Edit subnet associations > select private subnets (app, db, reserved) > Save associations > Repeat for B, C
+7. Cleanup: Edit subnet associations > uncheck all > save (x3) > Delete RTs > NATGWs: actions: delete (x3) > Elastic IPs: Release (x3) > CFN: Delete A4L stack
