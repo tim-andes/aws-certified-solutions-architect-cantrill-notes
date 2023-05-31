@@ -1840,4 +1840,70 @@ Security Groups (SGs) are another security feature of AWS VPC ... only unlike NA
 - SGs are STATEFUL; if you allow IB/OB request, the response is automatically allowed
 - Major limitation of SGs: no explicit deny. Can be used to allow traffic or NOT Allow traffic (which is an implicit Deny). This means they can't be used to block specific bad actors
 -- This is why you use NACLs in conjunction with SGs, because NACLs are used to add th explicit denies
+- Supports IP and CIDR, but also allows referencing AWS Logical Resources, including other SGs and ITSELF within rules
+- SGs are NOT attached to Instances/Subnets, they are attached to Elastic Network Interfaces (ENI). An instance has a primary ENI
 
+EXAM: Security groups are attached to NETWORK INTERFACES, not instances/subnets
+EXAM: SGs cannot EXPLICITLY DENY traffic
+
+### SG - Logical References
+Ex. Within VPC, we have APP and WEB subnets. Both APP and WEB are protected by SGs. External User is accessing web app via port tcp/443, allowing 0.0.0.0/0. Web to App is using tcp/1337. How do you best allow communication between WEB and APP? To take advantage of extra SG features, we could reference the web security group within the APP SG. In this, the Source for the IB Rule on APP is specifically the logical resource reference of the WEB SG
+- EXAM: An SG Reference applies to anything which has the SG attached. When you're referencing an SG from another SG, you're actually referencing any resouces which have the SG associated with them
+
+### SG - Self Referencing
+Ex. Private Subnet in AWS with ever-changing number of app instances.An IB Rule in each instance can reference can have its own SG referenced, allowing traffic between any other instances with that SG.
+EXAM: SG Self referencing handles IP changes automatically
+EXAM: Also allows for simplified management of any intra-app communications (Eg. Microsoft Domain Controlls, or apps with high availability within clusters
+EXAM: SGs cannot EXPLICITLY DENY traffic. Pair with NACL to explicitly deny bad actors
+
+
+NOTE: A logical resource is an abstraction that doesn't cost you anything.  It's a definition.  Something becomes a physical resource when it starts to cost you in terms of compute and store. In terms of cloud formation, you can define logical resources that are then used to create physical resources.  Within the template, you refer to things using the logical name.  Once things are deployed, you'll see deployed resources having physical IDs. In essence, a physical resource in AWS is a realized resource that consumes AWS infrastructure and services rather than a logical representation of one.
+
+
+## NAT (Network Address Translation) and NAT Gateway
+What is NAT? A process of giving a private resource outgoing access only to the internet. Set of processes which adjusts IP packets by changing their source or destination IP addresses from the private IPs to the Public NAT Gateway IP
+- IGW performs a "Static NAT"; how a resource can be allocated with a public IPv4 address
+- IP Masquerading. A subset of NAT that hides private CIDR Blocks behind ONE IP
+- NAT is many private IPs to one single IP, this is popular as IPv4 addresses are running out. 
+- Gives Private CIDR ranges OUTGOING internet access or AWS public services
+- NAT is not required for IPv6, only IPv4. All IPv6 addresses are PUBLICLY ROUTABLE
+- Need bi-directional connectivity on an instance? use IPv6 default route and point to IGW as target: ::/0 Route+IGW 
+- Outgoing ONLY access for an IPv6 instance? You need ::/0 Route + "Egress-Only IGW"
+
+AWS can provide NAT services in TWO ways:
+1. EC2 instance config'd with NAT
+2. NAT Gateway - Configured inside VPC
+
+### NAT Gateway (we'll use IP Masquerading interchangeably)
+NAT Gateway is provisioned into a PUBLIC subnet (like WEB subnet, in our examples), which can use public IP addresses. The Private Subnet has a route table that can point all its instances to the NAT Gateway within the WEB subnet.
+- NATGW contains a Translation Table, where all required packet data is stored: IP address, src, dst, port #, etc
+- Has to be run from a PUBLIC subnet (obviously). To have Public Subnets, you need an IGW, IPv4 allocation enabled on subnets, and default routes for the subnets pointing at IGW
+- Elastic IPs - NAT Gateways use Elastic IPs. These are IPv4 addresses that are static and don't change. NATG is the only AWS service that uses Elastic IPs
+- NATGW's are an AZ resilient service. To attain Region Resilience, you need a NATGW in EACH AZ, and have a Route Table in each AZ with that NATGW as the target. So, for every AZ you use, you need one NAT Gateway and one Route Table pointing at said NATGW
+
+EXAM: NATGW's are a managed service. Scales to 45 Gbps. 
+EXAM: NATGW's Billing: Hourly charge for running it (like 4 cents per hour, and partial hours are billed as full hours), data processing charge (per GB of processed data)
+EXAM: FALSE - Exam may suggest 1 NATGW is sufficient, that 1 is regionally resilient. FALSE. If you want regional resilience, you have to deploy NATGW into each AZ you use.
+EXAM: If you want to allow an EC2 instance to function as a NAT instance, Disable SOURCE/DESTINATION CHECKS
+EXAM: NAT/NATGW isn't required/doesn't work with IPv6
+
+### Scenarios where a NAT instance may be preferred over EC2+NATGW:
+- If you value availability, bandwidth, low maintenance, and high performance choose NATGW
+- NAT Instance will fail if AZ fails. A NATGW is highly available in 1 AZ--highly available (automatically recover and scale), but will still fail entirely if AZ fails entirely. For MAX Availability, have a NATGW in every AZ you use.
+- If Cost is the primary issue, a NAT Instance can be cheaper. Especially at high volumes.
+
+EXAM: NAT Instance can be used as a Bastion Server
+EXAM: NATGW CANNOT be used as Bastion Server, cannot do port-forwarding, b/c you can't connect to its operating sysytem (AWS Managed)
+EXAM: NATGW does NOT support Security Groups; you can only used NACLs with NATGW
+EXAM: NATGW is NOT Free Tier eligible
+EXAM: NAT Instances are just EC2 instances
+
+
+## DEMO - NAT Gateways - Implementing private internet access using NAT Gateways
+Implement a highly-available regionally resilient NAT Gateway solution within the Animals4life VPC. You will create three Nat Gateways, Route tables and Default Routes with the Nat Gateway as a target and finally associate those Route Tables with the Reserved, App and DB subnets in AZ A, B and C before testing the solution using the internal instance.
+
+1. One-click deployment: click lesson link > acknowledge
+2. Confirm resources done provisioning: CFN > Stacks Resources > A4L Resources tab > Click Instance ID for A4LINTERNATEST > On EC2, Connect to instance with Session Manager -- You'll see no internet connectoin
+NOTE: Session Mgr allows connection to an EC2 instance that has no public internet connectivity
+3. Connect to Internet with NATGW: VPC > NATGQ, Create NATGW > name "a4l-vpc1-natgw-A", subnet sn-web-A, Elastic IP: click 'Allocate' > Create NATGW > Repeat for B, C
+4. 
