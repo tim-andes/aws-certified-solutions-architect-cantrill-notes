@@ -1800,6 +1800,44 @@ Client pick temporary "ephemeral" port 2. client initiates server connection REQ
 ### Stateless Firewalls
 Ex. Server is within a stateless firewall; meaning that it doesn't understand the state of connections (it sees REQUEST/RESPONSE as separate parts, so you need 2 rules needed for each connection). 
 - TWO Rules needed for each connetion, 1 IN 1 OUT
-
+- Because firewall is stateless, it doesn't know which specific port is used for the response. You'll often have to allow the FULL RANGE of ephemeral ports to any destination
+-- This makes security engineers uneasy, which is why Stateful Firewalls are preferred.
 
 ### Stateful Firewalls
+A Stateful Firewall is intelligent enough to ID the REQUEST and RESPONSE components of a connection as being related
+- ONE RULE per connection; Allowing the REQUEST (inbound or outbound) means the RESPONSE (IB or OB) is automatically allowed; this reduced admin overhead and the chance for mistakes
+- You DO NOT need to allow full Ephemeral Port range
+
+
+## Network Access Control Lists (NACLs)
+A network access control list (ACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC. NACL only impacts data crossing the subnet boundary
+- Step through the features of a NACL, the impact of their STATELESS nature and some of the key points to be aware of for the exam.
+- NACLs are STATELESS
+- Can EXPLICITLY ALLOW AND EXPLICITLY DENY; you can block specific IPs/IP Ranges associated with bad actors
+- NACLS not aware of Logical Resources. They only allow you to use IP and CIDR ranges, ports and protocols
+
+First, NACLs are associated with Subnets. NACLs work with IB and OB traffic from VPC.
+- Each network ACL contains TWO sets of rules. Inbound and Outbound rules/protocols. Rules match the destination (DST) IP/Range or the DST Port, together with the protocol and ALLOW or DENY based on that match
+- NACL response to client requires using the ephemeral port range (chosen at random by client/requester)
+- NACLs cannot be assigned to AWS resources, ONLY subnets
+- Often used together with Security Groups to add explicit to DENY. Using SGs to ALLOW traffic, NACL to DENY
+- Subnet can only have ONE NACL, but a NACL can be associated with many subnets
+
+EXAM: NACLs filter traffic crossing the subnet boundary INBOUND or OUTBOUND. NACL only impacts data crossing the subnet boundary (communications between instances in the SAME subnet is not affected.
+EXAM: NACLs offer both EXPLICIT ALLOWS and EXPLICIT DENIES. Rules are processed in order, lowest rule number first. Once a match occurs, processing STOPS. * is an implicit DENY if nothing else matches
+EXAM: NACLs are stateless and require TWO RULES per connection: 1x OUTBOUND, 1x INBOUND
+
+### NACLs and multi-tiered architecture (operating across multiple subnets)
+Becomes more complex with multi-tiers. Internal communications also required IB/OB rules on the app subnet NACL. If you have a CLIENT (external), a WEB subnet and APP subnet, connection rules are required for all IB/OB movements whether in between web/app subnets or between client and web subnet
+- For every single communication, the rule-pairs app port (IB) and ephemeral ports (OB) are needed on each NACL for each communication type which occurs 1) within a VPC 2) TO a VPC 3) FROM a VPC
+
+### Default NACL. Default has IB/OB Rules with implicit deny (*) and a catch-all ALLOW ALL rule (0.0.0.0/0)
+### Custom NACL. Created for a specific VPC and initially NOT associated with subnets. Only ONE IB/OB rule by default: implicit deny (*)--so at first, if you associate subnets, all traffic will be denied
+
+
+## VPC Security Groups (SG)
+Security Groups (SGs) are another security feature of AWS VPC ... only unlike NACLs they are attached to AWS resources, not VPC subnets. SGs offer a few advantages vs NACLs in that they can recognize AWS resources and filter based on them, they can reference other SGs and also themselves. But.. SGs are not capable of explicitly blocking traffic - so often require assistance from NACLs
+- SGs are STATEFUL; if you allow IB/OB request, the response is automatically allowed
+- Major limitation of SGs: no explicit deny. Can be used to allow traffic or NOT Allow traffic (which is an implicit Deny). This means they can't be used to block specific bad actors
+-- This is why you use NACLs in conjunction with SGs, because NACLs are used to add th explicit denies
+
