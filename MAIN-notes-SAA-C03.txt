@@ -1910,3 +1910,46 @@ NOTE: Session Mgr allows connection to an EC2 instance that has no public intern
 5. Create Default route in each RT: select RT "privateA" > Routes tab > Edit routes > Add route > DST 0.0.0.0/0, target NATGW A > Save Changes > Repeat for B, C 
 6. Associate Route Table with subnets: VPC Route Tables, select web-A, Edit subnet associations > select private subnets (app, db, reserved) > Save associations > Repeat for B, C
 7. Cleanup: Edit subnet associations > uncheck all > save (x3) > Delete RTs > NATGWs: actions: delete (x3) > Elastic IPs: Release (x3) > CFN: Delete A4L stack
+
+
+
+# EC2 Basics
+
+## Virtualization 
+
+Emulated Virtualization
+Paravirtualization
+Hardware Assisted Virtualization
+SR-IOV
+
+EC2 provides virtualization as a service (IaaS). Process of running more than one O/S on a piece of physical hardware. Within an O/S, parts of it, the kernel run in wha's called Priveled Mode -- meaning it can interact with the system's hardware. Above the O/S are applications that run in User Mode (or un-priveleged mode) (cannot interact with hardware). An app would have to make a SYSTEM CALL to the kernel to interact with hardware. IF anything but the O/S attempts to make a priveleged call, the system will detect and cause a system-wide error, generally crashing the system (or at min the app) <- THIS IS HOW IT WORKS WITHOUT VIRTUALIZATION
+- Virtualization is a single piece of hardware running multiple O/S's
+- Nowadays, with multiple O/S's on a single bit of hardware, all O/S's expect to be priveleged and this conflict can cause crashes -- Virtualization is the solution to this problem
+- Virt used to have to be done as software and was slow
+-- First way was EMULATED VIRTUALIZATION (included hypervisor capability performing Binary Translation, creating Virtual Machines) - super slow
+-- PARA-VIRTUALIZATION. O/S's running in virtual machines, but instead of Binary Translation, they modify the guest O/S's to make Hypercalls. This requires O/S modification
+
+### Hardware Assisted Virtualization
+The major improvement to virtualization as it made the physical hardware became virtualization aware. When guest O/S's attempt privleged instructions, they're trapped by CPU (which expects this) so the system does not halt. 
+
+### SR-IOV
+Single-root IO Virtualization. Allows a network card to present itself as several "mini cards". Splits a physical card into several logical cards to present to guest O/S's
+
+SR-IOV is a method of device virtualization that provides higher I/O performance and lower CPU utilization when compared to traditional virtualized network interfaces. Enhanced networking provides higher bandwidth, higher packet per second (PPS) performance, and consistently lower inter-instance latencies. There is no additional charge for using enhanced networking. SR-IOV enables network traffic to bypass the software switch layer of the Hyper-V virtualization stack. 
+
+### Virtualization Resources
+http://www.brendangregg.com/blog/2017-11-29/aws-ec2-virtualization-2017.html
+
+
+## EC2 Architecture and Resilience
+Looking specifically at EC2 Hosts, how they are physically architected, why they are AZ resilient, and how the resilience of the Elastic Block Store (EBS) factors into our decisions as Solutions Architects.
+- EC2 instances are Virtual Machines (VMs = O/S + Resources) 
+- EC2 instances run on EC2 Hosts, they're either SHARED (across different AWS customers, Shared is Default) or DEDICATED hosts
+- EC2 is AZ resilient service. If AZ fails, Host Fails, Instances Fail
+
+### EC2 Hosts
+EC2 hosts have some local hardware--CPU and memory, but also local storage called Instance Store. 
+- They have two types of networking:
+1. Storage Networking. 
+2. Data Networking
+EXAM: An EC2 Host runs within a SINGLE AZ. They are AZ Resilient.
