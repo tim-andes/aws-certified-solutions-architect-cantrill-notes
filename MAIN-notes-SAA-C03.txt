@@ -1916,21 +1916,20 @@ NOTE: Session Mgr allows connection to an EC2 instance that has no public intern
 # EC2 Basics
 
 ## Virtualization 
-
 Emulated Virtualization
 Paravirtualization
 Hardware Assisted Virtualization
 SR-IOV
 
-EC2 provides virtualization as a service (IaaS). Process of running more than one O/S on a piece of physical hardware. Within an O/S, parts of it, the kernel run in wha's called Priveled Mode -- meaning it can interact with the system's hardware. Above the O/S are applications that run in User Mode (or un-priveleged mode) (cannot interact with hardware). An app would have to make a SYSTEM CALL to the kernel to interact with hardware. IF anything but the O/S attempts to make a priveleged call, the system will detect and cause a system-wide error, generally crashing the system (or at min the app) <- THIS IS HOW IT WORKS WITHOUT VIRTUALIZATION
+EC2 provides virtualization as a service (IaaS). It is dealing with the process of running more than one O/S on a piece of physical hardware. Within an O/S, parts of it, the kernel run in wha's called Priveled Mode -- meaning it can interact with the system's hardware. Above the O/S are applications that run in User Mode (or un-priveleged mode) (cannot interact with hardware). An app would have to make a SYSTEM CALL to the kernel to interact with hardware. IF anything but the O/S attempts to make a priveleged call, the system will detect and cause a system-wide error, generally crashing the system (or at min the app) <- THIS IS HOW IT WORKS WITHOUT VIRTUALIZATION
 - Virtualization is a single piece of hardware running multiple O/S's
 - Nowadays, with multiple O/S's on a single bit of hardware, all O/S's expect to be priveleged and this conflict can cause crashes -- Virtualization is the solution to this problem
-- Virt used to have to be done as software and was slow
+- Virtualization used to have to be done as software and was slow
 -- First way was EMULATED VIRTUALIZATION (included hypervisor capability performing Binary Translation, creating Virtual Machines) - super slow
 -- PARA-VIRTUALIZATION. O/S's running in virtual machines, but instead of Binary Translation, they modify the guest O/S's to make Hypercalls. This requires O/S modification
 
 ### Hardware Assisted Virtualization
-The major improvement to virtualization as it made the physical hardware became virtualization aware. When guest O/S's attempt privleged instructions, they're trapped by CPU (which expects this) so the system does not halt. 
+The major improvement to virtualization as it made the physical hardware became virtualization aware. When guest O/S's attempt priveleged instructions, they're trapped by CPU (which expects this) so the system does not halt. 
 
 ### SR-IOV
 Single-root IO Virtualization. Allows a network card to present itself as several "mini cards". Splits a physical card into several logical cards to present to guest O/S's
@@ -1950,6 +1949,32 @@ Looking specifically at EC2 Hosts, how they are physically architected, why they
 ### EC2 Hosts
 EC2 hosts have some local hardware--CPU and memory, but also local storage called Instance Store. 
 - They have two types of networking:
-1. Storage Networking. 
+1. Storage Networking
 2. Data Networking
+When instances are provisioned into a specfic subnet within a VPC, a primary Elastic Network Interface is provisioned in a subnet which maps to the physical hardware on the EC2 host. 
+- EC2 Host can connect to the Elastic Block Store (EBS). EBS also AZ Resilient. EBS let's you allocate volumes of portions of persistent storage, and these are allocated to instances in the same AZ.
+- An Instance runs on a specific host and if you restart the instance, it will stay on that host. An instance will stay on a host unless one of 2 things happens:
+-- 1. If the host fails or is taken down for maintenance by AWS
+-- 2. If an instance is STOPPED, then restarted (different than just restarting)
 EXAM: An EC2 Host runs within a SINGLE AZ. They are AZ Resilient.
+EXAM: EC2 Instances are locked inside one sepcific AZ. Same with EBS volumes
+- Migrations to new AZs are 'possible', but it's copying an instance into a new AZ (snapshots and AMIs)
+- Instances runnings on an EC2 Host share the host's resources. You can have instances of different size sharing host, but generally same size/type of EC2 instance shares a host
+
+### What's EC2 Good For?
+For traditional style workloads, for consistency, if you require an O/S...
+- Great for when you have traditional O/S+Application compute needs
+- Great for Long Running Conmpute needs.
+- Server style application (traditional app in an o/s awaiting incoming connections)
+- Great for occasional bursts in traffic and steady state load requirements
+- For monolithic application stacks
+- For migrating application workloads
+- Disaster Recovery (creating this dis.rec. env)
+
+
+## EC2 Instance Types
+EC2 instance Categories, how to decode the instance type names (family, generation, features & size), hints and tips on remembering the Instance type differences
+
+### EC2 Instance Type Resources
+- https://aws.amazon.com/ec2/instance-types/
+- https://ec2instances.info/
