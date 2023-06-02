@@ -2138,6 +2138,27 @@ EXAM: HIGHEST STORAGE PERFORMANCE storage option in AWS, but can't provide persi
 EXAM: Instance Store Volumes have to be ATTACHED AT LAUNCH OF INSTANCE, cannot happen after. Instances on this host only can access them
 
 
-## Choosing between the EC2 Instance Store and EBS
+## Choosing between the EC2 Instance Store Volumes (ISV) and EBS
 Resource: https://aws.amazon.com/ec2/instance-types/
 
+Need...
+Persistence? EBS (avoid ISV)
+Resilience? EBS (avoid ISV)
+Isolated from Instance Life Cycles? (to be able to un-attach and re-attach) EBS (avoid ISV)
+Resilience w/App In-Built Replication... it depends
+High Performance? Depends (ISV is super high performance)
+Cost is main factor? ISV (it's often included in the price)
+
+REMEMBER ALL OF THIS:
+EXAM: Cost Efficacy? ST1 or SC1. For throughput + streaming? ST1
+EXAM: Boot EC2 instances? NOT st1 or sc1
+EXAM: GP2 / GP3: Max performance 16,000 IOPS
+EXAM: IO1 / IO2: Max 64,000 IOPS (256,000 IOPS in io2 Block Express) - Max EBS performance with large instance (that is capabile of providing this performance)
+EXAM: RAID0 + EBS: Max 260,000 IOPS
+EXAM: Greater than 260,000 IOPS? use ISV, not EBS. *No persistence
+
+
+## Snapshots, Restore & Fast Snapshot Restore (FSR)
+- EBS Snapshots are backups of data consumed within EBS Volumes - Stored on S3.
+- Snapshots are incremental, the first being a full backup - and any future snapshots being incremental.
+- Snapshots can be used to migrate data to different availability zones in a region, or to different regions of AWS.
