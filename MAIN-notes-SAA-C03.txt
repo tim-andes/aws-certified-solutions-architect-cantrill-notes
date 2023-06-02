@@ -2183,6 +2183,7 @@ Commands for Terminal: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedem
 5. Migrate volume with Snapshot: EC2 > Instances > Stop AZA Instance 1 and 2 > when stopped, Volumes: Detach Volume > right click EBS Volume, Create Snapshot > Right click Snapshot, Create Volume from Snapshot > Zone us-east-1b > Tag key "Name" value "EBSTestVolume-AZB" > Create 
 6. Attach Volume to AZB instance: Volume > right click, Attach > ABZ Instance 1 > ATtach
 7. Verify the filesystem and file are intact > EC2 Instance Connet on AZB Instance 1 > `lsblk` > `sudo mkdir /ebstest` > `sudo mount /dev/xvdf /ebstest`
-Restart instance and verify the file system is intact
-Stop and Start the instance
-Verify the file system is no longer present - new EC2 Host.
+8. Stop AZB Instance > Detach EBS Volume
+9. Clean up > Detele Snapshopt > Volumes: delete test volumes > CloudFormation: Delete Stack
+* The remaining DEMO is not FREE TIER
+* On Instance Store Volumes, Instance reboot does not cause the data to be lost or moving to new host, but a Stop/Start changes hosts and you lose data
