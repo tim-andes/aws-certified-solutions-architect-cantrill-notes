@@ -2175,18 +2175,14 @@ EXAM: FSR costs extra
 
 
 ## DEMO - EBS Volumes
-1. Create an EBS Volume: 1-Click Deploy link > Create Stack
-2. Mount it to an EC2 instance
-Create and Mount a file system
-Generate a test file
-Migrate the volume to another EC2 instance in the same AZ
-verify the file system and file are intact
-Create a EBS Snapshot from the volume
-Create a new EBS Volume in AZ-B
-Verify the filesystem and file are intact
-Copy the snapshot to another region
-Create an EC2 instance with instance store volumes
-Create a filesystem and test file
+Commands for Terminal: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0004-aws-associate-ec2-ebs-demo/lesson_commands.txt
+1. Create an EBS Volume: 1-Click Deploy link > Create Stack > EC2 EBS > Create Volume > select GP2, 10 GiB size, AZ us-east-1a, tag: kay "Name" value "EBSTestVolume" > Create
+2. Mount it to an EC2 instance: Select new EBS Volume > Actions: Attach Volume > Choose Instance1 > Attach
+3. Create and Mount a file system: Ec2 Instance > select A4L-EBS-INSTANCE1-AZB, Connect > EC2 Instance Connect > `sudo mkfs -t xfs /dev/xvdf`, Enter
+4. Generate a test file: EC2 Connect > `sudo mkdir /ebstest`, Enter > Mount dev/xvdf to /ebstest directory `sudo mount /dev/xvdf /ebstest` > cd /esbstest > `sudo nano amazingtestfile.txt` > write text, ctrol+o, enter, ctrl+x > Reboot instance `sudo reboot`
+5. Migrate volume with Snapshot: EC2 > Instances > Stop AZA Instance 1 and 2 > when stopped, Volumes: Detach Volume > right click EBS Volume, Create Snapshot > Right click Snapshot, Create Volume from Snapshot > Zone us-east-1b > Tag key "Name" value "EBSTestVolume-AZB" > Create 
+6. Attach Volume to AZB instance: Volume > right click, Attach > ABZ Instance 1 > ATtach
+7. Verify the filesystem and file are intact > EC2 Instance Connet on AZB Instance 1 > `lsblk` > `sudo mkdir /ebstest` > `sudo mount /dev/xvdf /ebstest`
 Restart instance and verify the file system is intact
 Stop and Start the instance
 Verify the file system is no longer present - new EC2 Host.
