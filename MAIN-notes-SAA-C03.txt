@@ -1953,6 +1953,7 @@ EC2 hosts have some local hardware--CPU and memory, but also local storage calle
 2. Data Networking
 When instances are provisioned into a specfic subnet within a VPC, a primary Elastic Network Interface is provisioned in a subnet which maps to the physical hardware on the EC2 host. 
 - EC2 Host can connect to the Elastic Block Store (EBS). EBS also AZ Resilient. EBS let's you allocate volumes of portions of persistent storage, and these are allocated to instances in the same AZ.
+- EBS = Network based storage
 - An Instance runs on a specific host and if you restart the instance, it will stay on that host. An instance will stay on a host unless one of 2 things happens:
 -- 1. If the host fails or is taken down for maintenance by AWS
 -- 2. If an instance is STOPPED, then restarted (different than just restarting)
@@ -1974,7 +1975,169 @@ For traditional style workloads, for consistency, if you require an O/S...
 
 ## EC2 Instance Types
 EC2 instance Categories, how to decode the instance type names (family, generation, features & size), hints and tips on remembering the Instance type differences
+- Reminder: EC2 instance = O/S + allocation of resources
+- You can select instance type/size for more control
+
+Choosing a different instance type influences a few things...
+- The raw amount of resources you get: virtual CPU, memeory, local storage capacity, and type of storage
+- Resource Ratios
+- Storage and Data Network Bandwidth
+- Influences system architecture and vendor
+- Additional feature and capabilities differ between Instance Types. Ex. allocation of GPUs, certain capacity of FGPAs (no idea what this is)
+
+### EC2 Instances - Grouped into 5 Main Categories:
+1 - General Purpose (Default): Diverse workloads, equal resource ratios
+2 - Compute Optimized: Designed for media processing, high performance computing, modeling, gaming, ML; access to the latest high performance CPUs. Resource Ratio where more CPU is offered the memory 
+3 - Memory Optimized: Inverse of Compute Optimized. Processing large in-memory datasets (Ex. in-memory caching), some database workloads
+4 - Accelerated Computing: Dedicated GPUs for high scale parallel processing and modeling, custom programmable hardware known as field programmable gate arrays (FGPAs). Accelerated Computing category is often for niche requirements; you'll know when you need this category
+5 - Storage Optimized: Large amounts of super fast, local storage. Massive amounts of IO operations/second, scale out transactional databases, data warehousing, Elasticsearch, analytics workloads. The Storage Optimized  category is great for applicatoins that have serious demands on sequential and random IO.
+
+### EC2 Istance Types: Decoding the naming scheme
+Ex. R5dn.8xlarge. <- Example of type of EC2 instance
+- This is known as an Instance Type. If ops team member asks what instance type we need? You'd provide this full name
+- Start letter, R, is the INSTANCE FAMILY
+- 2nd character, 5, is the INSTANCE GENERATION. For example, a C4 would be the 4th generation of the C family of instance. Always select the most recent generation, with exception
+- "8xlarge" is the size of the instance. Sizes: Nano, mirco, small, medium. large, xl, 2xl, 4xl, 8xl, and so on... PRice premium on higher end... often better to scale system with large number of small sizes
+- "dn" can vary... this collection of letters between family-generation and size may not always be present. These letters denote add'l capabilities. Ex. 'a' signifies AMD CPUs (you don't need to memorize these letters for the exam)
+
+* Table / Visual of Instance Categories/Types/Details and Notes: https://imgur.com/a/LXpddQS
+** 'c' stands for computer. Compute Optimized
+** 'r' stands for RAM. Memory Optimized
+** 'I' stands for I/O. Storage Optimized
+** 'D' Dense Storage. Storage Optimized
+** 'G' GPU. Accelerated Computing
+** 'P' Parallel Processing. Accelerated Computing
 
 ### EC2 Instance Type Resources
 - https://aws.amazon.com/ec2/instance-types/
 - https://ec2instances.info/
+- Table / Visual of Instance Categories/Types/Details and Notes: https://imgur.com/a/LXpddQS
+
+
+## DEMO - EC2 SSH vs EC2 Instance Connect
+Amazon EC2 Instance Connect provides a simple and secure way to connect to your Linux instances using Secure Shell (SSH). With EC2 Instance Connect, you use AWS Identity and Access Management (IAM) policies and principals to control SSH access to your instances, removing the need to share and manage SSH keys.
+
+1. Make keypair for SSH: EC2 > Key Pairs, Create key pair > since we already have 'A4L' kp, we're good
+2. 1-Click Deploy: Click 1-Click Deploy lesson link > Create Stack, Acknowledge, Create stack
+3. Connect to Instance via SSH: EC2 > Instances > A4L, Connect, SSH Client > Open your Terminal > cd to directory with Key Pair .pem file > Paste command, Enter, 'Yes' for fingerprint
+4. Connect with EC2 Instance Connect:  EC2 > Instances > A4L, Connect, EC2 Instance Connect
+- NOTE: EC2 Instance Connect is not originating connections through your machine (not your IP)
+5. Clean up > CFN > Delete Stack 
+
+
+## Storage Refresher
+### Key Terms:
+- DIRECT (local) attached storage: Storage on the EC2 Host
+- NETWORK attached storage: Volumes are created and attached to a device over the network. In AWS, uses EBS (Elastic Block Store). Highly resilient, separate from instance hardware
+- EPHEMERAL storage: Temporary storage, non-persistent. This is the Instance Store, phyiscal storage attached to an EC2 Host
+- PERSISTENT storage: Permanent storage that lives past the lifetime of an instance.
+EXAM: An example of Persistent Storage in AWS is the networked attached storage delivered by EBS. Know which types of storage are Ephemeral and Persistent
+
+### Categories of Storage:
+- BLOCK storage: Create a Volume (Ex. inside EBS) that is presented to the OS as a collection of blocks; NO STRUCTURE beyond that. Mountable. Bootable.
+- FILE storage: Presented as a file share/file server WITH STRUCTURE. Mountable. NOT bootable.
+- OBJECT Storage: Collection of objects. NO STRUCTURE; flat. NOT mountable. NOT bootable.
+
+### Storage Performance 
+These items don't exist in isolation. IOPS is like speed of engine a racecar runs at (revolutions per second), IO block size is like the size of the car's wheels, throughput is the top-speed of the racecar. 
+- IO BLOCK SIZE: Size of the data you're writing to disk. 
+- IOPS: Measures the number of I/O operations a storage system supports in a second (how many read/writes in a second)
+- THROUGHPUT: Amount of data that can be transferred in a given second, MB/s. 
+* IO x IOPS = Throughput
+** Ex. 16KB IO block size x 100IOPS = 1.6MB/s throughput
+
+
+## EBS Service Architecture
+Amazon Elastic Block Store (Amazon EBS) provides block level storage volumes for use with EC2 instances. EBS volumes behave like raw, unformatted block devices. You can mount these volumes as devices on your instances. EBS volumes that are attached to an instance are exposed as storage volumes that persist independently from the life of the instance. You can create a file system on top of these volumes, or use them in any way you would use a block device (such as a hard drive).
+- EBS can be encrypted using KMS
+- When you attach a volume to an EC2 instance, the instance sees a Block Device, so raw storage.
+- EBS volumes appear just like any other storage device to an EC2 instance
+- EBS Volumes are attached to ONE instance at a time. However, can be detached and re-attached to a new instance. They are not lifecycle linked to one instance, they're persistent; if an instance moves to a new EC2 host, the volume follows it. EBS is persistent until you delete the volume (separate from the instance)
+- Snapshot into S3: You can create a backup of a volume with a Snapshot into S3. This can be used to migrate volumes between AZs. Snapshots are now REGIONALLY RESILIENT
+- EBS can provision volumes based on different physical storage types: ssd, high-performance ssd, volumes based on mechanical disks, different size volumes, different performance profiles
+- BILLING: Gigabyte/Month metric (and in some cases, performance)
+EXAM: Storage is provisioned in ONE AVAILABILITY ZONE; Resilient in that AZ
+
+### EBS Example - 1 region, 2 AZs (AZA, AZB), 1 S3 bucket.
+EBS is AZ-based. So, with two AZs you have two separate EBSs. Same as EC2 hosts--per AZ
+- EBS replicated data within an AZ. Failure of an entire AZ means failure of all volumes in that AZ. To fight this, you can Snapshot volumes into S3, creating more resilience, and you can create another volume in a new AZ from this snapshot (or even to a new region)
+- For Global Resilience on volumes, copy snapshots over to different regions
+
+
+## EBS Volume Types 
+General Purpose SSD — Provides a balance of price and performance. We recommend these volumes for most workloads.
+- Volumes can very in size from 1GB -> 16TB
+- When created, a volume is given an I/O credit allocation
+
+### EBS Volume Types - General Purpose (GP):
+1. GP2. GP2 is the default general purpose SSD based storage provided by EBS. 
+- GP2 gets 3 IO credits per second, per GB of volume size
+- "Burst Rate": GP2 volume can burst up to 3,000 IOPS
+- Max IOPS for GP2 is currently 16,000 IO credits per second (baseline performance) - Any volumes > 5.33TB in size achieves this rate constantly
+- Great for: boot volumes, low latency interactive apps, dev/test environments
+- GP2 auto scaled on size
+2. GP3. SSD based, but removed the credit architecture GP2 
+- Every GP3 volume, regardless of size starts with 3,000 IOPS and 125MiB/s
+- ~20% cheaper than GP2
+- Need more performance? Can pay for up 1o 16,000 IOPS or 1,000 MiB/s
+- GP3 does not auto-scale, you have to enable the upgrades
+
+#### IO Credit. When you create a volume (size ranging from 1GB -> 16TB), it is create with an IO credit allocation. 
+- An IO is one input/output operation
+- IO credit is a 16KB chuck of data
+- An IOP is one chuck of 16KB in one second
+- Ex. If transferring a 160KB file, that's 10 IO blocks of data. If this is all done in 1 second, that's 10IOPS
+- 1 IOPS is 1 IO in 1 second
+- IF you have NO credits in your IO "bucket" in the volume, you can't perform any IO on the disc
+- IO Bucket has capacity of 5.4 million IO credits and "Fills at the rate of Baseline Performance"
+- "Fills at the rate of Baseline Performance"... what does this mean? Every volume has baseline performance based on size, with a minimum
+-- IO Bucket wills with minimum of 100 IO Credits per second REGARDLESS OF VOLUME SIZE
+
+## EBS Volume Types - Provisioned IOPS (io1, io2,io2 Block Express)
+Provisioned IOPS SSD — Provides high performance for mission-critical, low-latency, or high-throughput workloads.
+- Three types of provisioned IOPs SSD: io1, io2, io2 Block Express
+- IOPS are configurable independent of volume size and designed for super high-performance situations
+- Max 64,000 IOPS/volume
+- io1/io2, 1,000MB/s throughput
+- io2 Block Express: 256,000 IOPS, 4,000MB/s throughput
+- Size: 4BG -> 16TB for io1/io2. io2 Block Express 4GB -> 64TB
+- Size-to-performance ratio maximums: io1 50IOPS/GB, io2 500IOPS/GB, io2 Block Express 1000IOPS/GB
+- Per Instance Performance restriction: the max performance between the EBS svc and an EC2 instance
+- WOW FUCKING NUMBERS EVERYWHERE (all the specs for Provisioned IOPS): https://imgur.com/a/zYQk7G1
+EXAM: Most consistent low latency and jitter. 
+EXAM: Prov.IOPS for sub-millisecond latency, consistent latency, and higher performance.
+
+
+### EBS Volume Types - HDD-Based*
+*Slower, only for specific situations
+Types:
+Throughput Optimized HDD (st1) — A low-cost HDD designed for frequently accessed, throughput-intensive workloads. For sequentially accessed data
+- Big data, data warehouses, log processing
+Cold HDD (sc1) — The lowest-cost HDD design for less frequently accessed workloads. 
+- gear for max economy (lowest EBS cost option) with lowest performance
+
+METRICS: https://imgur.com/a/EcGVrx8
+
+
+## Instance Store Volumes - Architecture
+An instance store provides TEMPORARY block-level storage devices for your instance. This storage is located on disks that are physically attached to the host computer. Instance store is ideal for TEMPORARY storage of information that changes frequently, such as buffers, caches, scratch data, and other temporary content, or for data that is replicated across a fleet of instances, such as a load-balanced pool of web servers.
+
+An instance store consists of one or more instance store volumes exposed as block devices. The size of an instance store as well as the number of devices available varies by instance type.
+
+The virtual devices for instance store volumes are `ephemeral[0-23]`. Instance types that support one instance store volume have ephemeral0. Instance types that support two instance store volumes have `ephemeral0` and `ephemeral1`, and so on.
+
+- HIGHEST STORAGE PERFORMANCE in AWS
+- Physically connected to ONE EC2 host - isolated to host
+- If instance moves between host, data that was stored on attached ephemeral[X] is lost and instance is re-attached to new ephemeral[X]
+- Instance Store Volumes should NOT be used for anything the requires persistence
+- More IOPS and Throughput VS EBS
+
+EXAM: Local to an EC2 Host
+EXAM: Data stored on Instance Store Volumes is lost on instance MOVE, RESIZE, or HARDWARE FAILURE
+EXAM: HIGHEST STORAGE PERFORMANCE storage option in AWS, but can't provide persistence. TEMPORARY, for replaceable data
+EXAM: Instance Store Volumes have to be ATTACHED AT LAUNCH OF INSTANCE, cannot happen after. Instances on this host only can access them
+
+
+## Choosing between the EC2 Instance Store and EBS
+Resource: https://aws.amazon.com/ec2/instance-types/
+
