@@ -2150,15 +2150,43 @@ High Performance? Depends (ISV is super high performance)
 Cost is main factor? ISV (it's often included in the price)
 
 REMEMBER ALL OF THIS:
-EXAM: Cost Efficacy? ST1 or SC1. For throughput + streaming? ST1
+EXAM: Cost Efficacy? ISV ST1 or ISV SC1. For throughput + streaming? ST1
 EXAM: Boot EC2 instances? NOT st1 or sc1
-EXAM: GP2 / GP3: Max performance 16,000 IOPS
-EXAM: IO1 / IO2: Max 64,000 IOPS (256,000 IOPS in io2 Block Express) - Max EBS performance with large instance (that is capabile of providing this performance)
-EXAM: RAID0 + EBS: Max 260,000 IOPS
-EXAM: Greater than 260,000 IOPS? use ISV, not EBS. *No persistence
+EXAM: GP2 / GP3: Has max performance 16,000 IOPS
+EXAM: IO1 / IO2: Has max 64,000 IOPS (256,000 IOPS in io2 Block Express) - Max EBS performance with large instance (that is capabile of providing this performance)
+EXAM: RAID0 + EBS: Has max 260,000 IOPS
+EXAM: Need anything greater than 260,000 IOPS? use ISV, not EBS. *No persistence
 
 
-## Snapshots, Restore & Fast Snapshot Restore (FSR)
+## EBS Snapshots, Restore & Fast Snapshot Restore (FSR)
 - EBS Snapshots are backups of data consumed within EBS Volumes - Stored on S3.
-- Snapshots are incremental, the first being a full backup - and any future snapshots being incremental.
+- Snapshots are incremental, the FIRST COPY being a full backup - and any future snapshots being incremental. No massive risk of losing incremental backups (each increment is self-sufficient)
 - Snapshots can be used to migrate data to different availability zones in a region, or to different regions of AWS.
+- AZ Resilient (vulnerable to issues which impact entire AZ), but with a snapshot the data becomes Region Resilient
+- Good for EBS Volume cloning, even moving / copying them across AZs
+- BILLING: Gigabyte-month cost; but you're only paying for USED data, not allocated data
+
+EXAM: Snapshot doesn't need to be initialized in a new EBS Volume, it's built-in
+EXAM: Snapshots are restored LAZILY; fetched gradually
+EXAM: Requested blocks are fetched immediately, you can do this initially to force rapid initialization so users have quickest access up front
+EXAM: Fast Snapshot Restore (FSR): A setting to Enable that allows immediate restores instead of gradual
+EXAM: Up to 50 FSRs per region. Set on the Snap & AZ, so 50 between AZs
+EXAM: FSR costs extra
+
+
+## DEMO - EBS Volumes
+1. Create an EBS Volume: 1-Click Deploy link > Create Stack
+2. Mount it to an EC2 instance
+Create and Mount a file system
+Generate a test file
+Migrate the volume to another EC2 instance in the same AZ
+verify the file system and file are intact
+Create a EBS Snapshot from the volume
+Create a new EBS Volume in AZ-B
+Verify the filesystem and file are intact
+Copy the snapshot to another region
+Create an EC2 instance with instance store volumes
+Create a filesystem and test file
+Restart instance and verify the file system is intact
+Stop and Start the instance
+Verify the file system is no longer present - new EC2 Host.
