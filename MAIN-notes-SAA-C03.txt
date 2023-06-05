@@ -2268,3 +2268,33 @@ sudo rm /tmp/db.setup
 *** Somewhere this bullshit fucked up and the system couldn't see tmp/db.setup, then it could, so the commands got duplicated
 **** Useless demo to show how annoying it is to do manually. Fucking up was a great example of dont do it this way
 Clean up Account: CFN > delete stack
+
+
+## Amazon Machine Image (AMI)
+Amazon Machine Images (AMI) are the images which can create EC2 instances of a certain configuration. In addition to using AMI's to launch instances, you can customize an EC2 instance to your bespoke business requirements and then generate a template AMI which can be used to create any number of customized EC2 instances.
+- AMIs are used to launch EC2 instances, even the Default instance launch is used via AMI. AMI's can be AWS or Community Provided
+- Marketplace AMIs are available
+- AMIs are REGIONAL... Unique ID for each AMI in each region Eg. "ami-0a887...."
+- AMI controls permissions (scope: Public, Your Account, Specific Accounts)
+- Not only can you create EC2 Instance from AMI, can create AMI from EC2 instance you want to template
+- BILLING: billed for the storage cost... EBS snapshots contained
+
+AMI Lifecycle: 
+1. Launch: AMI launches EC2 instance. 
+2. Configure: Can take launched instance and provide customizations (Eg. O/S, instance with config'd volumes, etc). 
+3. Create Image: Can create an AMI from your configured/customized Instance (make a template)
+4. Launch: Launch new instance with templace AMI
+
+EXAM: AMI = ONE REGION. Only works in that region
+EXAM: AMI Baking: Creating an AMI from a configured instance + application
+EXAM: AMI CAN NOT be edited. Instead, launch instance, change configs, make new AMI
+EXAM: AMI CAN be coped between regions (includes its EBS Volume Snapshots)
+EXAM: Default AMI permissions: Default is your account only. (Can be private, public, or greant access to specific accounts)
+
+
+## DEMO - Creating A4L AMI (AMI Baking)
+Create WP EC2 instance. Improve EC2 login screen. Create AMI from custom instance and deploy a new instance.
+
+Steps: 
+1. Set up WP Instance: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0007-aws-associate-ec2-ami-demo/lesson_commands.txt > Create Stack
+NOTE: This bullshit tutorial also broke like the previous one. Submitted a ticket
