@@ -2195,3 +2195,41 @@ Commands for Terminal: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedem
 9. Clean up > Detele Snapshopt > Volumes: delete test volumes > CloudFormation: Delete Stack
 * The remaining DEMO is not FREE TIER
 * On Instance Store Volumes, Instance reboot does not cause the data to be lost or moving to new host, but a Stop/Start changes hosts and you lose data
+
+
+## EBS Encryption
+EBS Encryption provides AT REST encryption for volumes and snapshots.
+- Uses KMS: AWS/ebs Keys or Customer Managed Keys
+- Uses DEK
+
+EXAM: AWS Accounts can be set to encrypt by default - Default KMS Key
+EXAM: Each Volume uses ONE unique DEK. Snapshots and future volumes use the SAME DEK. Volume from scratch? New DEK
+EXAM: There is NO WAY To remove an encryption from a volume, unless you clone data to a new volume
+EXAM: O/S is not aware of the encryption (no performance loss)
+
+
+## Networks Interfaces, Instance IPs and DNS
+Elastic Network Interfaces (ENIs) which can be allocated to EC2 instances - and the DNS, public, private and elastic IPs which can be assigned to those ENIs
+- Each EC2 Instance starts with one ENI (primary ENI). You can attach more ENI's, but to different subnets
+- Lots of things are attached to ENIs and not instances: Security groups, lots of IP stuff, Source/Destination checks
+- You can detach secondary ENIs and move them to different instances
+- ENIs contain...
+-- Primary Private IPv4 address
+-- Secondary Private IPv4 address
+-- Optionally, 1 public IPv4 address
+-- Optionally, 1 or more Elastic IP addresses
+
+### Elastic IP address
+Allocated to your AWS account. If Elastic IP assigned, it removes the Public IPv4 and replaces with the Elastic IP
+
+EXAM: If you assign Elastic IP and remove it, can you get the original, replaced IPv4 adddress back? NO, you get a different one back
+EXAM: Secondary ENIs + MAC addresses = Licensing that can move between instances
+EXAM: Multi-homed (subnets) Management & Data: An instance with an ENI in two different subnets (maybe use one for management and one for data)
+EXAM: Security Groups are attached to ENIs, not instances. Different rules needed for different groups? Set up multiple ENIs with SGs on each
+EXAM: THE OPERATING SYSTEM NEVER SEES THE PUBLIC IPv4; it's configured on the ENI
+EXAM: IPv4 Public IPs are DYNAMIC... Stop/Start instance means IP de-allocation/changes. Restarting instance maintains same IP. To avoid this, assign Elastic IP address
+EXAM: Public DNS given to the instance for the public IPv4 IP address resolves to the PRIMARY PRIVATE IPv4 address from within the VPC. This happens so that if you've got instance-to-instance communication, it never leaves the VPC. Outside the VPC, DNS will resolve to the PUBLIC address
+
+
+## DEMO - Manual Install of Wordpress on EC2
+Use EC2, install MariaDB, Apache & libraries and then download and install wordpress.
