@@ -2231,5 +2231,40 @@ EXAM: IPv4 Public IPs are DYNAMIC... Stop/Start instance means IP de-allocation/
 EXAM: Public DNS given to the instance for the public IPv4 IP address resolves to the PRIMARY PRIVATE IPv4 address from within the VPC. This happens so that if you've got instance-to-instance communication, it never leaves the VPC. Outside the VPC, DNS will resolve to the PUBLIC address
 
 
-## DEMO - Manual Install of Wordpress on EC2
+## DEMO - Manual Install of Wordpress on EC2 - NOTE-INCOMPLETE DEMO, IT BROKE 
 Use EC2, install MariaDB, Apache & libraries and then download and install wordpress.
+- Learning how NOT to do things through a manual installation
+
+Steps:
+1. 1-Click Deployment in lesson > Wait for stack to hit CREATE COMPLETE
+2. Install WP: EC2 > Instances Running > right-click A4L, Connect, Instance Connect
+3. Create Variables in Console > 
+DBName='a4lwordpress'
+DBUser='a4lwordpress'
+DBPassword='4n1m4l$4L1f3'
+DBRootPassword='4n1m4l$4L1f3'
+> Paste each, press Enter, paste the next, Enter
+4. Install system software - including Web and DB: `sudo yum install -y mariadb-server httpd wget` > install PHP/MariaDB `sudo amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2`
+5. Web and DB Servers Online - and set to startup: 
+sudo systemctl enable httpd >
+sudo systemctl enable mariadb >
+sudo systemctl start httpd >
+sudo systemctl start mariadb
+6. Set Mariadb Root Password: `mysqladmin -u root password $DBRootPassword`
+7. Install Wordpress: `sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html` > `cd /var/www/html` > `sudo tar -zxvf latest.tar.gz` (to extract tar file) > `sudo cp -rvf wordpress/* .` (copy data from WP file to current file '.') > `sudo rm -R wordpress` > `sudo rm latest.tar.gz`
+8. Configure Wordpress: 
+sudo cp ./wp-config-sample.php ./wp-config.php (rename template config file to be actual) > 
+sudo sed -i "s/'database_name_here'/'$DBName'/g" wp-config.php (search and replace to update config file > 
+sudo sed -i "s/'username_here'/'$DBUser'/g" wp-config.php >
+sudo sed -i "s/'password_here'/'$DBPassword'/g" wp-config.php >
+sudo chown apache:apache * -R (making sure web server has access to all file folders, owned by apache)
+9. Create Wordpress DB: 
+echo "CREATE DATABASE $DBName;" >> /tmp/db.setup (create WP DB) >
+echo "CREATE USER '$DBUser'@'localhost' IDENTIFIED BY '$DBPassword';" >> /tmp/db.setup >
+echo "GRANT ALL ON $DBName.* TO '$DBUser'@'localhost';" >> /tmp/db.setup >
+echo "FLUSH PRIVILEGES;" >> /tmp/db.setup >
+mysql -u root --password=$DBRootPassword < /tmp/db.setup
+sudo rm /tmp/db.setup
+*** Somewhere this bullshit fucked up and the system couldn't see tmp/db.setup, then it could, so the commands got duplicated
+**** Useless demo to show how annoying it is to do manually. Fucking up was a great example of dont do it this way
+Clean up Account: CFN > delete stack
