@@ -2105,6 +2105,7 @@ Provisioned IOPS SSD — Provides high performance for mission-critical, low-lat
 - Size-to-performance ratio maximums: io1 50IOPS/GB, io2 500IOPS/GB, io2 Block Express 1000IOPS/GB
 - Per Instance Performance restriction: the max performance between the EBS svc and an EC2 instance
 - WOW FUCKING NUMBERS EVERYWHERE (all the specs for Provisioned IOPS): https://imgur.com/a/zYQk7G1
+
 EXAM: Most consistent low latency and jitter. 
 EXAM: Prov.IOPS for sub-millisecond latency, consistent latency, and higher performance.
 
@@ -2370,3 +2371,38 @@ Right-click instance > Instance Settings > Change Termination Protection > Enabl
 
 
 ## EC2 - Horizontal & Vertical Scaling
+Two ways which systems have to deal with increasing or decreasing user-side load. Each has pros and cons but handles the act of scaling radically differently.
+- Adding or removing resources from a system
+
+### Vertical Scaling
+Resizing an EC2 instance when you scale, which can cause DOWNTIME. Can only scale during pre-agreed times, like outage windows, which can cause DISRUPTION
+CONS: Larger instances carry a premium. There is an upper cap on performance; instance size
+PROS: No app modification required. Works for ALL applications, even monoliths (since it all runs on one instance)
+
+### Horizontal Scaling
+Instead of increasing the size of the instance, HS adds more instances.
+- Many copies of the instance running together and sharing the load; need LOAD BALANCER
+- It's all about SESSIONS (state of your interaction with a session, like browsing YouTube). With HS, sessions don't work great since you move between instances during your interaction
+CONS: Requires off-host sessions to save Session data. HS instances are 'dumb' instances
+PROS: Balances / Evens out the load. No disruption while scaling, even when scaling down. No real limit to scaling horizontally. Often less expensive (since using many small instances). More granular; can increase in smaller increments.
+
+
+## EC2 - Instance Metadata - EXAM
+Instance metadata is data about your instance that you can use to configure or manage the running instance. Instance metadata is divided into categories, for example, host name, events, and security groups.
+- EC2 svc provides data to instances. Accessible to all instances.
+
+
+EXAM: IP Address to access Instance Metadata: 169.254.169.254
+- URL http://169.254.169.254/latest/meta-data/
+EXAM: Meta data service is NOT AUTHENTICATED and NOT ENCRYPTED; anyone who can connect to an instance and gain access to Linux Shell can access meta data
+
+### DEMO - Instance Metadata
+1. 1-Click Deploy. 2600:1f18:5421:7603:dc5e:6920:45eb:8f84
+Commands for EC2 Connect session: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0009-aws-associate-ec2-instance-metadata/lesson_commands.txt
+2. Download Instance Metadata functionality: 
+- wget http://s3.amazonaws.com/ec2metadata/ec2-metadata (download)
+- chmod u+x ec2-metadata (make usable)
+- ec2-metadata --help (see list of commands)
+
+EXAM: Never within lifecycle of instance is the public IPv4 address within the O/S. Remember, the internet gateway handles the public IPv4
+- Can use meta data commands to make public IP visible
