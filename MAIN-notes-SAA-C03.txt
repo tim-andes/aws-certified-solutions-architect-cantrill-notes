@@ -2047,7 +2047,7 @@ These items don't exist in isolation. IOPS is like speed of engine a racecar run
 ** Ex. 16KB IO block size x 100IOPS = 1.6MB/s throughput
 
 
-## EBS Service Architecture
+## EC2 - EBS Service Architecture
 Amazon Elastic Block Store (Amazon EBS) provides block level storage volumes for use with EC2 instances. EBS volumes behave like raw, unformatted block devices. You can mount these volumes as devices on your instances. EBS volumes that are attached to an instance are exposed as storage volumes that persist independently from the life of the instance. You can create a file system on top of these volumes, or use them in any way you would use a block device (such as a hard drive).
 - EBS can be encrypted using KMS
 - When you attach a volume to an EC2 instance, the instance sees a Block Device, so raw storage.
@@ -2064,7 +2064,7 @@ EBS is AZ-based. So, with two AZs you have two separate EBSs. Same as EC2 hosts-
 - For Global Resilience on volumes, copy snapshots over to different regions
 
 
-## EBS Volume Types 
+## EC2 - EBS Volume Types 
 General Purpose SSD — Provides a balance of price and performance. We recommend these volumes for most workloads.
 - Volumes can very in size from 1GB -> 16TB
 - When created, a volume is given an I/O credit allocation
@@ -2094,7 +2094,7 @@ General Purpose SSD — Provides a balance of price and performance. We recommen
 - "Fills at the rate of Baseline Performance"... what does this mean? Every volume has baseline performance based on size, with a minimum
 -- IO Bucket bills with minimum of 100 IO Credits per second REGARDLESS OF VOLUME SIZE
 
-## EBS Volume Types - Provisioned IOPS (io1, io2, io2 Block Express)
+## EC2 - EBS Volume Types - Provisioned IOPS (io1, io2, io2 Block Express)
 Provisioned IOPS SSD — Provides high performance for mission-critical, low-latency, or high-throughput workloads.
 - Three types of provisioned IOPs SSD: io1, io2, io2 Block Express
 - IOPS are configurable independent of volume size and designed for super high-performance situations
@@ -2109,7 +2109,7 @@ EXAM: Most consistent low latency and jitter.
 EXAM: Prov.IOPS for sub-millisecond latency, consistent latency, and higher performance.
 
 
-### EBS Volume Types - HDD-Based*
+### EC2 - EBS Volume Types - HDD-Based*
 * Slower, only for specific situations
 Types:
 Throughput Optimized HDD (st1) — A low-cost HDD designed for frequently accessed, throughput-intensive workloads. For sequentially accessed data like streaming
@@ -2120,7 +2120,7 @@ Cold HDD (sc1) — The lowest-cost HDD design for less frequently accessed workl
 HDD Based EBS Volume Type METRICS: https://imgur.com/a/EcGVrx8
 
 
-## Instance Store Volumes - Architecture
+## EC2 - Instance Store Volumes - Architecture
 An instance store provides TEMPORARY block-level storage devices for your instance. This storage is located on disks that are physically attached to the host computer. Instance store is ideal for TEMPORARY storage of information that changes frequently, such as buffers, caches, scratch data, and other temporary content, or for data that is replicated across a fleet of instances, such as a load-balanced pool of web servers.
 
 An instance store consists of one or more instance store volumes exposed as block devices. The size of an instance store as well as the number of devices available varies by instance type.
@@ -2166,7 +2166,7 @@ TL;DR EBS Volume VS Instance Store
 SSD: General Purpose (gp2, gp3), Provisioned IOPS SSD volumes (io1, io2, io2 Block Express)
 HDD: st1, sc1
 
-## EBS Snapshots, Restore & Fast Snapshot Restore (FSR)
+## EC2 - EBS Snapshots, Restore & Fast Snapshot Restore (FSR)
 - EBS Snapshots are backups of data consumed within EBS Volumes - Stored on S3.
 - Snapshots are incremental, the FIRST COPY being a full backup - and any future snapshots being incremental. No massive risk of losing incremental backups (each increment is self-sufficient)
 - Snapshots can be used to migrate data to different availability zones in a region, or to different regions of AWS.
@@ -2182,7 +2182,7 @@ EXAM: Up to 50 FSRs per region. Set on the Snap & AZ, so 50 between AZs
 EXAM: FSR costs extra
 
 
-## DEMO - EBS Volumes
+## DEMO - EC2 -  EBS Volumes
 Commands for Terminal: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0004-aws-associate-ec2-ebs-demo/lesson_commands.txt
 1. Create an EBS Volume: 1-Click Deploy link > Create Stack > EC2 EBS > Create Volume > select GP2, 10 GiB size, AZ us-east-1a, tag: kay "Name" value "EBSTestVolume" > Create
 2. Mount it to an EC2 instance: Select new EBS Volume > Actions: Attach Volume > Choose Instance1 > Attach
@@ -2197,7 +2197,7 @@ Commands for Terminal: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedem
 * On Instance Store Volumes, Instance reboot does not cause the data to be lost or moving to new host, but a Stop/Start changes hosts and you lose data
 
 
-## EBS Encryption
+## EC2 - EBS Encryption
 EBS Encryption provides AT REST encryption for volumes and snapshots.
 - Uses KMS: AWS/ebs Keys or Customer Managed Keys
 - Uses DEK
@@ -2208,7 +2208,7 @@ EXAM: There is NO WAY To remove an encryption from a volume, unless you clone da
 EXAM: O/S is not aware of the encryption (no performance loss)
 
 
-## Networks Interfaces, Instance IPs and DNS
+## EC2 - Networks Interfaces, Instance IPs and DNS
 Elastic Network Interfaces (ENIs) which can be allocated to EC2 instances - and the DNS, public, private and elastic IPs which can be assigned to those ENIs
 - Each EC2 Instance starts with one ENI (primary ENI). You can attach more ENI's, but to different subnets
 - Lots of things are attached to ENIs and not instances: Security groups, lots of IP stuff, Source/Destination checks
@@ -2219,7 +2219,7 @@ Elastic Network Interfaces (ENIs) which can be allocated to EC2 instances - and 
 -- Optionally, 1 public IPv4 address
 -- Optionally, 1 or more Elastic IP addresses
 
-### Elastic IP address
+### EC2 - Elastic IP address
 Allocated to your AWS account. If Elastic IP assigned, it removes the Public IPv4 and replaces with the Elastic IP
 
 EXAM: If you assign Elastic IP and remove it, can you get the original, replaced IPv4 adddress back? NO, you get a different one back
@@ -2231,7 +2231,7 @@ EXAM: IPv4 Public IPs are DYNAMIC... Stop/Start instance means IP de-allocation/
 EXAM: Public DNS given to the instance for the public IPv4 IP address resolves to the PRIMARY PRIVATE IPv4 address from within the VPC. This happens so that if you've got instance-to-instance communication, it never leaves the VPC. Outside the VPC, DNS will resolve to the PUBLIC address
 
 
-## DEMO - Manual Install of Wordpress on EC2 - NOTE-INCOMPLETE DEMO, IT BROKE 
+## DEMO - EC2 -  Manual Install of Wordpress on EC2 - NOTE-INCOMPLETE DEMO, IT BROKE 
 Use EC2, install MariaDB, Apache & libraries and then download and install wordpress.
 - Learning how NOT to do things through a manual installation
 
@@ -2270,31 +2270,103 @@ sudo rm /tmp/db.setup
 Clean up Account: CFN > delete stack
 
 
-## Amazon Machine Image (AMI)
+## EC2 - Amazon Machine Image (AMI)
 Amazon Machine Images (AMI) are the images which can create EC2 instances of a certain configuration. In addition to using AMI's to launch instances, you can customize an EC2 instance to your bespoke business requirements and then generate a template AMI which can be used to create any number of customized EC2 instances.
-- AMIs are used to launch EC2 instances, even the Default instance launch is used via AMI. AMI's can be AWS or Community Provided
+- AMIs are used to launch EC2 instances, even the Default EC2 instance launch is used via AMI. AMI's can be AWS or Community Provided
 - Marketplace AMIs are available
 - AMIs are REGIONAL... Unique ID for each AMI in each region Eg. "ami-0a887...."
 - AMI controls permissions (scope: Public, Your Account, Specific Accounts)
 - Not only can you create EC2 Instance from AMI, can create AMI from EC2 instance you want to template
-- BILLING: billed for the storage cost... EBS snapshots contained
+- BILLING: billed for the storage cost... the data of the EBS snapshots contained
 
 AMI Lifecycle: 
-1. Launch: AMI launches EC2 instance. 
-2. Configure: Can take launched instance and provide customizations (Eg. O/S, instance with config'd volumes, etc). 
-3. Create Image: Can create an AMI from your configured/customized Instance (make a template)
-4. Launch: Launch new instance with templace AMI
+1. Launch Instance: AMI launches EC2 instance. 
+2. Configure Instance: Can take launched instance and provide customizations (Eg. O/S, instance with config'd volumes, etc). 
+3. Create New AMI: Can create an AMI from your configured/customized Instance (make a template)
+4. Launch NEW Template instance: Launch new instance with templace AMI
 
 EXAM: AMI = ONE REGION. Only works in that region
 EXAM: AMI Baking: Creating an AMI from a configured instance + application
 EXAM: AMI CAN NOT be edited. Instead, launch instance, change configs, make new AMI
-EXAM: AMI CAN be coped between regions (includes its EBS Volume Snapshots)
-EXAM: Default AMI permissions: Default is your account only. (Can be private, public, or greant access to specific accounts)
+EXAM: AMI CAN be COPIED between regions (includes its EBS Volume Snapshots)
+EXAM: Default AMI permissions: Default is your account only. (Can be private, public, or grant access to specific accounts)
 
 
-## DEMO - Creating A4L AMI (AMI Baking)
+## DEMO - EC2 -  Creating A4L AMI (AMI Baking)
 Create WP EC2 instance. Improve EC2 login screen. Create AMI from custom instance and deploy a new instance.
 
 Steps: 
 1. Set up WP Instance: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0007-aws-associate-ec2-ami-demo/lesson_commands.txt > Create Stack
-NOTE: This bullshit tutorial also broke like the previous one. Submitted a ticket
+NOTE: This bullshit tutorial also broke like the previous one. Submitted a ticket. Cantrill says it works
+
+
+## EC2 Purchase Options (Launch Types)
+ON-DEMAND: Default/Shared. Per second billing. Resources like consume capacity bill regardless of instance state. Price defined up front, no discounts
+-- Suitable for short term workloads, or unknown workloads
+
+SPOT: Spot pricing is AWS selling unused EC2 Host Capacity for up to 90% discount. Spot price based on the space capacity at a given time
+-- Customer sets max price they're willing to pay. If a Spot price exceeds your max willing payment, you'll lose the Spot
+-- NEVER use a Spot for workloads which can't tolerate interruptions
+-- Best for things that are non-time critical. Anything which can tolerate interruption and just be rerun. Anything that has a bursty capacity need. 
+
+RESERVED: Form a part of most larger deployments in AWS. For long-term, consistent usage of EC2. Purchase a reservation to remove/reduce the per second price.
+-- An unused reservation is still billed. Can be locked to AZ or region. Partial coverage of a larger instance, not billed for full thing.
+-- Reservations terms: 1 year or 3 years. You pay for the entire term up front (no per/s fee, greatest discount of all reserved options). Or Partial Upfront, or No-Upfront (per/s fee)
+-- For when you need lowest cost, consistent usage, and can't tolerate any interruption
+
+DEDICATED INSTANCES: Instances run on an EC2 host that you don't own or share. Extra charges for instances, but dedicated hardware
+-- Fees: 1 off hourly fee for any regions using dedicated instances. Fee for the instances themselves
+-- For when you can't share infrastructure
+
+DEDICATED HOST: EC2 host allocated to you in its entirety. You need to manage capacity, however, and unused capacity is wasted. 
+-- 'Host Affinity' links instances to hosts
+-- For Strict Licensing requirements. Reason to use this purchase option: For socket and core licensing requirements
+-- You pay for the HOST, no instance charges. 
+
+EXAM: On demand, reserved, spot
+
+
+## EC2 - Reserved Instances - The Rest
+Scheduled Reserved Instances, the differences between zonal and regional reservations and on-demand capacity Reservations. For if you need access to the cheapest EC2 that runs 24/7/365.
+
+### Scheduled Reserved Instances: For long term useage which doesn't run constantly. Eg. Batch processing running daily for 5 hours. Eg 2 weekly data, like every friday for 24 hours
+- DOES NOT support all instance types
+- 1,200 hours min per year (100 hours per month)
+- 1 year minimum
+
+### Zonal: Only applies to one Availability Zone, providing billing discounts and capacity reservation in that one AZ
+- 1 or 3 year term
+
+### Regional: Provides a billing discount for valid instances launched in any AZ in that region
+- While flexible, they don't reserve capacity within an AZ, which is risky during major faults when capacity can be limited
+- 1 or 3 year term
+
+### On-Demand Capacity Reservations: Can be booked to ensure you always have access to capacity in an AZ when you need it, but at FULL ON-DEMAND price.
+- NO TERM LIMITS, but you pay whether or not you use it
+
+### Savings Plan: Kind of like a reserved instance purchase, but instead of particular type of instance, it's a 1 to 3 year commit to AWS in terms of hourly spend. Eg. Minimum spend 20$/hr for 1 or 3 years, you get a reduction in price. If you go above your savings plan ($20), you begin paying 
+- Can make a reservation of general compute amounts, 60% discount
+- EC2 savings plan, which must be used for EC2 but 72% discount
+- General Compute valid for things like EC2, fargate, lambda. These products have both on-demand rate and savings plan rate
+
+
+## EC2 - Instance Status Checks & Auto Recovery
+Amazon EC2 performs automated checks on every running EC2 instance to identify hardware and software issues. You can view the results of these status checks to identify specific and detectable problems.
+
+You can create an Amazon CloudWatch alarm that monitors an Amazon EC2 instance and automatically recovers the instance if it becomes impaired due to an underlying hardware failure or a problem that requires AWS involvement to repair. 
+- Terminated instances cannot be recovered. 
+- A recovered instance is identical to the original instance, including the instance ID, private IP addresses, Elastic IP addresses, and all instance metadata
+
+### Short Demo - When you first start an instance, these are the "2/2 checks passed"
+Each of these checks is a separate set of tests.  First, system status check. Second, instance status check.
+- If there's a failure, you can set Auto Recover and other actions. Other actions like setting notification alarms (you can include actions in this alarm; recover, reboot, stop, terminate)
+- Auto-Recovery ONLY works on EBS Volumes, not instance store
+
+
+## DEMO - EC2 - Shutdown, Terminate & Termination Protection
+Right-click instance > Instance Settings > Change Termination Protection > Enable
+- role separation: can permit users to disable termination protection, and permit users to terminate
+- Error if not permitted: "Failed to terminate instance: The instance [id] may not be terminated. Modify its 'disableApiTermination' instance and try again"
+
+
+## EC2 - Horizontal & Vertical Scaling
