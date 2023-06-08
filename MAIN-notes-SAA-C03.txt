@@ -2406,3 +2406,12 @@ Commands for EC2 Connect session: https://learn-cantrill-labs.s3.amazonaws.com/a
 
 EXAM: Never within lifecycle of instance is the public IPv4 address within the O/S. Remember, the internet gateway handles the public IPv4
 - Can use meta data commands to make public IP visible
+
+
+
+# CONTAINERS AND ECS
+
+## Introduction to Containers
+Another type of compute, container computing. Reminder, Virtualization is multiple O/S's operating on a single collection of hardware (guest O/S's). Containerization improves on Virtualization by aggregating and avoiding duplicating O/S's on different Virtual Machines in a system.
+- With containerization, you have Host Hardware at the bottom, Host O/S on that, then a Container Engine (think Docker) atop the Host O/S. Now apps/whatever can run within isolated containers in the Container Engine. Each app no longer requires a full O/S, so they run lighter and allow more apps running on single piece of hardware
+- Container is a running copy of a Docker Image. Similar to how an EC2 instance is a running copy of an EBS Volume. Docker Images are set up in layers which are read only, changes to layers are tracked using differential architecture (only tracks changes from 1 layer to another)
