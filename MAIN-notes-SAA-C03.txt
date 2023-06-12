@@ -2441,3 +2441,41 @@ docker login --username=YOUR_USER
 docker images
 docker tag IMAGEID YOUR_USER/containerofcats
 docker push YOUR_USER/containerofcats:latest
+
+
+## ECS - Elastic Container Service - Concepts
+ECS is to containers as EC2 is to virtual machines. A managed container-based compute service
+- Runs in two modes 1. EC2 2. Fargate
+- ECS let's you create a cluster. A Cluster is where you container runs from. 
+- Elastic Container Registry is the ECS Container Registry
+- Container Definition: Defines Images and Ports
+- Task Definition: A self contained application; the app as a whole. Stores a Task Role, an IAM Role. 
+- Task Role: IAM Role which the TASK assumes
+EXAM: Task Roles are the best practice way giving containers within ECS permission to interact with AWS Resources
+- ECS Service. Config'd with Service Definition: Tells how a task will scale and determines high availability. Can use load balancer. Restarts.
+
+## ECS - Cluster Mode
+ECS is capable of running in EC2 mode or Fargate mode. EC2 mode deploys EC2 instances into your AWS account which can be used to deploy tasks and services. 
+- With EC2 mode you pay for the EC2 instances regardless of container usage. 
+- Fargate mode uses shared AWS infrastructure, and ENI's which are injected into your VPC. 
+- You pay only for container resources used while they are running.
+
+The Two Modes when running ECS: EC2 Mode, Fargate Mode
+- Main differentiator: What you manage VS what AWS manages
+
+### EC2 Mode
+- Creates EC2 instances as Container Hosts; You'll be paying for these Hosts/Instances
+- EC2 Mode for when you want to use containers in your infrastructure but you NEED to manage container host capacity and availability
+
+### Fargate Mode
+- No management of EC2 instances as Container Hosts; no servers to manage.
+- Not paying for EC2 instances.
+- The main difference is how containers are Hosted: Fargate Shared Infrastructure instead of EC2 instances.
+-- Tasks / Services run from the Shared Insfrastructure and are injected in
+- Only pay for the container Resources that you consume
+
+EXAM: When to use EC2 vs ECS (EC2) vs Fargate
+- EC2 VS ECS. Containers? ECS. Containers great for isolating applications
+- EC2? Large consistent workload, price conscious, make use of existing reservations
+- Overhead conscious? Fargate. Less mgmt overhead. 
+- Small / Burst / Batch / Periodic workloads? Fargate (since you only pay for consumed resources)
