@@ -2414,4 +2414,30 @@ EXAM: Never within lifecycle of instance is the public IPv4 address within the O
 ## Introduction to Containers
 Another type of compute, container computing. Reminder, Virtualization is multiple O/S's operating on a single collection of hardware (guest O/S's). Containerization improves on Virtualization by aggregating and avoiding duplicating O/S's on different Virtual Machines in a system.
 - With containerization, you have Host Hardware at the bottom, Host O/S on that, then a Container Engine (think Docker) atop the Host O/S. Now apps/whatever can run within isolated containers in the Container Engine. Each app no longer requires a full O/S, so they run lighter and allow more apps running on single piece of hardware
-- Container is a running copy of a Docker Image. Similar to how an EC2 instance is a running copy of an EBS Volume. Docker Images are set up in layers which are read only, changes to layers are tracked using differential architecture (only tracks changes from 1 layer to another)
+- Container is a running copy of a Docker Image, a Docker Container adds read/write capability to Docker Image. Similar to how an EC2 instance is a running copy of an EBS Volume. Docker Images are set up in layers which are read only, changes to layers are tracked using differential architecture (only tracks changes from 1 layer to another)
+- Collections of Container Images are kep in a Container Registry Eg. Docker Hub
+- Dockerfiles used to create Docker Images
+- Great substitute for VMs if you don't need a full O/S for the container
+
+## DEMO - Creating 'container of cats' Docker Image
+Create a docker image containing the 'container of cats' application.
+- Prereq: Create a DockerHub account
+1. 1 Click Deploy.
+2. Nav to new EC2 instance > Connect > Session Manager
+3. Commands https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0030-aws-associate-ec2docker/lesson_commands.txt
+- `sudo amazon-linux-extras install docker` - Install Docker
+- `sudo service docker start` - Start Docker
+- `docker ps` - Test Docker. Expect a permissions error
+- `sudo usermod -a -G docker ec2-user` - Add permissions
+- `exit` and reopen a Session Manager
+- `sudo su - ec2-user` - Log in as EC2 user
+- `docker ps` now works
+- `cd container`, `ls -la`
+- `docker build -t containerofcats .` - Build container image
+- `docker images --filter reference=containerofcats` - Show images in this container
+- `docker run -t -i -p 80:80 containerofcats` - Map port 80 on container to port 80 on ec2 instance with cats image
+- Log in to docker hub
+docker login --username=YOUR_USER
+docker images
+docker tag IMAGEID YOUR_USER/containerofcats
+docker push YOUR_USER/containerofcats:latest
