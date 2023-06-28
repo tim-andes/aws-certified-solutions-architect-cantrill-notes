@@ -61,7 +61,7 @@ Many students confuse accounts with users inside the accounts. An org may use on
 
 At a high level, AWS Account is a container for Identities (users) (which you log in with) and Resources (which you provision).
 
-When creating an AWS account need need to provide:
+When creating an AWS account you need to provide:
 - Unique email address (for EACH AWS account); this creates a special type of identity: the account root user
 - Provide a payment method, generally a Credit Card (No need to spend: You can choose a Free tier and create a zero-spend budget)
 
@@ -156,11 +156,11 @@ Steps:
 8. Optional: Update alternate contacts in Account
 
 ### IAM (Identity and Access Management) Basics
-We first need to understand the identity situation. Accounts created have Root user will full access. AWS account and Root user can be thought of as the same thing. 
+We first need to understand the identity situation. Accounts created have Root user will have full access. AWS account and Root user can be thought of as the same thing. 
 
 Generally, you want to give access to other people in the companies, but with restricted access -- ONLY GIVE THEM PERMISSIONS REQUIRED TO DO A JOB, called "Least Priveleged Access". 
 
-EXAM: IAM is a globally resilient service, so any data is always secure across all AWS regions.
+EXAM: IAM is a GLOBALLY RESILIENT service, so any data is always secure across all AWS regions.
 
 Any IAM's in an account are completely separate from any other accounts. IAM as a service can do as much as the Root user if given all permissions, exception being some billing stuff (but that can be activated).
 
@@ -175,9 +175,9 @@ Users: Humans or applications that need access to your AWS account. An applicati
 
 Group: Collections of related users. All dev team users, finance, HR, etc.
 
-Roles: Can be used by AWS Services or if you want to grant external access to your account. Used to grant access to services in your account to an uncertain number of entities. EX: If you want all EC2 instances in your account to access the Simple Storage Service, you can create a role which grants access and allow instances to use that role. 
+Roles: Can be used by AWS Services or if you want to grant external access to your account. Used to grant access to services in your account to an uncertain number of entities. Eg. If you want all EC2 instances in your account to access the Simple Storage Service (S3), you can create a role which grants access and allow instances to use that role. 
 
-TIP: ROLES used when the number of entities needing access is *uncertain*.
+TIP: ROLES should be used when the number of entities needing access is *uncertain*.
 
 ### IAM Policy or Policy Document
 Objects or documents to be used to Allow or Deny access to AWS services, only when attached to users, groups, or roles.
@@ -286,12 +286,12 @@ TIP: If after you Configure CLI with credentials, you can delete the credential 
 ## AWS FUNDAMENTALS
 
 ### AWS Public VS Private Services
-Architecture of both Public/Private Services. "Private"/"Public" refer to networking only. Private runs within VPC, Public is s3
+Architecture of both Public/Private Services. "Private"/"Public" refer to networking only. Private runs within VPC, Public is S3
 - Both require Permissions / Configuration
 3 Zones:
 - 1. Public Internet Zone
-- 2. AWS Private Zone: VPC's are Virtual Private Clouds. VPCs are isolated unless configured otherwise. Can attach IGW (internet gateway) for access to internet
-- 3. Third zone, AWS Public Zone (runs between Public and Private zones). It's a network connected to the Public internet
+- 2. AWS Private Zone: VPC's are Virtual Private Clouds. VPCs are isolated unless configured otherwise; can attach IGW (internet gateway) for access to internet
+- 3. AWS Public Zone (runs between Public and Private zones). It's a network connected to the Public internet
 
 #### AWS Public Service: What is true of an AWS Public Service? 1. Located in the AWS Public Zone 2. Anyone can connect, but permissions are required to access the service
 #### AWS Private Service: What is true of an AWS Private Service? 1. Located in a VPC 2. Accessibly from the VPC it is located in 3. Accessible from other VPCs or on-premise networks as long as private networking is configured
@@ -308,8 +308,8 @@ Two types of Deployment at global level: 1) AWS Regions, 2) AWS Edge Locations (
 --- 3. Location Control. Performance
 -- Inside regions: You can use Region Code or Region Name. Eg Sygney Australia. RC: ap-southeast-2, RN: Asia Pacific (Sydney)
 
-#### AWS Availability Zone
-Located inside regions. Eg. for Sydney AU: ap-southeast-2a, ap-southeast-2b, ap-southeast-2c. If an issue is only in 1 availability zone (AZ), you'll still have functioning services in the other AZs
+#### AWS Availability Zone (AZ)
+AZ's are located inside regions. Eg. for Sydney AU: ap-southeast-2a, ap-southeast-2b, ap-southeast-2c. If an issue is only in 1 availability zone (AZ), you'll still have functioning services in the other AZs
 
 #### AWS Edge Location: Local distribution points closest to user. Content distribution services, edge computing. Eg. Netflix storing content close as possible to user. Edge locations for fast/efficient data transfer because they're closer to the user. Uses CloudFront
 
@@ -328,13 +328,15 @@ A Virtual Network inside AWS. VPCs are regional services; regionally resilient. 
 - A VPC is 1 account and 1 region, cann't be spread across multiple accounts/regions
 - Private and isolated unless configured otherwise
 - Default VPC (max 1 per region, pre-configured) and Custom VPCs (can have many)
-- Used to connect AWS private networks to on-premise network. Or connecting during multi-cloud deployments
+- Can be used to connect AWS private networks to on-premise network. Or connecting during multi-cloud deployments
+
+EXAM: VPCs are REGIONALLY resilient
 
 #### Default VPC
 There can only be one default VPC per region, and they can be deleted and recreated from the console UI. Unless configured otherwise, VPC is entirely private/isolated. 
 - VPC CIDR: Start and end range of IP addresses VPC can use. If anything needs (and is allowed to) communicate with VPC, it needs to communicate to the VPC CIDR
 - Default VPC only gets 1 CIDR IP range. Can't change it.
-- Default provides Internet Gateway (IGW), Security Group, and NACL
+- Default VPC provides Internet Gateway (IGW), Security Group, and NACL
 - VPC can be subdivided into subnetworks. Each subnet in VPC is located in one AZ. Default VPC has one subnet in each AZ by default
 -- Each subnet uses part of the VPC CIDR range
 -- Default VPC CIDR: always 172.31.0.0/16
@@ -342,6 +344,8 @@ There can only be one default VPC per region, and they can be deleted and recrea
 --- /20 subnet in each AZ in the region. The higher the /#, the smaller the network. /17 is half the size of /16
 
 QUIZ: How many subnets are in a default VPC? Default VPCs always have the same IP range and same '1 subnet per AZ' architecture. # Subnets = # AZ's in region
+
+EXAM: Default VPC CIDR IP? 172.31.0.0/16
 
 ##### Default VPC - Create / Delete
 
@@ -361,6 +365,8 @@ Basically the default compute service of AWS. It allows you to provision Virtual
 - On-Demand Billing, by second or hour
 - Storage Types: Local on-host storage, or network storage via Elastic Block Store (EBS)
 - By default, AWS has a [soft] limit of 20 instances per region
+
+EXAM: EC2 is AVAILABILITY ZONE resilient
 
 #### EC2 instance has attribute called State
 States to Know: Running, Stopped, Terminated
@@ -384,7 +390,6 @@ Image of an EC2 instance
 - Owner - Implicit Allow
 - Explicit - Allow specific AWS accounts
 
-
 ##### AMI includes the following:
 - One or more Amazon Elastic Block Store (Amazon EBS) snapshots, or, for instance-store-backed AMIs, a template for the root volume of the instance (for example, an operating system, an application server, and applications).
 - Launch permissions that control which AWS accounts can use the AMI to launch instances.
@@ -393,6 +398,8 @@ Image of an EC2 instance
 ##### NOT stored in AMI:
 - Instance Settings
 - Network Settings
+
+EXAM: What is NOT stored in an AMI? Instance and Network Settings
 
 Root Volume: AMI contains boot volume of instance, boots O/S
 
