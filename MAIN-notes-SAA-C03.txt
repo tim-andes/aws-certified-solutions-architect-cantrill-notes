@@ -1821,8 +1821,8 @@ A Stateful Firewall is intelligent enough to ID the REQUEST and RESPONSE compone
 
 
 ## Network Access Control Lists (NACLs)
-A network access control list (ACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC. NACL only impacts data crossing the subnet boundary
-- Step through the features of a NACL, the impact of their STATELESS nature and some of the key points to be aware of for the exam.
+A network access control list (ACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC. 
+- NACL only impacts data crossing the subnet boundary
 - NACLs are STATELESS
 - Can EXPLICITLY ALLOW AND EXPLICITLY DENY; you can block specific IPs/IP Ranges associated with bad actors
 - NACLS not aware of Logical Resources. They only allow you to use IP and CIDR ranges, ports and protocols
@@ -1831,7 +1831,7 @@ First, NACLs are associated with Subnets. NACLs work with IB and OB traffic from
 - Each network ACL contains TWO sets of rules. Inbound and Outbound rules/protocols. Rules match the destination (DST) IP/Range or the DST Port, together with the protocol and ALLOW or DENY based on that match
 - NACL response to client requires using the ephemeral port range (chosen at random by client/requester)
 - NACLs cannot be assigned to AWS resources, ONLY subnets
-- Often used together with Security Groups to add explicit to DENY. Using SGs to ALLOW traffic, NACL to DENY
+- Often used together with Security Groups to add an explicit DENY. Using SGs to ALLOW traffic, NACL to DENY
 - Subnet can only have ONE NACL, but a NACL can be associated with many subnets
 
 EXAM: NACLs filter traffic crossing the subnet boundary INBOUND or OUTBOUND. NACL only impacts data crossing the subnet boundary (communications between instances in the SAME subnet is not affected.
@@ -1850,21 +1850,21 @@ Becomes more complex with multi-tiers. Internal communications also required IB/
 Security Groups (SGs) are another security feature of AWS VPC ... only unlike NACLs they are attached to AWS resources, not VPC subnets. SGs offer a few advantages vs NACLs in that they can recognize AWS resources and filter based on them, they can reference other SGs and also themselves. But.. SGs are not capable of explicitly blocking traffic - so often require assistance from NACLs
 - SGs are STATEFUL; if you allow IB/OB request, the response is automatically allowed
 - Major limitation of SGs: no explicit deny. Can be used to allow traffic or NOT Allow traffic (which is an implicit Deny). This means they can't be used to block specific bad actors
--- This is why you use NACLs in conjunction with SGs, because NACLs are used to add th explicit denies
+-- This is why you use NACLs in conjunction with SGs, because NACLs are used to add the explicit denies
 - Supports IP and CIDR, but also allows referencing AWS Logical Resources, including other SGs and ITSELF within rules
 - SGs are NOT attached to Instances/Subnets, they are attached to Elastic Network Interfaces (ENI). An instance has a primary ENI
 
-EXAM: Security groups are attached to NETWORK INTERFACES, not instances/subnets
-EXAM: SGs cannot EXPLICITLY DENY traffic
+EXAM: Security groups are attached to ELASTIC NETWORK INTERFACES (AWS Resources), not instances/subnets
+EXAM: SGs cannot EXPLICITLY DENY traffic, must be paired with NACL to have an Explicit Deny
 
 ### SG - Logical References
 Ex. Within VPC, we have APP and WEB subnets. Both APP and WEB are protected by SGs. External User is accessing web app via port tcp/443, allowing 0.0.0.0/0. Web to App is using tcp/1337. How do you best allow communication between WEB and APP? To take advantage of extra SG features, we could reference the web security group within the APP SG. In this, the Source for the IB Rule on APP is specifically the logical resource reference of the WEB SG
-- EXAM: An SG Reference applies to anything which has the SG attached. When you're referencing an SG from another SG, you're actually referencing any resouces which have the SG associated with them
+- EXAM: An SG Reference applies to anything which has the SG attached. When you're referencing an SG from another SG, you're actually referencing any resources which have the SG associated with them
 
 ### SG - Self Referencing
-Ex. Private Subnet in AWS with ever-changing number of app instances.An IB Rule in each instance can reference can have its own SG referenced, allowing traffic between any other instances with that SG.
+Ex. Private Subnet in AWS with ever-changing number of app instances. An IB Rule in each instance can have its own SG referenced, allowing traffic between any other instances with that SG.
 EXAM: SG Self referencing handles IP changes automatically
-EXAM: Also allows for simplified management of any intra-app communications (Eg. Microsoft Domain Controlls, or apps with high availability within clusters
+EXAM: Also allows for simplified management of any intra-app communications (Eg. Microsoft Domain Controls, or apps with high availability within clusters
 EXAM: SGs cannot EXPLICITLY DENY traffic. Pair with NACL to explicitly deny bad actors
 
 
@@ -1872,7 +1872,7 @@ NOTE: A logical resource is an abstraction that doesn't cost you anything.  It's
 
 
 ## NAT (Network Address Translation) and NAT Gateway
-What is NAT? A process of giving a private resource outgoing access only to the internet. Set of processes which adjusts IP packets by changing their source or destination IP addresses from the private IPs to the Public NAT Gateway IP
+What is NAT? A process of giving a private resource outgoing-only access to the internet. Set of processes which adjusts IP packets by changing their source or destination IP addresses from the private IPs to the Public NAT Gateway IP
 - IGW performs a "Static NAT"; how a resource can be allocated with a public IPv4 address
 - IP Masquerading. A subset of NAT that hides private CIDR Blocks behind ONE IP
 - NAT is many private IPs to one single IP, this is popular as IPv4 addresses are running out. 
@@ -1882,14 +1882,14 @@ What is NAT? A process of giving a private resource outgoing access only to the 
 - Outgoing ONLY access for an IPv6 instance? You need ::/0 Route + "Egress-Only IGW"
 
 AWS can provide NAT services in TWO ways:
-1. EC2 instance config'd with NAT
-2. NAT Gateway - Configured inside VPC
+1. EC2 instance config'd with NAT (cheaper)
+2. NAT Gateway - Configured inside VPC (better)
 
 ### NAT Gateway (we'll use IP Masquerading interchangeably)
 NAT Gateway is provisioned into a PUBLIC subnet (like WEB subnet, in our examples), which can use public IP addresses. The Private Subnet has a route table that can point all its instances to the NAT Gateway within the WEB subnet.
 - NATGW contains a Translation Table, where all required packet data is stored: IP address, src, dst, port #, etc
 - Has to be run from a PUBLIC subnet (obviously). To have Public Subnets, you need an IGW, IPv4 allocation enabled on subnets, and default routes for the subnets pointing at IGW
-- Elastic IPs - NAT Gateways use Elastic IPs. These are IPv4 addresses that are static and don't change. NATG is the only AWS service that uses Elastic IPs
+- Elastic IPs - NAT Gateways use Elastic IPs. These are IPv4 addresses that are static and don't change. NATGW is the only AWS service that uses Elastic IPs
 - NATGW's are an AZ resilient service. To attain Region Resilience, you need a NATGW in EACH AZ, and have a Route Table in each AZ with that NATGW as the target. So, for every AZ you use, you need one NAT Gateway and one Route Table pointing at said NATGW
 
 EXAM: NATGW's are a managed service. Scales to 45 Gbps. 
@@ -1897,6 +1897,7 @@ EXAM: NATGW's Billing: Hourly charge for running it (like 4 cents per hour, and 
 EXAM: FALSE - Exam may suggest 1 NATGW is sufficient, that 1 is regionally resilient. FALSE. If you want regional resilience, you have to deploy NATGW into each AZ you use.
 EXAM: If you want to allow an EC2 instance to function as a NAT instance, Disable SOURCE/DESTINATION CHECKS
 EXAM: NAT/NATGW isn't required/doesn't work with IPv6
+EXAM: NATGW's are AVAILABILITY ZONE RESILIENT. If you want regional resilience, you have to deploy NATGW into each AZ you use.
 
 ### Scenarios where a NAT instance may be preferred over EC2+NATGW:
 - If you value availability, bandwidth, low maintenance, and high performance choose NATGW
@@ -1932,7 +1933,7 @@ Paravirtualization
 Hardware Assisted Virtualization
 SR-IOV
 
-EC2 provides virtualization as a service (IaaS). It is dealing with the process of running more than one O/S on a piece of physical hardware. Within an O/S, parts of it, the kernel run in wha's called Priveled Mode -- meaning it can interact with the system's hardware. Above the O/S are applications that run in User Mode (or un-priveleged mode) (cannot interact with hardware). An app would have to make a SYSTEM CALL to the kernel to interact with hardware. IF anything but the O/S attempts to make a priveleged call, the system will detect and cause a system-wide error, generally crashing the system (or at min the app) <- THIS IS HOW IT WORKS WITHOUT VIRTUALIZATION
+EC2 provides virtualization as a service (IaaS). It is dealing with the process of running more than one O/S on a piece of physical hardware. Within an O/S, parts of it, the kernel run in what's called Priveleged Mode -- meaning it can interact with the system's hardware. Above the O/S are applications that run in User Mode (or un-priveleged mode) (cannot interact with hardware). An app would have to make a SYSTEM CALL to the kernel to interact with hardware. IF anything but the O/S attempts to make a priveleged call, the system will detect and cause a system-wide error, generally crashing the system (or at min the app) <- THIS IS HOW IT WORKS WITHOUT VIRTUALIZATION
 - Virtualization is a single piece of hardware running multiple O/S's
 - Nowadays, with multiple O/S's on a single bit of hardware, all O/S's expect to be priveleged and this conflict can cause crashes -- Virtualization is the solution to this problem
 - Virtualization used to have to be done as software and was slow
@@ -2498,3 +2499,20 @@ Create a Fargate Cluster, create a task and container definition and deploy the 
 2. Create Task Definition (deploy container): Task Definitions > New > Compatibility: Fargate > Next Step > def name "containerofcats", no task role needed, operating system family: linux, task size: 1bg memory, 0.5vCPU > click "Add Container": name "containerofcatsweb", image "docker.io/acantril/containerofcats", Memory Limit Soft 1024, Port Mappings: 80 tcp > Add
 3. Run it: Clusters > allthecats > Tasks tab > Launch type: fargate, OS family: linux, select VPC: Cluster VPC: default selection, subnet: select 2 at random > Create/Add
 4. Cleanup > Stop Task Definition > Task: Actions: Deregister > Cluster: allthecats: Delete
+
+
+## ECR - Elastic Container Registry
+Like Docker Hub but the AWS version. A managed Container Image Registry service
+- Each AWS account has a public and private registry and can have many repositories
+-- Public = Public Read only, R/W requires permissions
+-- Private = Permissions required for any R/O or R/W
+- In each repo you can have many container images
+- Images can have several tags
+
+### Benefits of ECR
+- Integreated with IAM for Permissions
+- Offers security scannings, Basic and Enhanced Scanning (enh. uses Inspector product)
+- Near real-time metrics delivered into CloudWatch
+- Logs API actions into CloudTrail
+- Generates events deliverd to EventBridge
+- Offers Replication (cross region and cross account)
