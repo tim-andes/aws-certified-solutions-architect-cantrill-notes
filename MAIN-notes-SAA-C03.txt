@@ -1969,6 +1969,7 @@ When instances are provisioned into a specfic subnet within a VPC, a primary Ela
 - An Instance runs on a specific host and if you restart the instance, it will stay on that host. An instance will stay on a host unless one of 2 things happens:
 -- 1. If the host fails or is taken down for maintenance by AWS
 -- 2. If an instance is STOPPED, then restarted (different than just restarting)
+
 EXAM: An EC2 Host runs within a SINGLE AZ. They are AZ Resilient.
 EXAM: EC2 Instances are locked inside one sepcific AZ. Same with EBS volumes
 - Migrations to new AZs are 'possible', but it's copying an instance into a new AZ (snapshots and AMIs)
@@ -1991,25 +1992,25 @@ EC2 instance Categories, how to decode the instance type names (family, generati
 - You can select instance type/size for more control
 
 Choosing a different instance type influences a few things...
-- The raw amount of resources you get: virtual CPU, memeory, local storage capacity, and type of storage
+- The raw amount of resources you get: virtual CPU, memory, local storage capacity, and type of storage
 - Resource Ratios
 - Storage and Data Network Bandwidth
 - Influences system architecture and vendor
-- Additional feature and capabilities differ between Instance Types. Ex. allocation of GPUs, certain capacity of FGPAs (no idea what this is)
+- Additional feature and capabilities differ between Instance Types. Ex. allocation of GPUs, certain capacity of field programmable gate arrays (FGPAs)
 
 ### EC2 Instances - Grouped into 5 Main Categories:
 1 - General Purpose (Default): Diverse workloads, equal resource ratios
 2 - Compute Optimized: Designed for media processing, high performance computing, modeling, gaming, ML; access to the latest high performance CPUs. Resource Ratio where more CPU is offered the memory 
 3 - Memory Optimized: Inverse of Compute Optimized. Processing large in-memory datasets (Ex. in-memory caching), some database workloads
 4 - Accelerated Computing: Dedicated GPUs for high scale parallel processing and modeling, custom programmable hardware known as field programmable gate arrays (FGPAs). Accelerated Computing category is often for niche requirements; you'll know when you need this category
-5 - Storage Optimized: Large amounts of super fast, local storage. Massive amounts of IO operations/second, scale out transactional databases, data warehousing, Elasticsearch, analytics workloads. The Storage Optimized  category is great for applicatoins that have serious demands on sequential and random IO.
+5 - Storage Optimized: Large amounts of super fast, local storage. Massive amounts of IO operations/second, scale out transactional databases, data warehousing, Elasticsearch, analytics workloads. The Storage Optimized category is great for applications that have serious demands on sequential and random IO.
 
 ### EC2 Istance Types: Decoding the naming scheme
 Ex. R5dn.8xlarge. <- Example of type of EC2 instance
 - This is known as an Instance Type. If ops team member asks what instance type we need? You'd provide this full name
 - Start letter, R, is the INSTANCE FAMILY
 - 2nd character, 5, is the INSTANCE GENERATION. For example, a C4 would be the 4th generation of the C family of instance. Always select the most recent generation, with exception
-- "8xlarge" is the size of the instance. Sizes: Nano, mirco, small, medium. large, xl, 2xl, 4xl, 8xl, and so on... PRice premium on higher end... often better to scale system with large number of small sizes
+- "8xlarge" is the size of the instance. Sizes: Nano, mirco, small, medium. large, xl, 2xl, 4xl, 8xl, and so on... Price premium on higher end... often better to scale system with large number of small sizes
 - "dn" can vary... this collection of letters between family-generation and size may not always be present. These letters denote add'l capabilities. Ex. 'a' signifies AMD CPUs (you don't need to memorize these letters for the exam)
 
 * Table / Visual of Instance Categories/Types/Details and Notes: https://imgur.com/a/LXpddQS
@@ -2065,10 +2066,13 @@ Amazon Elastic Block Store (Amazon EBS) provides block level storage volumes for
 - When you attach a volume to an EC2 instance, the instance sees a Block Device, so raw storage.
 - EBS volumes appear just like any other storage device to an EC2 instance
 - EBS Volumes are attached to ONE instance at a time. However, can be detached and re-attached to a new instance. They are not lifecycle linked to one instance, they're persistent; if an instance moves to a new EC2 host, the volume follows it. EBS is persistent until you delete the volume (separate from the instance)
-- Snapshot into S3: You can create a backup of a volume with a Snapshot into S3. This can be used to migrate volumes between AZs. Snapshots are now REGIONALLY RESILIENT
+- Snapshot into S3: You can create a backup of a volume with a Snapshot into S3. This can be used to migrate volumes between AZs. 
 - EBS can provision volumes based on different physical storage types: SSD, high-performance SSD, volumes based on mechanical disks, different size volumes, different performance profiles
 - BILLING: Gigabyte/Month metric (and in some cases, performance)
+
 EXAM: Storage is provisioned in ONE AVAILABILITY ZONE; Resilient in that AZ
+EXAM: Snapshots are now REGIONALLY RESILIENT
+
 
 ### EBS Example - 1 region, 2 AZs (AZA, AZB), 1 S3 bucket.
 EBS is AZ-based. So, with two AZs you have two separate EBSs. Same as EC2 hosts--per AZ
@@ -2095,7 +2099,7 @@ General Purpose SSD — Provides a balance of price and performance. We recommen
 - Need more performance? Can pay for up 1o 16,000 IOPS or 1,000 MiB/s
 - GP3 does NOT auto-scale, you have to enable the upgrades
 
-#### IO Credit. When you create a volume (size ranging from 1GB -> 16TB), it is create with an IO credit allocation. 
+#### IO Credit. When you create a volume (size ranging from 1GB -> 16TB), it is created with an IO credit allocation. 
 - An IO is one input/output operation
 - IO credit is a 16KB chuck of data
 - An IOP is one chuck of 16KB in one second
@@ -2116,19 +2120,19 @@ Provisioned IOPS SSD — Provides high performance for mission-critical, low-lat
 - Size: 4BG -> 16TB for io1/io2. io2 Block Express 4GB -> 64TB
 - Size-to-performance ratio maximums: io1 50IOPS/GB, io2 500IOPS/GB, io2 Block Express 1000IOPS/GB
 - Per Instance Performance restriction: the max performance between the EBS svc and an EC2 instance
-- WOW FUCKING NUMBERS EVERYWHERE (all the specs for Provisioned IOPS): https://imgur.com/a/zYQk7G1
+- WOW NUMBERS EVERYWHERE (all the specs for Provisioned IOPS): https://imgur.com/a/zYQk7G1
 
-EXAM: Most consistent low latency and jitter. 
+EXAM: Provisioned IOPS: Most consistent low latency and jitter. 
 EXAM: Prov.IOPS for sub-millisecond latency, consistent latency, and higher performance.
 
 
 ### EC2 - EBS Volume Types - HDD-Based*
 * Slower, only for specific situations
 Types:
-Throughput Optimized HDD (st1) — A low-cost HDD designed for frequently accessed, throughput-intensive workloads. For sequentially accessed data like streaming
-- Big data, data warehouses, log processing
-Cold HDD (sc1) — The lowest-cost HDD design for less frequently accessed workloads. 
-- geared for max economy (lowest EBS cost option) with lowest performance
+1. Throughput Optimized HDD (st1) — A low-cost HDD designed for frequently accessed, throughput-intensive workloads. For sequentially accessed data like streaming
+-- Big data, data warehouses, log processing
+2. Cold HDD (sc1) — The lowest-cost HDD design for less frequently accessed workloads. 
+-- geared for max economy (lowest EBS cost option) with lowest performance
 
 HDD Based EBS Volume Type METRICS: https://imgur.com/a/EcGVrx8
 
@@ -2166,7 +2170,7 @@ REMEMBER ALL OF THIS:
 EXAM: Cost Efficacy? ISV ST1 or ISV SC1. For throughput + streaming? ST1
 EXAM: Boot EC2 instances? NOT st1 or sc1
 EXAM: GP2 / GP3: Has a max performance of 16,000 IOPS
-EXAM: IO1 / IO2: Has max 64,000 IOPS (256,000 IOPS in io2 Block Express) - Max EBS performance with large instance (that is capabile of providing this performance)
+EXAM: IO1 / IO2: Has max 64,000 IOPS (256,000 IOPS in io2 Block Express) - Max EBS performance with large instance (that is capable of providing this performance)
 EXAM: RAID0 + EBS: Has max 260,000 IOPS
 EXAM: Need anything greater than 260,000 IOPS? use ISV, not EBS. *No persistence
 EXAM: EBS Automated Backups? Amazon Data Lifecycle Manager: To automate the creation, retention, and deletion of Amazon EBS snapshots
@@ -2212,7 +2216,7 @@ Commands for Terminal: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedem
 
 ## EC2 - EBS Encryption
 EBS Encryption provides AT REST encryption for volumes and snapshots.
-- Uses KMS: AWS/ebs Keys or Customer Managed Keys
+- Uses KMS: AWS/EBS Keys or Customer Managed Keys
 - Uses DEK
 
 EXAM: AWS Accounts can be set to encrypt by default - Default KMS Key
