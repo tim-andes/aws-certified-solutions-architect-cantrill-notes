@@ -468,7 +468,7 @@ Containers created in a specific AWS region; default place to go to in order to 
 
 # QUIZ: What is true of Simple Storage Service (S3)
 - S3 is an AWS Public Service
-- S3 is an Ojbect Storage System
+- S3 is an Object Storage System
 - Buckets can store an unlimited amount of data
 
 ### DEMO: Creating an S3 Bucket
@@ -614,8 +614,8 @@ QUIZ: Who manages DNS Root Servers? 12 Large Organizations
 QUIZ: Who manages DNS Root Zone? IANA
 QUIZ: A Record = IPv4, AAAA Record = IPv6
 QUIZ: DNS Record type is how the root zone delegates control of .org to the .org registry
-QUIZ: Which type of organisation maintains the zones for a TLD (e.g .ORG)? Registry
-QUIZ: Which type of organisation has relationships with the .org TLD zone manager allowing domain registration? Registrar
+QUIZ: Which type of organization maintains the zones for a TLD (e.g .ORG)? Registry
+QUIZ: Which type of organization has relationships with the .org TLD zone manager allowing domain registration? Registrar
 QUIZ: How many subnets in a default VPC? Equal to the number of Availability Zones in the region the VPC in located in
 
 ### TTL - Time To Live
@@ -645,9 +645,9 @@ Priorities:
 - DENY (explicit), ALLOW (explicit), DENY (implicit)
 
 ### Three types of Policies
-- Inline Policies - JSON policies applied to each IAM account individually. (Manually applying policies to each Identity)
+- 1. Inline Policies - JSON policies applied to each IAM account individually. (Manually applying policies to each Identity)
 - Managed Policies - Created as their own object. You can attach this policy to more than one identity. Best for Common Access Rights
--- AWS managed or Customer managed
+-- 2. AWS managed or 3. Customer managed
 -- Reusable
 -- Low Management Overhead
 When to use Inline Policies? For Special or exceptional Allows or Deny's
@@ -810,8 +810,8 @@ First, take a single / standard AWS account (not within an org) and with this cr
 
 Using this management account, you can invite other standard AWS Accounts into the org. As they are existing accounts, they need to approve the Org invites. If they approve, they become part of the Org. Once these Standard Accounts join the Org, they become Member Accounts
 
-### AWS Org - Hierarchy of Containers (which contain Members and other containers
-Structure in AWS Orgs is hierarchical (upside-down tree). Top of hierarchy is Root Container of Organization (not to be confused with Account Root User)--this is a container for AWS Accounts, Mgmnt and Member Accounts. This Org Root container also can contain other containers, known as Organizational Units (OU's): can contain AWS accounts or other Organizational Units
+### AWS Org - Hierarchy of Containers (which contain Members and other containers)
+Structure in AWS Orgs is hierarchical (upside-down tree). Top of hierarchy is Root Container of Organization (not to be confused with Account Root User)--this is a container for AWS Accounts, Mgmt and Member Accounts. This Org Root container also can contain other containers, known as Organizational Units (OU's): can contain AWS accounts or other Organizational Units
 
 #### Types of Accounts relating to AWS Orgs
 - Management Account / Master Account. Account that created the AWS Organization and invites Account Members
@@ -905,6 +905,8 @@ Update the structure within the organization, add hierarchy (Root, Dev OU, Prod 
 ### Cloudwatch - What it looks like
 First, it's a Regional Service. Starting point: Logging Sources; external compute, DB's, external APIs, AWS services. Log Events are created from data from logging sources. Log Events are stored inside Log Stream (an ordered sequence of log events from the same source). Then a Metric Filter takes Log Group/Stream data, distills metrics which can bet set with alarm notifications
 
+EXAM: CloudWatch is a REGIONALLY resilient service
+
 ### Cloudwatch - Vocab
 - Log Group: Container for multiple log streams for the same type of logging. Log Group also stored config settings (retention, permissions)
 - Log Stream: An ordered sequence of log events from the same source. Log Streams inherit Log Group config settings.
@@ -913,7 +915,7 @@ First, it's a Regional Service. Starting point: Logging Sources; external comput
 
 
 ## CloudTrail
-- CloudTrail Is a product which logs API actions/calls and account events. Eg. Stop instance, change security group, delete s3 bucket--all logged.
+- CloudTrail Is a product which logs API actions/calls and account events. Eg. Stop instance, change security group, delete S3 bucket--all logged.
 - Very often used to diagnose security or performance issues, or to provide quality account level traceability
 - Enabled by default in AWS accounts and logs free information with a 90 day retention
 - It can be configured to store data indefinitely in S3 or CloudWatch Logs
@@ -926,7 +928,7 @@ First, it's a Regional Service. Starting point: Logging Sources; external comput
 -- All-Regions Trail: Collection of Trails within every AWS Region, but logged as one trail. If AWS adds new regions, they get automatically added to All Region Trails
 - Global Service Events: A very small number of services log events globally to ONE region (us-east-1). Eg. IAM, STS, CloudFront. A Trail needs this enabled in order to log these events. Should be enabled in the created Trail by default 
 
-EXAM: CloudTrail is a Regional Service. A Trail logs events for the AWS region it's created in
+EXAM: CloudTrail is a REGIONAL Service. A Trail logs events for the AWS region it's created in
 
 ### CloudTrail - Event Types (3)
 1. Management Events: Provide information about mgmt operations performed on resources in your AWS account; AKA Control Plane Operations. Eg. Creating VPC, terminating EC2 instance
@@ -939,7 +941,7 @@ NOTE: By default, CloudTrail only logs Management Events
 - All-Regions Trail: Collection of Trails within every AWS Region, but logged as one trail. If AWS adds new regions, they get automatically added to All Region Trails
 NOTE: Small number of services log events globally to ONE region (us-east-1). Eg. IAM, STS, CloudFront. These are called Global Service Events. So, Trails are either logged within the region they were created in, or to us-east-1 if it's a Global Service Event. Or to all regions if All-Region Trail
 -- All events are captured by a Trail (management events by default, data events if manually enabled)
--- A Trail stores events in an s3 bucket by default. Logs generated and stored in an s3 bucket can be stored indefinitely; charged for storage in s3. Trail event files are small JSON files, however
+-- A Trail stores events in an S3 bucket by default. Logs generated and stored in an s3 bucket can be stored indefinitely; charged for storage in s3. Trail event files are small JSON files, however
 -- Alternative to previous bullet, CloudTrail can integrate with CloudWatch Logs and deposit logged data there. Advantage here is being able to use CloudWatch Logs features
 
 ## CloudTrail - Continued
@@ -965,7 +967,7 @@ We will set the trail to log to an S3 bucket and then enhance it to inject data 
 NOTE: You can create individual trails in accounts, but it's always more efficient to use an Organizational Trail.
 NOTE: By default when you create a Trail, it creates a Trail for all AWS Regions in your account
 
-EXAM: s3 bucket names MUST be GLOBALLY UNIQUE
+EXAM: S3 bucket names MUST be GLOBALLY UNIQUE
 
 1. iamadmin login > CloudTrail > Trails > Create trail > Trail name "Animals4lifeOrg" > check "Enable for all accounts in my org" > uncheck Enable under "Log file SSE-KSM encryption (use this in production, not in this practice) > Enable CloudWatch Logs > CW Logs Role name "CloudTrailRoleForCloudWatchLogs_Animals4Life" > Next > select Event types to log: check Management Events > Next > Review / Create trail
 - After creating, can take some time for data to start appearing
@@ -1027,13 +1029,13 @@ A well-architected multi-account environment. Home Region is the one you deploy 
 ## S3 Security (Resource Policies & ACLs)
 Bucket Policies: Type of AWS Resource Policy
 
-EXAM: s3 is PRIVATE by default
-- only ID with any initial access is Account Root User of account which owns the s3 Bucket
+EXAM: S3 is PRIVATE by default
+- only ID with any initial access is Account Root User of account which owns the S3 Bucket
 - Any other permissions must be explicity granted through a few ways:
--- s3 Bucket Policy, a form of Resource Policies. RP's: These are attached to Resources, not Identities
+-- S3 Bucket Policy, a form of Resource Policies. RP's: These are attached to Resources, not Identities
 -- Resource Policies (RP) provide a resource perspective on permissions. Control access on a Resource
 --- Controlling who can access a resource
-- Unlike IDP, RP's have presence of an explicit Principal Component.
+- EXAM: Unlike ID Policies, Resource Policies's have presence of an explicit Principal Component.
 
 NOTE: You can only attach IDP's to ID's in your OWN account. Only controlling security inside account
 - Resource policies can be attached to its own account or DIFFERENT accounts. Inside this RP, you can reference any identities (whether in same or different account)
@@ -1072,7 +1074,7 @@ EXAM: Access Control Lists: NEVER unless required, as they are Legacy. AWS recom
 ## S3 Static Hosting
 Accessing S3 is generally done via APIs. Static Website Hosting is a feature of the product which lets you define a HTTP endpoint, set index and error documents and use S3 like a website.
  - S3 Static Hosting allows access to s3 via HTTP - Eg. Blogs
- - Usage: First enable, and in doing so, you have to set INDEX and ERROR documents
+ - Usage (2 Documents required): First enable, and in doing so, you have to set INDEX and ERROR documents
  - Index page is entry point to most websites
  - Error Document: When you access a page that isn't there, or other type of service side error that's when Error Doc is shown
  -- Index and Error docs need to be html documents as s3 Static Hosting reads HTML files
@@ -1114,7 +1116,7 @@ Accessing S3 is generally done via APIs. Static Website Hosting is a feature of 
 - Objects aren't deleted - object deletion markers are put in place to hide objects.
 - Object Versioning starts off in a Disabled state. Once enabled, you CANNOT disable it again. Instead, you can Suspend it. A suspended bucket can be re-enabled. 
 
-EXAM: A bucket with Object Versioning enabled can NEVER be disabled again
+EXAM: A bucket with Object Versioning enabled can NEVER have OV disabled again
 
 Without versioning, Objects are identified solely by the Object's name, which is unique in the bucket. If you modify an object, the original version of the object is replaced. Versioning lets you store multiple versions of objects within a bucket/ 
 - Operations which would modify an Object instead creates a new version
@@ -1129,7 +1131,7 @@ With Versioning enabled, if we indicate to S3 we want to delete the object witho
 ### Object Versioning: REMINDERS: 
 - Versioning CANNOT be disabled after activating, only suspended (and suspending doesn't remove old versions, so you're still billed for all of it)
 - Space is consumed by all versions of the object and you are billed for ALL versions
-- Only way to return t reduce cost due to Versioning is to delete the bucket and re-add all content to another bucket that doesn't have Versioning enabled
+- Only way to return to reduced cost due to Versioning is to delete the bucket and re-add all content to another bucket that doesn't have Versioning enabled
 
 ### MFA Delete
 Something enabled withing the Versioning config in a bucket. This makes MFA required to change a bucket's versioning state (To change from Enabled to Suspended, etc). 
@@ -1185,6 +1187,7 @@ AWS Key Management Service (AWS KMS) makes it easy for you to create and manage 
 - KMS Keys NEVER leave the product; this is it's primary function. To keep keys in and securely held WITHIN the service
 
 EXAM: FIPS 140-2: KMS Provides a service compliant with FIPS 140-2 Level 2, a US security standard
+EXAM: KMS is REGIONAL and PUBLIC
 
 ### KMS: KMS Keys
 Used by KMS within cryptographic operations. You, apps, and other AWS svcs can use these keys. KMS Key is a container for physical key material; it is Logical (representation of an encryption key)--the data contained is ID, date, policy, description, and state
@@ -1245,14 +1248,14 @@ aws kms decrypt \
 ## SSE-S3 (AES256)
 Step through the various encryption options available within S3 and finish by looking at default bucket encryption settings
 - Server-Side Encryption (SSE).
--- Important: Buckets are NOT encrypted, Objects are; encryption not defined at Bucket level. Encryption is defined at Object level
+-- EXAM: Buckets are NOT encrypted, Objects are; encryption not defined at Bucket level. Encryption is defined at Object level
 - Client-Side Encryption (CSE). S3 never sees plaintext
 
 ### SSE-S3: SSE VS CSE: How data is stored on disk in an encrypted way; encryption at rest
 - Path: Users/App <-> S3 Endpoint <-> S3 Storage. 
 -- In transit: On both SSE/CSE, Data in transit between User/S3 Endpoint is encrypted in transit.
 -- AT REST is what we're focusing on. 
---- In CSE, Objects being uploaded are encrypted by the client before they ever leave. AWS will never see data in plain text form. In CSE, you own keys, process, and tooling
+--- In CSE, Objects being uploaded are encrypted by the client before they ever leave client-side. AWS will never see data in plain text form. In CSE, you own keys, process, and tooling
 --- In SSE, even though data is initially encrypted in-transit using HTTPS, the Objects themselves are NOT initially encrypted. From User > S3 Endpoint, data is in its original form. At S3 endpoint, the data gets encrypted and delivered to S3 Storage as ciphertext.
 
 NOTE: AWS has made SSE mandatory, so you can no longer store objects in an unencrypted form on S3. You control what type of SSE is utilized
@@ -1488,8 +1491,8 @@ EXAM: Don't generate PreSigned URLs using an IAM Role (temp credentials of a Rol
 EXAM: Understand this architecture
 S3 and Glacier Select allow you to use a SQL-Like statements to retrieve partial objects from S3 and Glacier.
 - Ways you can retrieve PARTS of objects rather than the entire object
--- Both S3 and Glacier super scalable. S3 can store objcets up to 5TB and store infinite number of these objects. Often, you don't need to retrieve the entire 5TB object
-- With S3 Select, filtering occurs on the service/the source (s3); The data delivered by S3 is pre-filtered WITHIN S3, making it quicker and reducing costs
+-- Both S3 and Glacier super scalable. S3 can store objects up to 5TB and store infinite number of these objects. Often, you don't need to retrieve the entire 5TB object
+- With S3 Select, filtering occurs on the service/the source (S3); The data delivered by S3 is pre-filtered WITHIN S3, making it quicker and reducing costs
 
 
 ## S3 Events
@@ -1499,7 +1502,8 @@ The Amazon S3 notification feature enables you to receive notifications when cer
 - Types of events: object Created (Put, Post, Copy, CompleteMultiPartUpload), object Delete (*, Delete, DeleteMarkerCreated), object Restore (Post (Initiated), Completed), Replication 
 - Events are generated by S3 Service, known as S3 Principal, so we also need to add Resource Policies to the destination services to allow S3 svc to interact 
 - Events are JSON objects
-- S3 Event notifications are dated and limited features. Can also use EventBridge which supports more events and wider svc integration. Default: recommend using EventBridge as default
+- S3 Event notifications are dated and limited features. Can also use EventBridge which supports more events and wider svc integration. 
+DEFAULT: use EventBridge as Default for S3 event notifications
 
 
 ## S3 Access Logs
@@ -1545,7 +1549,7 @@ Amazon S3 Access Points, a feature of S3, simplifies managing data access at sca
 - Every Access Point has its own endpoint address
 - EXAM: Access Point created via Console or with this shell command:
 -- aws s3control create-access-point --name [name] --account-id [account-id] --bucket [bucket-name]
-- Access Points can be thought of as mini bukets or different views of the bucket
+- Access Points can be thought of as mini buckets or different views of the bucket
 - Each Access Point has a unique DNS that would be given to the users using it
 - Access Point Policies control permissions for access via Access Point and are functionally equivalent to a Bucket Policy. Access Point Policy can restruct identities to certain prefixes, tags, or actions based on need
 - IMPORTANT: Any permissions defined on an Access Point need to also be defined on the Bucket Policy
@@ -1760,7 +1764,7 @@ EXAM EXAM EXAM
 Example: IPv4 EC2 Instance <-> IGW <-> Linux Update Server
 - EC2 instance trying to send updates to Linux server.
 -> The IPv4 instance has the private IP of 10.16.16.20, and IPv4 Public IP of 43.250.192.20. However, this isn't how it really works. what actually happens with public IPv4.. they never touch the actual services in a VPC. When you allocate a public IPv4 address, for example to this EC2 instance, a record is created which the IGW maintains, linking the instances Private IP to it's allocated Public IP
--> A packet for tranist has Source and Destination IP addresses. At this point, packet is not configured with any public addressing (not currently routable accross public internet, could not currently reach the Linux update srever). Packet leaves instance, follows Default route to IGW. IGW sees packet is from EC2 based on source IP, and IGW knows the associated IPv4 address for this Source IP and changes Source address to IPv4 to be routable across internet. Linux Update server receives packet from Source IPv4 address. On the way back, the inverse happens
+-> A packet for transit has Source and Destination IP addresses. At this point, packet is not configured with any public addressing (not currently routable accross public internet, could not currently reach the Linux update srever). Packet leaves instance, follows Default route to IGW. IGW sees packet is from EC2 based on source IP, and IGW knows the associated IPv4 address for this Source IP and changes Source address to IPv4 to be routable across internet. Linux Update server receives packet from Source IPv4 address. On the way back, the inverse happens
 
 EXAM: At no point is the O/S on the EC2 instance aware of the public IP, it just knows of its Private IP (no IGW translation)
 NOTE: Since IPv6 is publicly routable, the O/S on the EC2 instance would know it and it gets passed through IGW to sent without changing to a different IP (unlike IPv4 in the example above)
@@ -1802,11 +1806,11 @@ EXAM: Every CONNECTION between user/server has two parts: 1. REQUEST (initiation
 
 What actually happens:
 Client pick temporary "ephemeral" port 2. client initiates server connection REQUEST using well-known port number (like Port 443 HTTPS) 3. Server RESPONDS using source port of tcp/443 and ephemeral port picked by client 4. 
-- Directionality depends on your perspectiv. What is INBOUND/OUTBOUND -- Source/Dest swap depending on who's perspective. 
+- Directionality depends on your perspective. What is INBOUND/OUTBOUND -- Source/Dest swap depending on who's perspective. 
 
 ### Stateless Firewalls
 Ex. Server is within a stateless firewall; meaning that it doesn't understand the state of connections (it sees REQUEST/RESPONSE as separate parts, so you need 2 rules needed for each connection). 
-- TWO Rules needed for each connetion, 1 IN 1 OUT
+- TWO Rules needed for each connection, 1 IN 1 OUT
 - Because firewall is stateless, it doesn't know which specific port is used for the response. You'll often have to allow the FULL RANGE of ephemeral ports to any destination
 -- This makes security engineers uneasy, which is why Stateful Firewalls are preferred.
 
