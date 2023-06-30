@@ -2467,14 +2467,18 @@ ECS is to containers as EC2 is to virtual machines. A managed container-based co
 - Container Definition: Defines Images and Ports
 - Task Definition: A self contained application; the app as a whole. Stores a Task Role, an IAM Role. 
 - Task Role: IAM Role which the TASK assumes
+
 EXAM: Task Roles are the best practice way giving containers within ECS permission to interact with AWS Resources
 - ECS Service. Config'd with Service Definition: Tells how a task will scale and determines high availability. Can use load balancer. Restarts.
+EXAM: Cluster Modes available within ECS: Network Only (Fargate), EC2 Linux + Networking, EC2 Windows + Networking
+EXAM: Benefits of containers: Fast to start up, Portable, Lightweight
 
 ## ECS - Cluster Mode
 ECS is capable of running in EC2 mode or Fargate mode. EC2 mode deploys EC2 instances into your AWS account which can be used to deploy tasks and services. 
 - With EC2 mode you pay for the EC2 instances regardless of container usage. 
 - Fargate mode uses shared AWS infrastructure, and ENI's which are injected into your VPC. 
 - You pay only for container resources used while they are running.
+
 
 The Two Modes when running ECS: EC2 Mode, Fargate Mode
 - Main differentiator: What you manage VS what AWS manages
