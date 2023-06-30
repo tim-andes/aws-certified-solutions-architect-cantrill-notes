@@ -2521,7 +2521,6 @@ Like Docker Hub but the AWS version. A managed Container Image Registry service
 - Generates events deliverd to EventBridge
 - Offers Replication (cross region and cross account)
 
-
 ## Kubernetes - K8
 Open source container orchestration system. Cloud agnostic product - can use on many platforms
 - Cluster: Highly available cluster of compute resources
@@ -2537,3 +2536,17 @@ Open source container orchestration system. Cloud agnostic product - can use on 
 - Ingress Controller: Used to provide ingress (Eg. AWS Load Balance Controller)
 Default storage in K8s is ephemeral by default, provided locally by a node. Like ISVs on EC2
 - Persistent Storage (PV) : Volume whose lifecycle lives beyond any 1 pod using it
+
+## Elastic Kubernetes Service (EKS)
+Amazon Elastic Kubernetes Service (Amazon EKS) is a fully-managed, Kubernetes implementation that simplifies the process of building, securing, operating, and maintaining Kubernetes clusters on AWS.
+- open-source and cloud agnostic
+- K8s Control Plane scales and runs on multiple AZs
+- Integrates with AWS svc's: ECR, Elastic Load Balancer, IAM, VPC
+- EKS Cluster = EKS Control Plane & EKS Nodes
+- etcd: the key-value store that k8's uses, is distributed across multiple AZs
+- Nodes: can be Self-Managed (ec2 instance), Managed Node Groups (ec2 instance), or Fargate pods
+- For Persistent Storage, EKS can use EBS, EFS, FSx Lustre, FSx for NetApp ONTAP
+
+### EKS Resources
+- https://docs.aws.amazon.com/eks/latest/userguide/eks-compute.html
+- https://docs.aws.amazon.com/eks/latest/userguide/fargate.html
