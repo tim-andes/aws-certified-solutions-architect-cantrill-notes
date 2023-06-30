@@ -2554,3 +2554,34 @@ Amazon Elastic Kubernetes Service (Amazon EKS) is a fully-managed, Kubernetes im
 ### EKS Resources
 - https://docs.aws.amazon.com/eks/latest/userguide/eks-compute.html
 - https://docs.aws.amazon.com/eks/latest/userguide/fargate.html
+
+
+# ADVANCED EC2
+## Bootstrapping EC2 using User Data
+EC2 Bootstrapping is the process of configuring an EC2 instance to perform automated install & configuration steps 'post launch' before an instance is brought into service. With EC2 this is accomplished by passing a script via the User Data part of the Meta-data service - which is then executed by the EC2 Instance OS
+- tl;dr this allows you to bring and EC2 instance up in a pre-configured state
+- EC2 Bootstrapping = EC2 Build Automation
+- This process uses User Data via meta-data IP (http://169.254.169.254/latest/user-data) - Note, this is instead of /meta-data
+-- EC2 doesn't interpret this data, the OS needs to understand the User Data
+- This boostrapping ONLY happens on Launch. If you update User Data after the fact, it won't be applied
+- User Data is OPAQUE to EC2, its just a block of data to EC2
+- User Data is NOT secure; don't use it for PWs or long term creds
+- User Data limited to 16KB in size
+- If you want to update User Data... stop instance, update data, and restart 
+
+EXAM: Boot-time-to-Service-Time: how quickly you can bring an instance into service and have it ready for use by customers
+- measured in minutes
+
+## DEMO - Bootstrapping WP Installation (parts 1 and 2)
+Bootstrap two EC2 instances with WordPress and the 'cowsay' login banner customizations.
+- The first, directly using User Data via the console UI
+- the second, using CloudFormation
+
+Steps:
+1. 1-click deploy > Create stack
+2. EC2 > Launch Instance (x2) > Name "A4L-MANUALWORDPRESS" > keypair: proceed without > Network Settings, Edit
+3. Instance Network Settings: VPC, select a4l-vpc1 > subnet, select sn-web-A > Select Existing Security Group, BOOTSTRAP-[etc] > Advanced Details, User Data, paste in .txt file provided > Launch Instance
+4. EC2 Instance Connect > Will see custom Banner above normal stuff if you wait long enough. Paste in the commands in the command file to see user data
+Note: Within EC2 Connect, "cd /var/log" you can use the cloud-init-output.log and cloud-init.log to diagnose any bootstrapping issues
+5. CloudFormation > 1-click deploy > etc etc
+6. Clean up > Terminate EC2 instance > Delete CFN stack
