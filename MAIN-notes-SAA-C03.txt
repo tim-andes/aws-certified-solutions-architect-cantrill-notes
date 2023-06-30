@@ -2520,3 +2520,20 @@ Like Docker Hub but the AWS version. A managed Container Image Registry service
 - Logs API actions into CloudTrail
 - Generates events deliverd to EventBridge
 - Offers Replication (cross region and cross account)
+
+
+## Kubernetes - K8
+Open source container orchestration system. Cloud agnostic product - can use on many platforms
+- Cluster: Highly available cluster of compute resources
+-- Vocab: Cluster Control Plane, Cluster Nodes, containerd, kubelet, Kubernetes API
+-- The control plane orchestrates containerized applications which run on nodes
+- Pods: Smallest unit of computing in K8's, often seeing one-container-one-pod. Pods are NON-PERMANENT; view them as temporary things that are created for job and gone when job is done
+- Cluster: A deployment of K8's
+- Node: Resources within cluster; pods are placed on nodes to run
+- Pods: Smallest unit in K8s, often 1 container to 1 pod
+- Service; Abstraction running on 1 or more pods; what you'll understand as an application
+- Job: ad-hoc, creates one or more pods until completion
+- Ingress: How something external to the cluster can access the service
+- Ingress Controller: Used to provide ingress (Eg. AWS Load Balance Controller)
+Default storage in K8s is ephemeral by default, provided locally by a node. Like ISVs on EC2
+- Persistent Storage (PV) : Volume whose lifecycle lives beyond any 1 pod using it
