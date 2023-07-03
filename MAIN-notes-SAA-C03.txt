@@ -2585,3 +2585,14 @@ Steps:
 Note: Within EC2 Connect, "cd /var/log" you can use the cloud-init-output.log and cloud-init.log to diagnose any bootstrapping issues
 5. CloudFormation > 1-click deploy > etc etc
 6. Clean up > Terminate EC2 instance > Delete CFN stack
+
+
+## EC2 Instance Roles & Profile
+EC2 instances Roles/Profiles are how applications running on an EC2 instance can be given permissions to access AWS resources on your behalf. Short term temporary creds are available via the EC2 instance Metadata and are renewed automatically by the EC2 and STS Services
+
+Instance Role Architecture uses an IAM role that allows EC2 instance to assume it. There is an InstanceProfile wrapper that actually attached to the instance. Creds delivered within metadata
+- creds used to give InstanceProfile IAM role access are inside meta data
+-- iam/security-credentials/role-name
+-- creds always valid/auto-rotated
+- BEST PRACTICE: Always use Roles when possible, better security. CLI tools will use role creds automatically
+
