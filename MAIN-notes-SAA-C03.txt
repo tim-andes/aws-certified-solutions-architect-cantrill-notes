@@ -2606,3 +2606,34 @@ Steps:
 4. Attach Role to Instance: EC2 > Right-click instance, Security: Modify IAM Role > Choose Role A4LInstanceRole
 5. You can now `aws s3 ls` command in EC2 Connect because you have applied the IAM Role that has the S3ReadOnly permission to the EC2 instance
 6. Clean up > IAM: Delete A4LInstanceRole > EC2: Security: Modify IAM, select NO IAM Role > CFN: Delete Demo stack
+
+## EC2 - SSM Parameter Store 
+The SSM Parameter store is a service which is part of Systems Manager which allows the storage and retrieval of parameters - string, stringlist or secure string.
+- The service supports encryption which integrates with KMS, versioning and can be secured using IAM.
+- The service integrates natively with many AWS services - and can be accessed using the CLI/APIs from anywhere with access to the AWS Public Space Endpoints.
+
+As previously mentioned, passing secret data through to EC2 instance with user data is bad practice. 
+- SSM is storage for configuration and secrets 
+- Parameter store can store the following: String, StringList, SecureString
+-- There are hierarchies and Versioning of parameters
+-- Can be stored as plaintext and ciphertext (integrating with KMS)
+- Public Parameters are available, like the latest AMIs per region
+
+## DEMO - Parameter Store
+Create some Parameters in the Parameter Store and interact with them via the command line - using individual parameter operations and accessing via paths.
+
+Steps:
+1. Nav to Systems Manager in AWS Console > Parameter Store > Create parameter
+2. Parameter 1 details: Name "/my-cat-app/dbstring" > value "db.allthecats.com:3306" > description "Connection string for cat app" > create
+- the fwd slashes create hierarchy in Parameter Store 
+3. Parameter 2: Name "/my-cat-app/dbuser" > value: "bosscat" > create 
+4. Param 3 (secure): Name "/my-cat-app/dbpassword" > Type: SecureString > value: amazingsecretpassword1337 (encrypted)
+5. Param 4: Name "/my-dog-app/dbstring" > value: "db.ifwereallymusthavedogs.com:3306"
+6. Param 5: Name "/rate-my-lizard/dbstring" > value "db.thisisprettyrandom.com:3306"
+7. CloudShell (top menu) > try these commands:
+aws ssm get-parameters --names /rate-my-lizard/dbstring 
+aws ssm get-parameters --names /my-dog-app/dbstring 
+aws ssm get-parameters --names /my-cat-app/dbstring 
+aws ssm get-parameters-by-path --path /my-cat-app/ 
+aws ssm get-parameters-by-path --path /my-cat-app/ --with-decryption
+8. Clean up: Select all params > Delete
