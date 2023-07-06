@@ -2588,7 +2588,7 @@ Note: Within EC2 Connect, "cd /var/log" you can use the cloud-init-output.log an
 
 
 ## EC2 Instance Roles & Profile
-EC2 instances Roles/Profiles are how applications running on an EC2 instance can be given permissions to access AWS resources on your behalf. Short term temporary creds are available via the EC2 instance Metadata and are renewed automatically by the EC2 and STS Services
+EC2 Instance Roles/Profiles are how applications running on an EC2 instance can be given permissions to access AWS resources on your behalf. Short-term temporary creds are available via the EC2 instance Metadata and are renewed automatically by the EC2 and STS Services
 
 Instance Role Architecture uses an IAM role that allows EC2 instance to assume it. There is an InstanceProfile wrapper that actually attached to the instance. Creds delivered within metadata
 - creds used to give InstanceProfile IAM role access are inside meta data
@@ -2600,7 +2600,7 @@ Instance Role Architecture uses an IAM role that allows EC2 instance to assume i
 Create an EC2 Instance Role, apply it to an EC2 instance and learn how to interact with the credentials this generates within the EC2 instance metadata.
 
 Steps:
-1. 1 click deploy
+1. 1-click deploy
 2. EC2 > instance connect > EC2 Instance Connect > test command `aws s3 ls` > need creds
 3. Create IAM Role > IAM > Roles > Create Role > Trust Entity, AWS service: select `EC2` > Next, Add Permissions, search `s3`, select AmazonS3ReadOnlyAccess > Next, Role name "A4LInstanceRole" > Create Role
 4. Attach Role to Instance: EC2 > Right-click instance, Security: Modify IAM Role > Choose Role A4LInstanceRole
@@ -2612,7 +2612,7 @@ The SSM Parameter store is a service which is part of Systems Manager which allo
 - The service supports encryption which integrates with KMS, versioning and can be secured using IAM.
 - The service integrates natively with many AWS services - and can be accessed using the CLI/APIs from anywhere with access to the AWS Public Space Endpoints.
 
-As previously mentioned, passing secret data through to EC2 instance with user data is bad practice. 
+As previously mentioned, passing secret data through to EC2 instance with User Data is bad practice. 
 - SSM is storage for configuration and secrets 
 - Parameter store can store the following: String, StringList, SecureString
 -- There are hierarchies and Versioning of parameters
@@ -2637,3 +2637,11 @@ aws ssm get-parameters --names /my-cat-app/dbstring
 aws ssm get-parameters-by-path --path /my-cat-app/ 
 aws ssm get-parameters-by-path --path /my-cat-app/ --with-decryption
 8. Clean up: Select all params > Delete
+
+## System and Application Logging on EC2
+CloudWatch is for metrics*
+CloudWatch Logs is for logging and interpreting that logged data*
+* Neither of these natively capture data inside an instance
+- CloudWatch Agent is required for CW/CW Logs to natively capture data in an instance (plus config and permissions)
+-- Configured / Permitted CW Agent pulls logs from Instance and sends to CW / CW Logs
+-- The permissions the Agent needs will use an IAM Role
