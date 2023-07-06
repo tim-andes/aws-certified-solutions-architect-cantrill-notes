@@ -2669,13 +2669,23 @@ Allows you to choose placement of EC2 instances, so you can ensure that they're 
 3. Partition (Topology Awareness)
 
 - Cluster. For highest EC2 performance. Launch these all at the same time for similar placement/capacity, will be launched into single AZ. Instances in Cluster group have fast direct connections to each other. Cluster achieves 1-Gbps per single stream instead of the standard 5Gbps/stream. Lowest latency and max Packets-per-second possible in AWS (when paired with Enhanced Networking)
-EXAM: Cluster Placement Groups are ONE AZ ONLY, which is locked when launching the first instance. Close prox is what gives them best Performance of placement groups 
+EXAM: CLUSTER Placement Groups are ONE AZ ONLY, which is locked when launching the first instance. Close prox is what gives them best Performance of placement groups 
 EXAM: VPC peers in cluster placement groups can span AZs, but this impacts performance
 EXAM: Cluster PGs not supported on all instance types
 EXAM: Launch all instances within cluster group at same time as best practice
 EXAM: 10Gbps single stream performance; highest performance, lowest latency, best throughput
 
-- Spread. For max availability and resilience for an application; span AZs to accomplish this. 
-EXAM: Spread PG instance LIMIT: 7 instances per AZ (HARD limit)
+- Spread. For max availability and resilience for an application; span AZs to accomplish this. Use case: small number of critical instances that need to be kept separate from each other
+EXAM: Spread PG instance LIMIT: 7 INSTANCES per AZ (HARD limit)
 EXAM: Spread PGs provide "infrastructure isolation" to provide max availability and resilience
 EXAM: Each instance runs from a different rack, each rack has its own network and power source
+EXAM: Not supported for Dedicated Instances or Hosts
+
+- Partition. Designed for when you have more than 7 instances per AZ but you still need to be able to separate those instances into separate fault domains. Designed for huge-scale parallel processing systems
+EXAM: For when you need max availability/resilience but MORE THAN 7 instances per AZ
+EXAM: Max 7 PARTITIONS per AZ, but each partition can contain more than 7 instances
+EXAM: Each partition has its own rack
+EXAM: Instances can be placed into a specific partition or can be auto-placed
+EXAM: for 'TOPOLOGY' aware applications; Eg: HDFS, HBase, Cassandra
+
+## EC2 - Dedicated Hosts
