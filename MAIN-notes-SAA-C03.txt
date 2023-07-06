@@ -2689,3 +2689,29 @@ EXAM: Instances can be placed into a specific partition or can be auto-placed
 EXAM: for 'TOPOLOGY' aware applications; Eg: HDFS, HBase, Cassandra
 
 ## EC2 - Dedicated Hosts
+It's an EC2 Host dedicated only to you. Dedicated hosts are EC2 Hosts which support a certain type of instance which are dedicated to your account. Eg: a1, c5, m5
+- Billing: No EC2 instance charges, you pay for the host
+- You can pay an on-demand or reserved price for the hosts and then you have no EC2 instance pricing to pay for instances running on these dedicated hosts.
+- Generally dedicated hosts are used for applications which use physical core/socket licensing
+
+### How they work: Host is designed for a specific family and size of instance. Eg. a1 dedicated host has 1 socket and 16 cores
+
+### Dedicated Host Limitations (things that aren't supported)
+- AMI limits - Not supported: RHEL, SUSE Linux, Windows AMIs
+- Cannot used Amazon RDS instances
+- Placement Groups not supported
+
+Note: Using RAM (resource access manageR) product, hosts CAN BE shared with other ORG accounts
+
+## EC2 - Enhanced Networking & EBS Optimized
+Enhanced networking is the AWS implementation of SR-IOV, a standard allowing a physical host network card to present many logical devices which can be directly utilized by instances.
+- This means lower host CPU usage, better throughput, lower and consistent latency
+- EBS optimisation on instances means dedicated bandwidth for storage networking - separate from data networking.
+- Resource: https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/enhanced-networking.html
+
+### Enhanced Networking
+A feature designed to improve overall performance of EC2 networking--required for high performance things like Cluster Placement Groups.
+- Uses technique called SR-IOV so that the network interface inside EC2 is aware of virtualization. This all increases IO, lower host CPU usage, more bandwidth, and higher packets-per-second (PPS), consistent lower latency
+
+### EBS Optimized Instances
+What we know about EBS already: EBS is block storage over the network. EBS Optimized means DEDICATED capacity for EBS
