@@ -2715,3 +2715,42 @@ A feature designed to improve overall performance of EC2 networking--required fo
 
 ### EBS Optimized Instances
 What we know about EBS already: EBS is block storage over the network. EBS Optimized means DEDICATED capacity for EBS
+
+
+# Route 53 - Global DNS
+
+## R53 Public Hosted Zones
+### R53 Hosted Zones (HZs):
+- An R53 Hosted Zone is a DNS DB for a domain
+- GLOBALLY RESILIENT
+- HZs are created automatically when you register a domain using R53. But HZs can be created separately
+- HZs are what the DNS system references; authoritative source to confirm a domain Eg. animals4life.org
+- Two types of hosted zones in R53: public and private
+
+### Public Hosted Zones
+A PUBLIC hosted zone is a container that holds information about how you want to route traffic on the internet for a specific domain which is accessible from the public internet
+- Creating a Public HZ creates 4 R53 Nameservers that are all accessible from public internet and VPCs
+- Monthly cost for hosting public HZ and small cost for queries against it
+
+## R53: Private Hosted Zones
+A private hosted zone is a container that holds information about how you want Route 53 to respond to DNS queries for a domain and its subdomains within one or more VPCs that you create with the Amazon VPC service
+- Private Hosted Zones are ALWAYS associated with a VPC and are only accessible within those VPCs
+- Enabled split-view (overlap public / private) for PUBLIC and INTERNAL use with the same zone name (eg. only intranet for internals but see same thing via public route if external)
+- To gain access to a private hosted zone, you need to be querying from within a VPC, AND that VPC needs to be explicity associated with the private host
+
+## R53: CNAME vs R53 Alias
+The issue with only using CNAMEs: `A` record maps a NAME to IP Address ie. catagram.io => 1.3.3.7. CNAME on the other hands, maps NAME to NAME (ie. www.catagram.io => catagram.io)
+- Problem: can't use a CNAME for the apex of a domain, also known as the naked domain. AWS services like ELB only use DNS names, so just a CNAME like catagram.io would be invalid within ELB
+- Solution: R53 Alias records let you iuse CNAME for domain apex
+
+### R53 Alias
+- ALIAS records map a NAME to an AWS Resource
+- ALIAS records can be used for naked/apex and normal records. Alias functions like CNAME for non-apex/non-naked domains
+- No charge for ALIAS requests pointing at AWS resources
+EXAM: For AWS Services, ALIAS should be your default choice
+
+## R53: Simple Routing
+Simple routing lets you configure standard DNS records, with no special Route 53 routing such as weighted or latency. With simple routing, you typically route traffic to a single resource, for example, to a web server for your website.
+- Simple Routing supports 1 record per name (www)
+- Each record can have multiple values
+EXAM: Use Simple Royuting when you want to route requests towards ONE SERVICE such as a web server
