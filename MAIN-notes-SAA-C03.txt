@@ -2768,3 +2768,10 @@ Amazon Route 53 health checks monitor the health and performance of your web app
 - States: Healthy or Unhealthy
 - Globally, you have distributed health checkers. If 18%+ of health checkers report status as healthy, the health check returns healthy
 - In most cases, an UNHEALTHY record is NOT returned in queries
+
+## R53 - Failover Routing
+Failover routing lets you route traffic to a resource when the resource is healthy or to a different resource when the first resource is unhealthy
+- Use when you want to configure "active passive failover"
+
+# DEMO - Using R53 and Failover Routing - NOTE: This demo requires an R53 registered domain 
+Create Failover routing and private hosted zones. https://learn.cantrill.io/courses/1820301/lectures/41301585
