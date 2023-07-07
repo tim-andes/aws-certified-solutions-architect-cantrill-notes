@@ -2753,4 +2753,18 @@ EXAM: For AWS Services, ALIAS should be your default choice
 Simple routing lets you configure standard DNS records, with no special Route 53 routing such as weighted or latency. With simple routing, you typically route traffic to a single resource, for example, to a web server for your website.
 - Simple Routing supports 1 record per name (www)
 - Each record can have multiple values
+- Simple Routing does not support health checks
 EXAM: Use Simple Royuting when you want to route requests towards ONE SERVICE such as a web server
+
+## R53 Health Checks
+Amazon Route 53 health checks monitor the health and performance of your web applications, web servers, and other resources. 
+- Each health check that you create can monitor one of the following:
+-- The health of a specified resource, such as a web server
+-- The status of other health checks
+-- The status of an Amazon CloudWatch alarm
+
+- Health checkers are located GLOBALLY
+- Health Checks occur every 30s (or every 10s if you pay more)
+- States: Healthy or Unhealthy
+- Globally, you have distributed health checkers. If 18%+ of health checkers report status as healthy, the health check returns healthy
+- In most cases, an UNHEALTHY record is NOT returned in queries
