@@ -2775,3 +2775,9 @@ Failover routing lets you route traffic to a resource when the resource is healt
 
 # DEMO - Using R53 and Failover Routing - NOTE: This demo requires an R53 registered domain 
 Create Failover routing and private hosted zones. https://learn.cantrill.io/courses/1820301/lectures/41301585
+
+## R53 - Multi Value Routing
+Multivalue value routing lets you configure Amazon Route 53 to return multiple values, such as IP addresses for your web servers, in response to DNS queries. You can specify multiple values for almost any record, but multivalue answer routing also lets you check the health of each resource, so Route 53 returns only values for healthy resources
+- Improves availability, but NOT a replacement for load balancing
+- Up to 8 healthy records are returned. If you have more than 8 records, 8 at random are returned
+
