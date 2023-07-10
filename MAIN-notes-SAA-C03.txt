@@ -2794,3 +2794,9 @@ Geolocation routing lets you choose the resources that serve your traffic based 
 - Good for regional restrictions, language specific content, or laod balancing across regional endpoints
 - To route traffic based on customer location. Not proximity, but based on tag and specificity
 EXAM: Geolocation routing NOT about closest recoird, but returns RELEVANT locations only 
+
+
+## R53 - Geoproximity Routing
+Geoproximity routing lets Amazon Route 53 route traffic to your resources based on the geographic location of your users and your resources. 
+- You can also optionally choose to route more traffic or less to a given resource by specifying a value, known as a bias.
+-- A BIAS expands or shrinks the size of the geographic region from which traffic is routed to a resource. Can define a plus or minus bias + / -
