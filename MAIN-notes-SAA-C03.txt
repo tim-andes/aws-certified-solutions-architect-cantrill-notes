@@ -2785,3 +2785,12 @@ Multivalue value routing lets you configure Amazon Route 53 to return multiple v
 Should be used when trying to optimize for performance and user experience
 - Latency-based routing supports one record with the same name in each region
 - In the background, AWS mantains a latency table between users and regions and matched user to lowest latency
+- Latency DB is NOT real time
+
+## R53 - Geolocation Routing
+Geolocation routing lets you choose the resources that serve your traffic based on the geographic location of your users, meaning the location that DNS queries originate from. 
+- Geolocation records are tagged with a location
+- Does not return the closest record, but that which are applicatble or the default or no answer. "Default" is backup answer
+- Good for regional restrictions, language specific content, or laod balancing across regional endpoints
+- To route traffic based on customer location. Not proximity, but based on tag and specificity
+EXAM: Geolocation routing NOT about closest recoird, but returns RELEVANT locations only 
