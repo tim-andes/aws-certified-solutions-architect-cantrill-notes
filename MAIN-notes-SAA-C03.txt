@@ -2827,9 +2827,23 @@ DB Types:
 1) Relational Database Management System (RDBS, commonly SQL) 
 - RDBS has a structure in & between tables of data; rigid schema
 - Fixed relationship between tables. These relationships are defined in advance
-- Column Store (AKA OLTP, good for transactional processes like collections of orders) and Row Store (RedShift; good for analytics)
 2) Non-relational (NoSQL); more relaxed schemas
 - Common Examples of Non-relational DBs:
 -- Key-value DB's: just key/value pairs and no schema otherwise. Highly scalable and fast. Good for in-memory caching
 -- Wide Column Store: Every item in table has same key layout (Partition Key, + other key). Items in a table can have differing attributes. Eg. DynamoDB
 -- Document Database. Good for DBs of orders or contact list. Key/Value but the value is the accessible document+data
+-- Column Store (AKA OLTP, good for transactional processes like collections of orders) and Row Store (RedShift; good for analytics)
+-- Graph. Data and the relationships of data stored in DB
+
+## RDS - ACID vs BASE
+This lesson steps through the ACID and BASE Database transaction models and introduces the CAP Theorem
+- transaction models AKA define a few things about transactions to and from a DB
+- CAP Theorem - Consistency, Availability, Partition Tolerant (resilience). CAP Theorem says that any DB product only capable of delivering a max of TWO of these factors
+-- ACID focuses on consistency, BASE focuses on Availability
+
+### ACID - atomic, consistent, isolated, durable
+EXAM: 'ACID' mentioned in exam? Probably an RDS based DB. Acid limits DB scalability
+- Atomic: either all or NO components of a transaction succeed or fail
+- Consistent: transactions move DB from one VALID state to another; nothing in-between is allowed
+- Isolated: if multiple transactions occur at once, they don't interfere with each other
+- Durable: once committed, transactions are durable; stored on non-volatile memory and are resilient to outages/crashes
