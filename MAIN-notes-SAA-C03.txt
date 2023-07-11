@@ -2842,8 +2842,33 @@ This lesson steps through the ACID and BASE Database transaction models and intr
 -- ACID focuses on consistency, BASE focuses on Availability
 
 ### ACID - atomic, consistent, isolated, durable
-EXAM: 'ACID' mentioned in exam? Probably an RDS based DB. Acid limits DB scalability
+EXAM: 'ACID' mentioned in exam? RDS based DB. Acid limits DB scalability
 - Atomic: either all or NO components of a transaction succeed or fail
 - Consistent: transactions move DB from one VALID state to another; nothing in-between is allowed
 - Isolated: if multiple transactions occur at once, they don't interfere with each other
 - Durable: once committed, transactions are durable; stored on non-volatile memory and are resilient to outages/crashes
+
+### BASE - Basically available, soft state, eventually consistent
+- Basically Available: Read / Write ops are available 'as much as possible' but without any consistency guarantees
+- Soft State: The DB doesn't enforce consistency, this is offloaded onto the application/user
+- Eventually Consistent: If we wait long enough, reads from the system will be consistent
+BASE = highly scalable, Eg DynamoDB
+EXAM: BASE = noSQL
+
+## RDS - Databases on EC2
+NOTE: Running DB on EC2 is generally bad practice as there is usually a better alternative
+Why you might run DB on EC2...
+- If you need access to the DB instance OS
+- Advanced DB Option tuning (DBROOT)
+- Vendor/decision maker demands
+- Need to run DB or DB Version AWS doesn't provide
+- Need a specific OS/DB combo or architecture AWS doesn't provide
+
+Why you SHOULD NOT run DB on EC2
+- Admin overhead is high to manage on EC2 and DBHost
+- Backups / disaster recovery management becomes more difficult
+- EC2 is a single AZ. If zone fails, DB access fails
+- Features. AWS DB products are great and you could be missing out
+- EC2 is ON or OFF. No serverless easy scaling
+- Replication.
+- Performance. AWS invests time into optimisation / features that you're missing
