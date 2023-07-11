@@ -2810,3 +2810,6 @@ R53 does two things: 1) Domain Registrar 2) Domain Hosting. It can do both or ei
 2. Allocates 4 name servers (NS) [DH]
 3. Creates a Zone File (domain hosting) on the above NS's [DH]
 4. R53 communicates with registry of TLD (domain registrar) [DR]
+
+## R53 - DNSSEC
+DNSSEC strengthens authentication in DNS using digital signatures based on public key cryptography. With DNSSEC, it's not DNS queries and responses themselves that are cryptographically signed, but rather DNS data itself is signed by the owner of the data. How DNSSEC is implemented in AWS Route53 and demo DNSSEC signing enabling on a hosted zone, including trust chain establishment.
