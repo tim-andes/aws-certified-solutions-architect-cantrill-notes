@@ -2882,3 +2882,11 @@ Steps:
 3. A4L-WordPress, ec2 connect `mysqldump -u root -p a4lwordpress > a4lwordpress.sql` > PW an1m4ls4l1f3
 4. Inject a4lwordpress.sql into new DB `mysql -h privateipof_a4l-mariadb -u a4lwordpress -p a4lwordpress < a4lwordpress.sql`
 5.... Error at 4. 
+
+## RDS - Architecture
+- Known as "DBaaS", but more accurately RDS is a DBSaaS "DB Server as a Service"
+- RDS provides multiple databases on one DB Server (instance)
+- RDS is a managed service, so no access to OS or SSH Access
+- RDS operates within a VPC
+- RDS Instance can have more than 1 DB in it, and each RDS Instance has its own Dedicated EBS-provided storage 
+NOTE: Amazon Aurora is DIFFERENT from RDS
