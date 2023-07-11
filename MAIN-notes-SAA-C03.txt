@@ -2872,3 +2872,13 @@ Why you SHOULD NOT run DB on EC2
 - EC2 is ON or OFF. No serverless easy scaling
 - Replication.
 - Performance. AWS invests time into optimisation / features that you're missing
+
+## Demo - RDS - Splitting Wordpress Monolith => APP & DB
+- Moving DB to new AZ, separate from Webserver/App 
+
+Steps: 
+1. 1 click deploy > Create complete
+2. Copy WP instance IP, paste to browser > Title "The Best Cats!!", user "admin", PW "an1m4ls4l1f3", email test@test.com > Install
+3. A4L-WordPress, ec2 connect `mysqldump -u root -p a4lwordpress > a4lwordpress.sql` > PW an1m4ls4l1f3
+4. Inject a4lwordpress.sql into new DB `mysql -h privateipof_a4l-mariadb -u a4lwordpress -p a4lwordpress < a4lwordpress.sql`
+5.... Error at 4. 
