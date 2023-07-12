@@ -2881,7 +2881,8 @@ Steps:
 2. Copy WP instance IP, paste to browser > Title "The Best Cats!!", user "admin", PW "an1m4ls4l1f3", email test@test.com > Install
 3. A4L-WordPress, ec2 connect `mysqldump -u root -p a4lwordpress > a4lwordpress.sql` > PW an1m4ls4l1f3
 4. Inject a4lwordpress.sql into new DB `mysql -h privateipof_a4l-mariadb -u a4lwordpress -p a4lwordpress < a4lwordpress.sql`
-5.... Error at 4. 
+5.... Error at step 4. 
+6. Clean up > CFN > Delete Stack
 
 ## RDS - Architecture
 - Known as "DBaaS", but more accurately RDS is a DBSaaS "DB Server as a Service"
@@ -2890,3 +2891,57 @@ Steps:
 - RDS operates within a VPC
 - RDS Instance can have more than 1 DB in it, and each RDS Instance has its own Dedicated EBS-provided storage 
 NOTE: Amazon Aurora is DIFFERENT from RDS
+Cost: Billed for resource allocation
+-- Cost #1: instance size/type
+-- Cost #2: Multi-AZ or not
+-- Cost #3: Storage type/amount
+-- Cost #4: Data transferred
+-- Cost #5: Backups & Snapshots
+-- Cost #6: Licensing
+
+## RDS - DEMO - Migrating EC2 DB into RDS
+Create a MySQL RDS instance and migrate the Wordpress Database from the self-managed MariaDB server running on EC2 into this RDS instance.
+
+Steps:
+1. 1 click deploy
+2. Set up website: EC2 > A4L-Wordpress instance, copy IPv4 address, paste into browser > title "The Best Cats!!", username "admin", PW "4n1m4ls4L1f3", email "test@example.com" > install WP
+3. Set Up data to move: Blog Post > Posts > delete Hello World > Add New > H1 "The Best Cats Ever!!" > add Gallery widget and upload zipped file, Publish
+4. Set up RDS DB: RDS > Subnet Groups > Create a DB Subnet Group "a4lsngroup" for title/descrip > VPL a4l > Add subnets, select us-east-1a/b/c > Pick your subnets > go to VPC, Subnets and look for full names of sn-db-A/B/C to select those ones > Create
+5. Provision DB: RDS > DB > Create DB > Standard Create > select MySQL > engine version (currently 8.0.32 in demo video) > Template, Free Tier > DB instance identifier "a4lwordpress" > admin "a4lwordpress" > PW "4n1m4ls4L1f3" > Storage, uncheck "Enable storage autoscaling" > Connectivity, select a4l-vpc1 > VPC security group (firewall), Create New > name "a4lvpc-rds-sg" > Add'l Configuration, Initial DB Name "a4lwordpress" > Create DB
+6. Config Security Group so RDS DB is connected: RDS > DB's > a4lwordpress > Connecitivity & Security tab, click the VPC SG link and open in new tab > find your SG > Inboud Rules > Edit > Add Rule, Type MYSQL/Aurora, Source (magnifying glass icon) "MIGRATE2RDS-Instance..." > Save Rule
+7. Migrate Data to new RDS DB, create backup file to move: EC2 Connect with A4L-Wordpress > 
+`mysqldump -h PRIVATEIPOFMARIADBINSTANCE -u a4lwordpress -p a4lwordpress > a4lwordpress.sql` -> replace private IP with Private IPv4 of a4l DB instance > Enter > use PW above > Enter
+8. Move backup SQL DB instance into RDS: `mysql -h CNAMEOFRDSINSTANCE -u a4lwordpress -p a4lwordpress < a4lwordpress.sql` -> Replace CNAME with Endpoint name in RDS db instance > Enter
+9. Point WP at RDS instance: 
+`cd /var/www/html` >
+`sudo nano wp-config.php` -> Go to Database Hostname and replace the IPv4 pointing at the WB DB EC2 instance with the Endpoint name of the RDS instance...
+Looks like...
+/** Database hostname */
+define( 'DB_HOST', 'a4lwordpress.cloy7bpdvh9v.us-east-1.rds.amazonaws.com' ); > ctrl+o to Save, ctrl+x to Exit nano
+10... annnnnd the site no longer works get fucked loser
+11. Cleanup: RDS > Delete DB > VPC > Delete Security group "a4lvpc-rds-sg" > Cloufformation > Delete Stack
+
+## Relational Database Service (RDS) MultiAZ - Instance and Cluster Deployments
+MultiAZ is a feature of RDS which provisions a HIGHLY AVAILABLE instance set.
+- The product provides MultiAZ instance where a standby replica is kept in sync Synchronously with the primary instance.
+-- The standby replica cannot be used for any performance scaling, only availability.
+- MultiAZ cluster mode: where a write and two reader instances are kept in sync Synchronously. The reader instances can be used for read operations allowing for limited read scaling.
+- Backups, software updates and restarts can take advantage of MultiAZ to reduce user disruption.
+
+## MultiAZ Instance Deployments
+- Synchronous replication of the primary DB to the standby DB
+- Standby is only for backups and is never accessed unless a failover is required. Failover can take 60-120s
+- Not free
+- Only ONE standby replica due to architecture
+- Same region only, but different AZs in region
+- Backups taken from Standby to improve Primary performance
+
+## MultiAZ Cluster Deployments
+NOTE: Keep in mind the differences between MultiAZ Cluster Deployments and Amazon Aurora
+- ONE Writer replicates to TWO reader instances, all in different AZs. With Aurora, you can have more than 2 reader instances
+- These Readers (called Standby in Instance Deployment) can be used for Read operations, allowing for some read scaling
+- Faster Hardware than Instance Deployment
+- Faster failover, ~35s
+- Writes considered "committed" when 1 of the readers has confirmed it
+
+## RDS Automatic Backup, RDS Snapshots and Restore
