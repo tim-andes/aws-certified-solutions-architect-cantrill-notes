@@ -1,4 +1,4 @@
-# Adrian Cantrill's AWS Certified Solutions Architect - Associate (SAA-C03) Course
+fa# Adrian Cantrill's AWS Certified Solutions Architect - Associate (SAA-C03) Course
 
 
 # INTRODUCTION & SCENARIO
@@ -2945,3 +2945,70 @@ NOTE: Keep in mind the differences between MultiAZ Cluster Deployments and Amazo
 - Writes considered "committed" when 1 of the readers has confirmed it
 
 ## RDS Automatic Backup, RDS Snapshots and Restore
+- RDS is capable of performing Manual Snapshots and Automatic backups
+-- Manual snapshots are performed manually and live past the termination of an RDS instance
+-- Automatic backups can be taken of an RDS instance with a 0 (Disabled) to 35 Day retention.
+- Automatic backups also use S3 for storing transaction logs every 5 minutes - allowing for point in time recovery.
+- Snapshots can be restored .. but create a new RDS instance.
+EXAM: RDS Backups live in S3 but are AWS Managed, so you never seem them
+
+### RDS Backup - Snapshots (Manual)
+- First snapshot is full copy, after that it's incremental copies
+- Snapshots DON'T expire, they live beyond the termination of an RDS instance -- you have to delete them manually
+- Technically, you could reach a 5 minute Recovery Point Objective
+
+### RDS Backup - Automated Backups
+- Occur once per day
+- Think of them as automated snapshots
+- If using single AZ, plan for a small IO pause and do it during downtime
+- Every 5 mins, Transaction Logs are recorded to S3. With these plus snapshots; you have a 5 Minute Recovery Point Objective 
+- Retention Period. 0 - 35 days before AWS deletes the automated backups. If you select 35 days, you can restore to any point in time over that 35 day period
+- To avoid losing data beyond 35 days, you need to do a final manual snapshot
+
+### RDS Backups - Cross-Region Replication
+- RDS can replicate backups to another region (both snapshots and transaction logs)
+- Charges apply for the cross-region data copy and for the storage in the destination region
+- This feature must be enabled
+
+### RDS Backsup - Restores
+- Creates a new RDS instance when you restore an automated backup or manual snapshot
+- Snapshot restore is a single point in time, at the time of creation of the snapshot
+- Automated backups are restorable to any 5 minute point in time
+
+## RDS Read Replicas
+RDS Read Replicas can be added to an RDS Instance - 5 direct per primary instance.
+- READ-ONLY
+- They can be in the same region, or cross-region replicas.
+- They provide read performance scaling for the instance, but also offer low RTO recovery for any instance failure issues
+- They don't help with data corruption as the corruption will be replicated to the RR
+- Asynchronous replication
+EXAM: Synchronous is MultiAZ, asynchronous is Read Replicas
+
+### Read Replicas - Why do they matter?
+- Read performance and read scaling. 
+-- You get 5 direct read-replicas per DB instance, each providing add'l instance of read performance
+-- Read-replicas can have read-replicas, but then lag starts to be a problem
+-- Global performance improvements
+- Recovery Point and Recovery Time Objective benefits
+-- Snapshots/Backups improve RPO, with RR's offering a near 0 RPO (little potential for data loss)
+-- RR's have low RTO. NOTE: For Failure only, not corruption. The corruption is also likely replicated
+- Read-replicas are Read-only until promoted (until activated), then they become a normal RDS instance
+- Since you can cross-region replicate, you get Global Resilience
+
+## Demo - RDS - MultiAZ & Snapshot Restore with RDS
+Working with RDS Multi AZ mode and snapshot restores
+
+Steps:
+1. 1 click deploy
+2. Set up WP (The Best Cats!!, admin, 4n1m4ls4L1f3, test@test.com), create blog post
+3. Create snapshot: RDS > select DB > Actions, Take snapshot > name "a4lwordpress-with-cat-post-mysql-8032" > Take snapshot
+4. Enable MultiAZ: RDS > select database > Modify > Enable MultiAZ (this part costs money so I'm not doing it) 
+
+Demo 2 - Restore RDS in the case of data corruption
+Steps:
+1. Change WP blog post text to simulate 'corrupted' data
+2. RDS > Snapshots > select snap, Actions, Restore Snapshot > name "a4lwordpress-restore" > select burstable somethings > select RDSsecurity for SG > Create/Restore
+NOTE: Restoring RDS from snapshot creates a NEW instance
+3. Point to new DB: EC2 connect > cd /var/www/html >
+`sudo nano wp-config.php` >
+Get new restored RDS endpoint and prepare to paste it into DB hostname in nano > paste into correct spot > ctrl+o to save/write > ctrl+x to exit
