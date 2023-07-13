@@ -3012,3 +3012,4 @@ NOTE: Restoring RDS from snapshot creates a NEW instance
 3. Point to new DB: EC2 connect > cd /var/www/html >
 `sudo nano wp-config.php` >
 Get new restored RDS endpoint and prepare to paste it into DB hostname in nano > paste into correct spot > ctrl+o to save/write > ctrl+x to exit
+4. Cleanup > Delete restore snapshot > CFN delete stack
