@@ -3013,3 +3013,56 @@ NOTE: Restoring RDS from snapshot creates a NEW instance
 `sudo nano wp-config.php` >
 Get new restored RDS endpoint and prepare to paste it into DB hostname in nano > paste into correct spot > ctrl+o to save/write > ctrl+x to exit
 4. Cleanup > Delete restore snapshot > CFN delete stack
+
+## RDS - Security
+- In transit encryption (SSL/TLS) available for RDS and can be set to Mandatory on a per user basis
+- At Rest encrpytion available via KMS and EBS encryption
+- Transparent Data Encryption: Encryption handled within the database engine
+-- RDS Oracle supports TDE using CloudHSM (even more secure as the key management is customer now AWS)
+
+### RDS - Security - IAM Authentication
+You can configure RDS to use IAM user authentication against a DB
+- AUTHORIZATION is still handled internally by DB engine
+- Storage, logs, snapshots, and replicas all encrypted
+- Encryption can't be removed
+
+## Amazon RDS Custom
+Amazon RDS Custom is a managed database service for applications that require customization of the underlying operating system and database environment.
+- fills the gap between RDS and EC2 running a DB engine
+- RDS is fully managed so OS/engine access is limited, DB on EC2 is self-managed, but has overhead. RDS Custom bridges this gap
+- RDS Custom works for MS SQL and Oracle
+- Can connect using SSH, RDP, Session Manager
+- Customizing RDS Custom? Make sure to look at RDS DB Automation settings to ensure no disruptions (pause automation, customize, restart automation)
+
+## Aurora Architecture
+Aurora [Provisioned] is a AWS designed relational database engine officially part of RDS. Aurora implements a number of radical design changes which offer significant performance and feature improvements over other RDS database engines.
+- Uses a "cluster", which other RDS engines don't have. Cluster contains a primary instance + 0 or more replicas which have read capability during normal operation
+- For storage, Aurora uses a Cluster Volume, not local storage; faster provisioning, higher availability, better performance
+- Max cluster volume space of 128 TiB
+- Can have up to 15 Replicas
+- Storage is SSD based; high IOPS, low latency
+
+### Aurora - Billing
+- "High watermark billing" -- If you scale up to 50 TiB and then scale down to 40, you'll still be paying for the full 50. Freed up storage can be re-used
+- No free-tier option
+- Aurora does not support micro-instances. Beyond RDS SingleAZ (micro), Aurora offers better value
+- 100% Database size in backups are included
+- Backup restores create a new cluster
+- Backtrack: A rollback feature that lets you roll back to your existing cluster but to a previous point in time. "in place rewinds"
+
+## Aurora Serverless
+Serverless VS Provisioned
+Aurora Serverless provides a version of the Aurora DB product where you don't need to statically provision DB instances of a certain size or worry about managing DB instances
+- Removes the overhead of managing individual DB instances
+- Uses concept of Arurora Capacity Units (ACUs)
+- Serverless cluster has a min and max ACU tht you choose, can go to 0 and be paused, cluster adjusts based on load
+- Same resilience as Provisioned (6 copies across AZs)
+
+### Aurora Serverless - Uses
+- For infrequently used applications
+- New applications (where you're unsure of load levels)
+- For variable workloads / unpredictable workloads
+- For dev and test databases (since it can pause itself)
+- Multi-tenant applications (like subscribing to app), where load is directed related to customer use/revenue
+
+## DEMO - Migrating to Aurora Serverless. Advised to not actually do per tutorial, just watch
