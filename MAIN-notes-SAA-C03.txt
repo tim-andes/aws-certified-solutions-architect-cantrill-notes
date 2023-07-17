@@ -3029,7 +3029,7 @@ You can configure RDS to use IAM user authentication against a DB
 ## Amazon RDS Custom
 Amazon RDS Custom is a managed database service for applications that require customization of the underlying operating system and database environment.
 - fills the gap between RDS and EC2 running a DB engine
-- RDS is fully managed so OS/engine access is limited, DB on EC2 is self-managed, but has overhead. RDS Custom bridges this gap
+- RDS is fully managed, so OS/engine access is limited. DB on EC2 is self-managed, but has overhead. RDS Custom bridges this gap
 - RDS Custom works for MS SQL and Oracle
 - Can connect using SSH, RDP, Session Manager
 - Customizing RDS Custom? Make sure to look at RDS DB Automation settings to ensure no disruptions (pause automation, customize, restart automation)
@@ -3066,3 +3066,19 @@ Aurora Serverless provides a version of the Aurora DB product where you don't ne
 - Multi-tenant applications (like subscribing to app), where load is directed related to customer use/revenue
 
 ## DEMO - Migrating to Aurora Serverless. Advised to not actually do per tutorial, just watch
+
+## Aurora Global Database
+Aurora global databases are a feature of Aurora Provisioned clusters which allow data to be replicated globally providing significant RPO and RTO improvements for business continuity and disaster recovery planning. Additionally, global databases can provide performance improvements for customers .. with data being located closer to them, in a read-only form.
+- Global level Aurora, primary region and 5 secondary region. Secondary clusters are read-only. Each secondary region has up to 16 replicas
+EXAM: Great for Cross-Region Disaster Recovery and Business Continuity. ~1s replication times
+EXAM: Global Read Scaling: Low latency performance improvements to global customers
+EXAM: ~1s replication or less between regions
+
+## Aurora Provisioned - Multi-master writes
+Allows Aurora cluster to have multiple instances that are all capable of both reads and writes
+- No lengthy failovers since replicas already have R/W capability
+
+## RDS Proxy
+Amazon RDS Proxy is a fully managed, highly available database proxy for Amazon Relational Database Service (RDS) that makes applications more scalable, more resilient to database failures, and more secure.
+- Why do you want RDS Proxy? Opening/Closing connections consumes resources, takes time which creates latency. Esp true with serverless. Handling failure of DB is difficult
+- RDS proxy changes your architecture; instead of your app connecting to a DB 
