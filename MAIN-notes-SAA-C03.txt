@@ -3081,4 +3081,48 @@ Allows Aurora cluster to have multiple instances that are all capable of both re
 ## RDS Proxy
 Amazon RDS Proxy is a fully managed, highly available database proxy for Amazon Relational Database Service (RDS) that makes applications more scalable, more resilient to database failures, and more secure.
 - Why do you want RDS Proxy? Opening/Closing connections consumes resources, takes time which creates latency. Esp true with serverless. Handling failure of DB is difficult
-- RDS proxy changes your architecture; instead of your app connecting to a DB 
+- RDS proxy changes your architecture by creating long term connection pools; instead of your app connecting to a DB every time its used, its connected to a proxy which are already open to a pool of DB connections
+- Abstracts client away from DB failure
+
+### RDS Proxy - When to use?
+- too many connection errors esp. if using small/burst instances
+- when using AWS Lambda: time saved, connection reuse, IAM auth
+- Long running connections (SaaS apps) needing low latency
+- Where resilience to DB failure is a priority
+- To further reduce failover time
+- Make DB transparent to application
+
+### RDS Proxy - Key Facts (EXAM)
+- Fully managed DB proxy for RDS/Aurora
+- Auto-scaling, highly available by default
+- Provides connection pooling to reduce DB load
+- RDS proxy only accessibly from a VPC
+- Accessed via a proxy endpoint; no app changes
+- can enfore SSL/TLS
+- Can reduce failover time by over 60%
+- Abstracts failure away from your applications
+
+## RDS - Database Migration Service (DMS)
+- The Database Migration Service (DMS) is a managed service which allows for 0 data loss, low or 0 downtime migrations between 2 database endpoints.
+- The service is capable of moving databases INTO or OUT of AWS.
+- Runs using a replication instance via EC2, requiring Source/Destination endpoints and Source/Target Databases
+- ONE of the endpoints must be running on AWS. Endpoints store connection info for source/target DBs
+- Replication Instance runs one or more Replication Tasks
+- Jobs can be 1 of 3 types: 
+1. Full Load (one-off full-data migration), 
+2. Full Load + CDC (change data capture, for ongoing replication), 
+3. or CDC only (to replicate only data changes, using native tools to bulk move initial data outside of DMS)
+- Schema Conversion Tool assists with schema conversion
+EXAM: DB Migration question? Default to DMS as answer, especially if talking about "no-downtime migration"
+
+### DMS - Schema Conversion Tool
+- Used when converting one DB engine to another
+- NOT USED for moving between COMPATIBLE DB ENGINES
+
+#### DMS and Snowball devices
+- A physical device for moving data physically
+- Larger migrations (multi-TB in size) over networks takes times and consumes capacity, so DMS can utilize Snowball
+
+## Network Storage & Data Cycle
+The Elastic File System (EFS) is an AWS managed implementation of NFS which allows for the creation of shared 'filesystems' which can be mounted within multi EC2 instances.
+- For scalability / resiliency
