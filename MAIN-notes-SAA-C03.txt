@@ -3123,6 +3123,23 @@ EXAM: DB Migration question? Default to DMS as answer, especially if talking abo
 - A physical device for moving data physically
 - Larger migrations (multi-TB in size) over networks takes times and consumes capacity, so DMS can utilize Snowball
 
-## Network Storage & Data Cycle
+
+## Network Storage & Data Cycle - EFS (Elastic File System)
 The Elastic File System (EFS) is an AWS managed implementation of NFS which allows for the creation of shared 'filesystems' which can be mounted within multi EC2 instances.
 - For scalability / resiliency
+- EFS is an implementation of NSFv4 (network file system version 4)
+- Can be mounted in EC2 linux and shared between many EC2 instances
+- EFS is private service that mounts targets inside a VPC
+- Can be accessed from on-premises via VPN or AWS Direct Connect (DX)
+- Uses POSIX permissions (a linux thing)
+EXAM: EFS is Linux ONLY
+EXAM: 2 performance modes: 1. General Purpose 2. Max I/O
+EXAM: 2 throughput modes: 1. Bursting 2. Provisioned
+EXAM: 2 storage classes: 1. Standard 2. Infrequent Access (IA) - S3 Lifecycle policies can be used with these
+
+## DEMO - Implementing EFS
+Implement a simple EFS file system in a VPC, configure mount targets and configure two EC2 instances to mount the file system within a mount point.
+
+Steps:
+1. 1 click deploy
+2. EFS > Create File System > Customize > name "A4L-EFS", storage class Standard, 
