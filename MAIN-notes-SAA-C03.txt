@@ -3072,7 +3072,7 @@ Aurora global databases are a feature of Aurora Provisioned clusters which allow
 - Global level Aurora, primary region and 5 secondary region. Secondary clusters are read-only. Each secondary region has up to 16 replicas
 EXAM: Great for Cross-Region Disaster Recovery and Business Continuity. ~1s replication times
 EXAM: Global Read Scaling: Low latency performance improvements to global customers
-EXAM: ~1s replication or less between regions
+EXAM: ~1s replication or less between regions. Recovery Point Objective (RPO) of 1 second and a Recovery Time Objective (RTO) of less than 1 minute
 
 ## Aurora Provisioned - Multi-master writes
 Allows Aurora cluster to have multiple instances that are all capable of both reads and writes
