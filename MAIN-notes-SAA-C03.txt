@@ -3140,6 +3140,32 @@ EXAM: 2 storage classes: 1. Standard 2. Infrequent Access (IA) - S3 Lifecycle po
 ## DEMO - Implementing EFS
 Implement a simple EFS file system in a VPC, configure mount targets and configure two EC2 instances to mount the file system within a mount point.
 
+Video: https://learn.cantrill.io/courses/1820301/lectures/41301666
+
 Steps:
 1. 1 click deploy
-2. EFS > Create File System > Customize > name "A4L-EFS", storage class Standard, 
+2. Create EFS: EFS > Create File System > Customize > name "A4L-EFS", storage class Standard, disable Encryption of data at rest, pPrformance Settings: Bursting > Next
+3. EFS Network Settings: Create mount targets > Delete default SG's (blue bloxes) > Attach APP subnets: us-east-1a, "sn-app-A" etc > Security Group x3 "IMPLEMENTINGEFS[...]" > Next > Skip File System policy (optional) > Next > Review and CREATE
+NOTE: any AZs within a VPC you're consuming the services provided by EFS, you should be creating a mount target
+4. EC2 Instances > duplicate EC2 instance tab > tab 1, EC2 connect to instance A, tab 2 connect to B
+5. EC2 Connect Instance A > `sudo mkdir -p /efs/wp-content` (creates file as well as any paths like /efs/ with the -p) >
+`sudo dnf -y install amazon-efs-utils` package of tools which allows this instance to interact with EFS >
+`cd /etc` >
+`sudo nano /etc/fstab` >
+Paste this into 3rd line of nano: `file-system-id:/ /efs/wp-content efs _netdev,tls,iam 0 0` > 
+6. Paste EFS file system ID of A4L EFS into the nano text above, replacing 'file-system-id`
+7. Save Nano: ctrl+o to save, Enter, ctrl+x to exit
+8. `df -k` still not showing anything. Time to mount file system: `sudo mount /efs/wp-content`, now `df -k` will show it >
+`cd /efs/wp-content` (move into new file system) >
+`sudo touch amazingtestfile.txt` (create test file)
+9. Instance B Connect: 
+df -k >
+sudo dnf -y install amazon-efs-utils >
+sudo mkdir -p /efs/wp-content >
+sudo nano /etc/fstab >
+file-system-id:/ /efs/wp-content efs _netdev,tls,iam 0 0 >
+sudo mount /efs/wp-content >
+cd /efs/wp-content/ >
+ls -la -- you'll see amazingtestfile.txt in the directory which was created in instance A 
+10. Clean up: EFS > Delete file system > Cloudformation > Delete stack
+
