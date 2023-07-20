@@ -3169,3 +3169,52 @@ cd /efs/wp-content/ >
 ls -la -- you'll see amazingtestfile.txt in the directory which was created in instance A 
 10. Clean up: EFS > Delete file system > Cloudformation > Delete stack
 
+## AWS Backup
+Use AWS Backup to centralize and automate data protection across AWS services and hybrid workloads. AWS Backup offers a cost-effective, fully managed, policy-based service that further simplifies data protection at scale. AWS Backup also helps you support your regulatory compliance or business policies for data protection. Together with AWS Organizations, you can use AWS Backup to centrally deploy data protection policies to configure, manage, and govern your backup activity across your company’s AWS accounts and resources.
+- fully managed data-protection
+- consolidate backups across accounts/regions into one place
+
+### AWS Backup - Components
+- Backup Plans: frequency, window, lifecycle, vault, region copy
+- Backup resources: the resources being backed up
+- Vaults: destination for backups (container). Assign KMS key for encryption
+- Vault Lock: WORM write-one-read-many, 72 hour cool off, then even AWS can't delete
+- On-Demand backups when you require
+- PITR: Point in time recovery
+
+
+# HA & Scaling
+
+## Regional and Global AWS Architecture
+Global Components - Global Svc Location/Discovery, Content Delivery+optimization, global health checks/failover
+Regional Components - Regional entry point, scaling/resilience, app svc's/components
+
+## Evolution of Elastic Load Balancer (ELB)
+Currently 3 types of ELBs available in AWS split between v1 (avoid this) and v2 (use this). "ELB" refers to all 3.
+- Version 1: Classic Load Balancer (CLB), 2009. Not really layer 7, only one SSL per CLB
+- Version 2: 
+-- v2-1. Application Load Balancer (ALB): HTTP/HTTPS/WebSocket. Layer 7 device
+-- v2-2. Network Load Balancer (NLB): TCP, TLS, UDP. For apps that don't use HTTP/HTTPS, like email or SSH servers
+- Version 2 is faster, cheaper, supports target groups and rules
+
+## Elastic Load Balancer (ELB) 
+Job of a Load Balancer is to accept connections from a user and distribute that connection to the backend of the app
+- "dual stack" means using both IPv4/6
+- config'd to run in 2+ AZ's. 1+ nodes are placed into a subnet in each AZ and scale with load
+- Each ELB confg'd with an A record DNS name which resolves to the ELB nodes. Requests distributed to nodes, nodes scale within AZ
+EXAM: ELB can be internet-facing (given public and private IP Addresses) or internal (given only private IP addresses)
+EXAM: Internet-Facing LB can still access both public AND private EC2 instances
+EXAM: /27 or larger subnet is minimum for load balancer. /28 is 2nd most correct answer
+
+### ELB - Cross-Zone Load Balancing
+- Load Balancer Nodes can send requests across an AZ to any other registered instance in other AZs for further balancing
+- Comes enabled as default
+
+## ELB EXAM
+EXAM: ELB is a DNS A Records pointing at 1+ Nodes per AZ
+EXAM: Nodes can scale per subnet
+EXAM: Internet-facing nodes have public IPv4 IPs
+EXAM: Internal-facing nodes have only Private IPs
+EXAM: EC2 instance does NOT need to be public to work with an internet-facing LB
+EXAM: Listener Config controls WHAT the LB does
+EXAM: ELBs required 8+ free IPs per subnet, and at least /27 subnet to allow scaling
