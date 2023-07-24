@@ -3218,3 +3218,58 @@ EXAM: Internal-facing nodes have only Private IPs
 EXAM: EC2 instance does NOT need to be public to work with an internet-facing LB
 EXAM: Listener Config controls WHAT the LB does
 EXAM: ELBs required 8+ free IPs per subnet, and at least /27 subnet to allow scaling
+
+
+## Application Load balancing (ALB) vs Network Load Balancing (NLB)
+When to pick ALB vs NLB.
+- Remember, always avoid Version 1 Classic Load Balancer -- does not scale.
+
+### Version 2, APPLICATION Load Balancers: 
+- Layer 7 LB's. Listens on either HTTP and/or HTTPS
+- Doesn't listen to any other Layer 7 protocols (SMTP, SSH, Gaming, etc)
+- Can't listen to TCP/TLS/UDP
+- Can't do end-to-end unbroken SSL encryption as the request is terminated on ALB and new connection is made from ALB -> App
+NOTE: if you need unbroken encryption, you need to use a Network Load Balancer
+- ALBs using HTTPS must have an SSL cert on that LB
+- ALBs are slower than NLB as they're more complex
+- As they are LAyer 7, they can do health checks at layer 7
+- "Rules" - Direct connections which arrive at a listener, rules processed in priority order, there is a final Default Rule as a catch-all
+- "Rule Conditions"
+- "Actions" - follows rules
+NOTE: if you need unbroken encryption, you need to use a Network Load Balancer
+
+### Version 2: NETWORK Load Balancers
+- Layer 4 LBs: TCP, TLS, UDP, TCP_UDP
+- No visibility or understanding of HTTP/S; can't see headers, cookies, session stickiness
+- NLBs are super fast, about 25% of ALB latency
+- Good for SMTP, SSH, game servers which don't use web protocols, financial apps which don't use web protocols
+- health checks not app aware, they just check ICMP/TCP handshakes
+- can have static IPs which is useful for whitelisting
+- can forward TCP to instances for UNBROKEN ENCRYPTION
+- used for PRIVATE LINK to provide services to other VPCs
+
+EXAM: Need unbroken encryption? Network Load Balancer
+EXAM: Need highest performance LB? NLB
+EXAM: Need Private Link? NLB
+
+EXAM--
+### ALB VS NLB
+- Need unbroken encryption? Network Load Balancer
+- Static IP for whitelisting? NLB
+- Best performance? NLB
+- Operate on non-HTTP/S? NLB
+- Private Link? NLB
+- Otherwise... ALB
+
+## EC2 Launch Configuration and Templates
+Both alllow you to define config of an EC2 instance in advance
+- Including....
+-- AMI, instance type, storage & keypair, networking and SGs, userdata and IAM role
+- Configs are NOT editable; defined one. But, Launch Templates have versions
+- LT came after LC so it has newr features like T2/T3 unlimited, placement ggroups, capacity reserveations, elastic graphics
+NOTE: AWS recommends using Launch Templates over LCs
+- LC's have one use: only used as part of Auto Scaling groups
+
+## Auto Scaling Groups
+Auto Scaling group contains a collection of Amazon EC2 instances that are treated as a logical grouping for the purposes of automatic scaling and management. An Auto Scaling group also enables you to use Amazon EC2 Auto Scaling features such as health check replacements and scaling policies. Both maintaining the number of instances in an Auto Scaling group and automatic scaling are the core functionality of the Amazon EC2 Auto Scaling service.
+
