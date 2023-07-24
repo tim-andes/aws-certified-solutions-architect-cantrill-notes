@@ -3321,6 +3321,25 @@ Scaling policies are NOT REQUIRED on ASGs
 - Scaling based on SQS - ApproximateNumerOfMessagesVisible
 
 ## ASG - Lifecycle Hooks
-Lifecycle hooks enable you to perform custom actions by pausing instances as an Auto Scaling group launches or terminates them. When an instance is paused, it remains in a wait state either until you complete the lifecycle action using the complete-lifecycle-action command or the CompleteLifecycleAction operation, or until the timeout period ends (one hour by default) then CONTINUE or ABANDON.
+Lifecycle hooks enable you to perform custom actions by pausing instances as an Auto Scaling group launches or terminates them. When an instance is paused, it remains in a WAIT state either until you 1. complete the lifecycle action using the complete-lifecycle-action command or 2. the CompleteLifecycleAction operation, or 3. until the timeout period ends (one hour by default) then CONTINUE or ABANDON.
 - Configure Custom Actions on instances during ASG actions (launch or terminate transitions)
 - Can be config'd with EventBridge or SNS Notifications
+
+## ASG - Health Check Comparison: EC2 VS ELB
+Amazon EC2 Auto Scaling can determine the health status of an instance using one or more of the following: 
+- Amazon EC2. To identify hardware and software issues that may impair an instance. This is the Default for ASG
+- Elastic Load Balancing (ELB). Disable by default. ELB health checks can be application aware (Layer 7)
+- Custom Health Checks. Instances marked Healthy/Unhealthy by an external system
+
+Health Check Grace Period (default 300s). Delay before starting health checks which first allows system to launch, bootstrap, application start 
+
+## Elastic Load Balancer - SSL Offload & Session Stickiness
+Three ways a load balancer handles secure connections: Bridge, Pass Through, Offloading
+- Bridging (default). SSL encrypt/decrypt happens at ELB, but instances still need SSL certs and compute required for crpyto operations
+- Pass Through. No encypt/decrpyt happens at ELB, instead each instance has SSL Cert installed
+- Offload. SSL decrypted at ELB and then only plain text HTTP goes through to instance. Instance doesn't need SSL cert or crypto compute capability
+
+### ELB - Connection Stickiness 
+- With no stickiness, connections are distributed across all in-service backend instances
+- With stickiness, a cookie is generated (AWSALB) which locks the device to a single backend instance for a set duration: 1 second to 7 days
+NOTE: Instead of worrying about this, just make sure servers are stateless and state is stored elsewhere like the DB
