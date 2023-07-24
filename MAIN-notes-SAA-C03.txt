@@ -3285,7 +3285,7 @@ Scaling policies are rules. Three ways you can scale auto-scaling groups:
 3. Dynamic Scaling (3 subtypes). Rules which react to something and change 
 - a. Simple Scaling. Often a pair of rules: "CPU above 50%,  +1. CPU below 50%, -1."
 - b. Stepped Scaling. Bigger +/- based on difference (generally use this over Simple unless simplicity is the priority)
-- c. Target Tracking. Eg Desired aggregate CPU to stay at 40%
+- c. Target Tracking. Eg.. Desired aggregate CPU to stay at 40%
 Cooldown Periods: How long to wait at the end of a scaling action before doing another
 
 ### ASG - Health
@@ -3313,6 +3313,14 @@ EXAM: Use with Application Load Balancers for elasticity; abstraction
 EXAM: ASG defines WHEN/WHERE, Launch Templates/Configs define WHAT
 
 ## ASG - Scaling Policies
-- Step / Simple scaling: you choose scaling metrics and threshold values for the CloudWatch alarms that trigger the scaling process. You also define how your Auto Scaling group should be scaled when a threshold is in breach for a specified number of evaluation periods.
-- Step / Simple scaling require you to create CloudWatch alarms for the scaling policies. Both require you to specify the high and low thresholds for the alarms
-- Step / Simple scaling require you to define whether to add or remove instances, and how many, or set the group to an exact size
+Scaling policies are NOT REQUIRED on ASGs
+- Manual - When you set Min / Desired / Max. Best for Testing or when urgent
+- Step / Simple scaling: you choose scaling metrics and threshold values for the CloudWatch alarms that trigger the scaling process. You also define how your Auto Scaling group should be scaled when a threshold is in breach for a specified number of evaluation periods
+-- Step / Simple scaling require you to create CloudWatch alarms for the scaling policies. Both require you to specify the high and low thresholds for the alarms
+-- Step / Simple scaling require you to define whether to add or remove instances, and how many, or set the group to an exact size
+- Scaling based on SQS - ApproximateNumerOfMessagesVisible
+
+## ASG - Lifecycle Hooks
+Lifecycle hooks enable you to perform custom actions by pausing instances as an Auto Scaling group launches or terminates them. When an instance is paused, it remains in a wait state either until you complete the lifecycle action using the complete-lifecycle-action command or the CompleteLifecycleAction operation, or until the timeout period ends (one hour by default) then CONTINUE or ABANDON.
+- Configure Custom Actions on instances during ASG actions (launch or terminate transitions)
+- Can be config'd with EventBridge or SNS Notifications
