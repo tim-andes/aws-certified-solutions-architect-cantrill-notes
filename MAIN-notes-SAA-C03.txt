@@ -3272,4 +3272,47 @@ NOTE: AWS recommends using Launch Templates over LCs
 
 ## Auto Scaling Groups
 Auto Scaling group contains a collection of Amazon EC2 instances that are treated as a logical grouping for the purposes of automatic scaling and management. An Auto Scaling group also enables you to use Amazon EC2 Auto Scaling features such as health check replacements and scaling policies. Both maintaining the number of instances in an Auto Scaling group and automatic scaling are the core functionality of the Amazon EC2 Auto Scaling service.
+- "seal healing" for EC2
+- uses launch templates or configs to launch all scaled instances
+- Auto-scaling group has three important values: Minimum size, desired capacity, maximum size (eg 1:2:4), called min/desired/max or x/y/z
+- Auto-scaling keeps running instances at the DESIRED capacity by provisioning/terminating instances
+- Scaling Policies automate based on metrics like CPU load
 
+### Auto-Scaling Groups - Scaling Policies
+Scaling policies are rules. Three ways you can scale auto-scaling groups:
+1. Manual Scaling. Manually adjust min/desired/max
+2. Scheduled Scaling. Time-based adjustment
+3. Dynamic Scaling (3 subtypes). Rules which react to something and change 
+- a. Simple Scaling. Often a pair of rules: "CPU above 50%,  +1. CPU below 50%, -1."
+- b. Stepped Scaling. Bigger +/- based on difference (generally use this over Simple unless simplicity is the priority)
+- c. Target Tracking. Eg Desired aggregate CPU to stay at 40%
+Cooldown Periods: How long to wait at the end of a scaling action before doing another
+
+### ASG - Health
+ASG performs healths checks using EC2 status checks
+- Self healing: If ASG detects downed instance, it will replace the downed instance with a newly provisioned one
+
+### ASG - ASG + Load Balancers
+- Uses Target Groups
+- Can use Load Balancer health checks instead of EC2 health checks; application aware health checks (which ec2 health checks are not)
+
+### ASG - Scaling Processes
+- LAUNCH and TERMINATE (can SUSPEND / RESUME) any process, like suspending the Launch process to not scale out if event takes place
+- AddToLoadBalancer - Add to LB on launch
+- AlarmNotification - Accept notification from CloudWatch
+- AZRebalance - Balances instances evenly across all AZs
+- HealthCheck - health checks on/off
+- ReplaceUnhealthy
+- ScheduledActions
+- Stanby or InService
+
+### ASG - Final Points
+EXAM: Autoscaling groups are free; only the resources created are billed (use cooldowns to avoid rapid scaling and increased costs)
+EXAM: Think about using mor smaller instances for granularity and higher control and more cost-effective
+EXAM: Use with Application Load Balancers for elasticity; abstraction
+EXAM: ASG defines WHEN/WHERE, Launch Templates/Configs define WHAT
+
+## ASG - Scaling Policies
+- Step / Simple scaling: you choose scaling metrics and threshold values for the CloudWatch alarms that trigger the scaling process. You also define how your Auto Scaling group should be scaled when a threshold is in breach for a specified number of evaluation periods.
+- Step / Simple scaling require you to create CloudWatch alarms for the scaling policies. Both require you to specify the high and low thresholds for the alarms
+- Step / Simple scaling require you to define whether to add or remove instances, and how many, or set the group to an exact size
