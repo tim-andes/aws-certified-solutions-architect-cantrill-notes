@@ -3343,3 +3343,23 @@ Three ways a load balancer handles secure connections: Bridge, Pass Through, Off
 - With no stickiness, connections are distributed across all in-service backend instances
 - With stickiness, a cookie is generated (AWSALB) which locks the device to a single backend instance for a set duration: 1 second to 7 days
 NOTE: Instead of worrying about this, just make sure servers are stateless and state is stored elsewhere like the DB
+
+## DEMO - EMB - Seeing Session Stickiness in Action
+How session stickiness works with Application Load Balancers
+Video: https://learn.cantrill.io/courses/1820301/lectures/43242687
+
+## ADVANCED DEMO - Architecture Evolution
+Stage 1 - Setup the environment and manually build wordpress - https://learn.cantrill.io/courses/1820301/lectures/41301448
+Stage 2 - Automate the build using a Launch Template
+Stage 3 - Split out the DB into RDS and Update the LT
+Stage 4 - Split out the WP filesystem into EFS and Update the LT
+Stage 5 - Enable elasticity via a ASG & ALB and fix wordpress (hardcoded WPHOME)
+Stage 6 - Cleanup
+
+## Gateway Load Balancer (GWLB)
+Gateway Load Balancers enable you to deploy, scale, and manage virtual appliances, such as firewalls, intrusion detection and prevention systems, and deep packet inspection systems. It combines a transparent network gateway (that is, a single entry and exit point for all traffic) and distributes traffic while scaling your virtual appliances with the demand.
+- At high level, GWLBs have two main components:
+1. Endpoints. Traffic enters/leaves via these endpoints
+2. The GWLB itself; balances packets across multiple backend instances
+
+- Traffic and metadata is tunneled using GENEVE protocol
