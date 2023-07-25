@@ -3363,3 +3363,4 @@ Gateway Load Balancers enable you to deploy, scale, and manage virtual appliance
 2. The GWLB itself; balances packets across multiple backend instances
 
 - Traffic and metadata is tunneled using GENEVE protocol
+- GWLB = network security at scale
