@@ -3211,7 +3211,7 @@ EXAM: /27 or larger subnet is minimum for load balancer. /28 is 2nd most correct
 - Comes enabled as default
 
 ## ELB EXAM
-EXAM: ELB is a DNS A Records pointing at 1+ Nodes per AZ
+EXAM: ELB is a DNS A Record pointing at 1+ Nodes per AZ
 EXAM: Nodes can scale per subnet
 EXAM: Internet-facing nodes have public IPv4 IPs
 EXAM: Internal-facing nodes have only Private IPs
@@ -3232,7 +3232,7 @@ When to pick ALB vs NLB.
 NOTE: if you need unbroken encryption, you need to use a Network Load Balancer
 - ALBs using HTTPS must have an SSL cert on that LB
 - ALBs are slower than NLB as they're more complex
-- As they are LAyer 7, they can do health checks at layer 7
+- As they are Layer 7, they can do health checks at Layer 7
 - "Rules" - Direct connections which arrive at a listener, rules processed in priority order, there is a final Default Rule as a catch-all
 - "Rule Conditions"
 - "Actions" - follows rules
@@ -3251,6 +3251,7 @@ NOTE: if you need unbroken encryption, you need to use a Network Load Balancer
 EXAM: Need unbroken encryption? Network Load Balancer
 EXAM: Need highest performance LB? NLB
 EXAM: Need Private Link? NLB
+EXAM: Static IP? NLB
 
 EXAM--
 ### ALB VS NLB
@@ -3304,11 +3305,11 @@ ASG performs healths checks using EC2 status checks
 - HealthCheck - health checks on/off
 - ReplaceUnhealthy
 - ScheduledActions
-- Stanby or InService
+- Standby or InService
 
 ### ASG - Final Points
 EXAM: Autoscaling groups are free; only the resources created are billed (use cooldowns to avoid rapid scaling and increased costs)
-EXAM: Think about using mor smaller instances for granularity and higher control and more cost-effective
+EXAM: Think about using more smaller instances for granularity - higher control and more cost-effective
 EXAM: Use with Application Load Balancers for elasticity; abstraction
 EXAM: ASG defines WHEN/WHERE, Launch Templates/Configs define WHAT
 
@@ -3328,10 +3329,10 @@ Lifecycle hooks enable you to perform custom actions by pausing instances as an 
 ## ASG - Health Check Comparison: EC2 VS ELB
 Amazon EC2 Auto Scaling can determine the health status of an instance using one or more of the following: 
 - Amazon EC2. To identify hardware and software issues that may impair an instance. This is the Default for ASG
-- Elastic Load Balancing (ELB). Disable by default. ELB health checks can be application aware (Layer 7)
+- Elastic Load Balancing (ELB). Disabled by default. ELB health checks can be application aware (Layer 7)
 - Custom Health Checks. Instances marked Healthy/Unhealthy by an external system
 
-Health Check Grace Period (default 300s). Delay before starting health checks which first allows system to launch, bootstrap, application start 
+EXAM: Health Check Grace Period (default 300s); a delay before starting health checks which first allows system to launch, bootstrap, application start 
 
 ## Elastic Load Balancer - SSL Offload & Session Stickiness
 Three ways a load balancer handles secure connections: Bridge, Pass Through, Offloading
@@ -3364,3 +3365,56 @@ Gateway Load Balancers enable you to deploy, scale, and manage virtual appliance
 
 - Traffic and metadata is tunneled using GENEVE protocol
 - GWLB = network security at scale
+
+
+## Serverless and Application Services 
+
+### Architecture Deep Dive - Event-Driven Architecture
+Types of architecture:
+- MONOLOTHIC: everything is built together and coupled; everything is always running and incurring charges even if not being used; if one part fails, whole thing fails
+- TIERED: monolith broken apart into tiers that can be on same server or different servers. Tiers still coupled as they each connect to endpoint of next tier. Benefits are that tiers can be vertically scaled independently (server size of each tier can be increased).
+-- if you add load balancers between tiers, this abstracts tiers meaning that you can now horizontally scale tiers by adding instances (the tiers are no longer connected to each other but to LBs. Still not decoupled though.
+- QUEUE-BASED Decoupled Architecture: The queue would sit between components (tiers) to decouple, the components no longer require answers; now the components are using async communications
+- MICROSERVICE Architecture: tiers/components become Microservices that can be duplicated. There are Producers, Consumers, and Both
+-- Producers produce data, Consumers consume data/messages, 'Both' does ..both
+--- Events are what are consumed. Queues can be used to communicate events
+- EVENT DRIVEN Architecture: Event Producers / Event Consumers. You can have components that can do Both
+-- Best-practice Event-driven arch's have Event Routers, which are highly available central exchange points for Events. Nothing is sitting around waiting, they are activated when an Event is sent to them; only consumes resources while handling events (serverless)
+
+### Lambda
+- FaaS: Function as a Service - short running and focused
+- Lambda function: piece of code that lambda runs
+- Functions use a runtime like Python 3.8
+- Functions loaded into a runtime environment; env has a direct memory (indirect CPU) allocation
+- Billing: for the duration that the function runs
+- Lambda is a key part of Serverless architectures
+- Lambda Function: Think of it as the code + association wrappings/config; a deploment package. Stateless
+- You define Lambda resources like Memory (128MB -> 10240MB in 1MB steps), which then scales how much CPU you'll get (you can't directly control how much CPU). Storage in Lambda stored in /tmp 512MB -> 10240MB
+
+EXAM: Lambda function timeout 900s (15 minutes). Anything beyond 15 mins can't use Lambda directly
+
+#### Common Uses of Lambda
+- Serverless applications 
+- File processing
+- Database triggers
+- Serverless CRON
+- Real time stream data processing (kinesis + lambda)
+
+#### Lambda Networking Modes
+1. Public (Default)
+2. VPC
+
+1. Public: Could access Public AWS svc's like SQS, DynamoDB, or external like IMDB
+- Lambda functions have no access to VPC unless public IPs are provided and security controls allow external access
+2. Private (in VPC): Lambda functions running in a VPC obey ALL VPC networking rules (can't access external stuff unless configured as such). Eg. Could use a gateway endpoint to access dynamodb
+
+#### Lambda - Security
+- Execution Role: For Lambda env to access AWS p&s it needs an Execution Role to gain the role's permissions based on the role policy
+- Lambda Resource Policies: similar to bucket policy on S3 which controls WHO/WHAT can interact with a specific Lambda function. Eg. services like SNS or S3 being allowed to invoke the function
+
+### Lambda - Logging
+Lambda uses CloudWatch, CloudWatch Logs, and X-Ray
+- Logs from Lambda executions -> CloudWatch Logs
+- Metrics like invocation success/failures, retries, latency -> CloudWatch
+- Distributed Tracing Capability -> X-Ray. Eg. Trace the path of a user through an application
+NOTE: CloudWatch Logs requires permissions via the Execution Role
