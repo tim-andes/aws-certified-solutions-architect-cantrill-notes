@@ -3707,3 +3707,30 @@ Extract, transform (using script), and load Jobs
 ### Glue VS Data Pipeline (both do ETL)
 - Glue is serverless, ad-hoc, more cost-effective
 - Data Pipeline requires a server
+
+## Amazon MQ
+AmazonMQ is an open-source message broker; an AWS implementation of Apache ActiveMQ. Like a merge of SNS/SQS
+- Supports open standards such as JMS, AMQP, MQTT, OpenWire and STOMP
+-- If you need to support any of these, and use QUEUES and TOPICS - AmazonMQ is the tool to use.
+- Provides Queues and Topics (like SQS/SNS); one-to-one or one-to-many
+EXAM: Amazon MQ is NOT a public service; runs on a VPC and requires private networking to access it
+EXAM: AWS Integration required? Use SNS/SQS and not MQ. 
+EXAM: Migrate from an existing system with little to no app change? Amazon MQ
+EXAM: Need APIs like JMS or protocols like AMQP, MQTT, OpenWire, STOMP needed? Amazon MQ
+
+## Amazon AppFlow
+Amazon AppFlow is a fully managed integration service that enables you to securely transfer data between Software-as-a-Service (SaaS) applications like Salesforce, SAP, Zendesk, Slack, and ServiceNow, and AWS services like Amazon S3 and Amazon Redshift, in just a few clicks. 
+- With AppFlow, you can run data flows at enterprise scale at the frequency you choose: on a schedule, in response to a business event, or on demand. 
+- You can configure data transformation capabilities like filtering and validation to generate rich, ready-to-use data as part of the flow itself, without additional steps. 
+- AppFlow automatically encrypts data in motion, and allows users to restrict data from flowing over the public Internet for SaaS applications that are integrated with AWS PrivateLink, reducing exposure to security threats.
+-- Can use AppFlow Custom Connector SDK to build your own integration if the integration doesn't already exist
+- Exchange data between applications (connectors) using FLOWS; SYNC or AGGREGATE data
+- PUBLIC endpoints, but works with PrivateLink
+- CONNECTIONS store config/creds to access apps. Connections can be reused across many flows
+
+
+# GLOBAL CONTENT DELIVERY AND OPTIMIZATION
+## Cloudfront Architecture
+CloudFront is a Content Delivery network (CDN) within AWS.
+
+
