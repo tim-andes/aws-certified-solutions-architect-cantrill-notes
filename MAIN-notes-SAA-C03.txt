@@ -3660,3 +3660,37 @@ EXAM: CANNOT directly access the data via storage, only via APIs
 - Integrates with other AWS svc's like REKOGNITION and CONNECT
 
 ## Amazon Cognito - User and Identity Pools
+A user pool is a user directory in Amazon Cognito. With a user pool, your users can sign in to your web or mobile app through Amazon Cognito
+- Users can also sign in through social identity providers like Google, Facebook, Amazon, or Apple, and through SAML identity providers
+- Whether your users sign in directly or through a third party, all members of the user pool have a directory profile that you can access through a Software Development Kit (SDK).
+- Amazon Cognito identity pools (federated identities) enable you to create unique identities for your users and federate them with identity providers. With an identity pool, you can obtain temporary, limited-privilege AWS credentials to access other AWS services. 
+
+Cognito provides the following for web/mobile apps:
+- authentication
+- authorization
+- user management
+
+Cognito has 2 components:
+1. User pools: for sign-in. You get a JSON Web Token (JWT) if successful (but most AWS svc's don't use this JWT)
+- user directory mgmt/profiles, sign up and sign in (with UI), MFA and other security features
+- most AWS services CANNOT be accessed using JWT via User Pools
+- can use internal or social logins for sign in
+2. Identity pool: Swap external ID for temporary AWS credentials. 
+- Unauthenticated ID's; guest users
+
+USER POOLS = SIGN IN / SIGN UP
+IDENTITY POOLS = ABOUT SWAPPING ID TOKENS (with Google, Apple, etc) for temporary tokens to access AWS services
+
+### Cognito - Web ID Federation
+- First, User Pool JWT replaces all the different external token configs you'd need for handling different external IDs (User Pool removes admin overhead of handling all external social logins)
+- Next, app can pass this User Pool token through to an Identity Pool
+- Federated Identities can swap (Eg. give Google creds to swap for AWS creds)
+
+## AWS Glue
+- Fully managed SERVERLESS extract, transform, and load (ETL) service which makes it easy for customers to prepare and load their data for analytics
+-- Can create and run an ETL job with a few clicks in the AWS Management Console.
+- Simply point AWS Glue to your data stored on AWS, and AWS Glue discovers your data and stores the associated metadata (e.g. table definition and schema) in the AWS Glue Data Catalog. Once cataloged, your data is immediately searchable, queryable, and available for ETL.
+- Moves/transforms data between source/destination
+- Data Sources: Stores: S3, RDS, JDBC Compatible, DynamoDB. Data Sources: Streams: Kinesis Data Stream, Apache Kafka
+- Data Targets: S3, RDS, JDBC Databases
+- Crawls data sources and generates the AWS Glue Data Catalog
