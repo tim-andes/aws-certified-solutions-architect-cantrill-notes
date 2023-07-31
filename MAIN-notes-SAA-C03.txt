@@ -3768,4 +3768,21 @@ A service which allows the creation, management and renewal of certificates. It 
 -- These certificates get signed by a trusted authority AKA Chain of Trust
 
 - ACM can be a Public or Private Certificate Authority (CA)
-- ACM can generate or import certificates. If generated, it can auto-renew. If imported, you are responsible for renewal
+EXAM - ACM can generate or import certificates. If generated, it can auto-renew. If imported, you are responsible for renewal
+EXAM - Certificates can only be deployed out to SUPPORTED services (Eg. pretty much just CloudFront and ALBs, specifically NOT EC2)
+EXAM - Reminder, cannot use ACM with EC2
+EXAM - Certs can't leave the region they are generated/imported into
+EXAM - To use a cert with an ALB in ap-southeast-2, you need a CERT IN ACM in ap-southeast-2
+- EXAM -- GLOBAL services like CloudFront operate as though within us-east-1
+
+## Cloudfront and SSL/TLS
+- Each CloudFront distribution gets a Default Domain Name (CNAME DNS record) when created
+- SSL supported by default as long as you use *.cloudfront.net cert
+-- Can have Alternate Domain Names Eg. cdn.catagram.com
+--- You need to verify ownership using a matching certificate
+- Global service? Cert must be in us-easst-1, Eg. CloudFront
+
+When using CloudFront, you actually have TWO SSL connections:
+1. Viewer => CloudFront
+2. CloudFront => Origin
+- Both need valid PUBLIC certificates. Self-signed certs don't work with CloudFront
