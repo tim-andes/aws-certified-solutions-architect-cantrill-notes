@@ -3602,12 +3602,15 @@ EXAM - Fanout Architecture: SNS fans messages out to multiple SQS queues
 ### FIFO
 - Single-lane highway (performance limited by width of lanes). 300 TPS w/o batching, 3,000 TPS with
 - Delivered in a guaranteed order
+EXAM - Must have a .fifo suffix
+- Exactly-once processing: removes chance of duplicate message delivery
 
 ## SQS - Delay Queues
-Delay queues provide an initial period of invisibility for messages; psotpone delivery to consumers. Predefine periods can ensure that processing of messages doesn't begin until this period has expired.
+Delay queues provide an initial period of invisibility for messages; postpone delivery to consumers. Predefine periods can ensure that processing of messages doesn't begin until this period has expired.
 - A message is automatically hidden once it hits a queue
 - NOT the same as Visibility Timeout; VT is automatic re-processing of problem messages whereas this is an initial delay in processing of all messages 
 - DelaySeconds min is 0, it has to be non-zero to be a Delay Queue
+- NOT SUPPOERTED ON FIFO QUEUES
 
 ## SQS - Dead-Letter Queues (DLQ)
 Dead letter queues allow for messages which are causing repeated processing errors to be moved into a dead letter queue.
@@ -3615,9 +3618,45 @@ Dead letter queues allow for messages which are causing repeated processing erro
 -- Each time a message re-appears in queue after timeout, the ReceiveCount tally is incremeted
 -- when ReceiveCount > maxReceiveCount && message is NOT delted, it's moved to DLQ
 
+## Kinesis Data Streams
+Kinesis data streams are a real-time, scalable streaming service within AWS designed to ingest large quantities of data and allow access to that data for consumers
+- Ideal for dashboards and large scale real time analytics needs
+- Kinesis data firehose allows the long term persistent storage of kinesis data onto services like S3
+- Producers send data into a kinesis STREAM, which can scale from low to near infinite data rates
+-- Streams store a 24-hour moving window of data
+--- This storage is included and can be increased to MAX 365 days of moving data window (add'l costs)
+--- Multiple consumers access data from this moving window
 
-- NOT SUPPOERTED ON FIFO QUEUES
+### Kinesis VS SQS
+- SQS = decoupling, asynchronous communicatoions. No message persistence, no window of data stored
+- Kinesis = huge-scale data ingestion, real-time data streaming. Made for multiple consumers and has a rolling window of stored data for persistence (default 24 hrs, up to 365 days for add'l cost)
 
+## Kinesis Data Firehose
+Fully managed service to load data for data lakes, data stores (like S3), an analytics svc's -> This let's data be persisted beyond the rolling window of Kinesis Data Streams
+- Auto scaling, fully serverless, resilient
+EXAM - NEAR real-time delivery (~60s) which is unlike the main Kinesis Data Stream which offers real-time delivery
+- Firehose supports transformation of data on the fly using Lambda
+- Valid destination endpoints for Firehose: HTTP, Splunk, Redshift, ElasticSearch, S3
 
-- Exactly-once processing: removes chance of duplicate message delivery
-EXAM - Must have a .fifo suffix
+## Kinesis Data Analytics
+Amazon Kinesis Data Analytics is the easiest way to analyze streaming data, gain actionable insights, and respond to your business and customer needs in real time.
+- Real-time processing of data using SQL
+- Ingests from Kinesis Data Streams or Firehose
+- Destinations of analyzed data: Firehose (and subsequently S3, Redshift, ElasticSearch, Splunk), AWS Lambda, Kinesis Data Streams
+-- If OUTPUT to firehose, data becomes NEAR REAL-TIME. If output to Kinesis Data Streams or Lambda data stays REAL-TIME
+
+### When to use Kinesis Data Analytics
+- streaming data needing real-time SQL processing
+- time-series analytics like elections, esports
+- real-time dashboards like leaderboard for games
+- real-time metrics like for security/response teams
+
+## Kinesis Video Streams
+Amazon Kinesis Video Streams makes it easy to securely stream video from connected devices to AWS for analytics, machine learning (ML), playback, and other processing. Kinesis Video Streams automatically provisions and elastically scales all the infrastructure needed to ingest streaming video data from millions of devices
+- ingest LIVE video data from things like security cameras, phones, cars, drones, time-serialised audio, thermal, depth, RADAR
+- consumers can access data frame-by-frame or as-needed
+- Can PERSIST and ENCRYPT (in-transit and at-rest)
+EXAM: CANNOT directly access the data via storage, only via APIs
+- Integrates with other AWS svc's like REKOGNITION and CONNECT
+
+## Amazon Cognito - User and Identity Pools
