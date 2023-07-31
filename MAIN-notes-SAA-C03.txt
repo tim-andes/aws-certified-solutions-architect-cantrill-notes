@@ -3732,5 +3732,40 @@ Amazon AppFlow is a fully managed integration service that enables you to secure
 # GLOBAL CONTENT DELIVERY AND OPTIMIZATION
 ## Cloudfront Architecture
 CloudFront is a Content Delivery network (CDN) within AWS.
+- Origin: The source location of your content (can be S3 or custom origin)
+- Distribution: The 'configuration' unit of CloudFront
+- Edge Locations: Local cache of your data
+- Regional Edge Cache: Larger version of an Edge Location, provides another layer of caching
+NOTE: Can use SSL certs with CloudFront as it integrates with AWS Certificate Manager (ACM) for HTTPS
+NOTE: CloudFront is for DOWNLOAD operations only, uploads go directly to Origin with NO WRITE CACHING. CloudFront does Read-Only caching
 
+## CloudFront (CF) - Behaviors
+CloudFront Behaviours control much of the TTL, protocol and privacy settings within CloudFront
+- Behaviors have caching options, and restrict viewer access options
+- Distribution can have multiple behaviors, but there is one Default(*) behavior
 
+## CloudFront - TTL and Invalidations
+How CloudFront handles object expiry and invalidation
+- Covering
+
+- TTL: Object considered not expired when within its TTL
+Default TTL: 24 hours (validity period)
+Minimum TTL / Maximum TTL can be set
+
+You can specify TTLs using headers.
+-- Origin Header Types:
+--- Cache-Control max-age (seconds until expiry)
+--- Cache-Control s-maxage (seconds)
+--- Expires (Date & Time for expiry)
+
+- Cache Invalidation: Performed on a distribution and applied to all Edge Locations 
+-- immediately expires objects regardless of their TTL based on the invalidation pattern that you specify
+-- Instead of Cache Invalidation, you can use Versioned File Names (whiskers1_v1.jpg // _v2.jpg // _v3.jpg) which is a better practice
+
+## AWS Certificate Manager
+A service which allows the creation, management and renewal of certificates. It allows deployment of certificates onto supported AWS services such as CloudFront and ALB.
+- HTTP was/is simple and insecure. HTTPS introduced a layer of encryption to HTTP encrypting the data in-transit. HTTPS also allows for servers to prove their identity with Certificates using SSL/TLS
+-- These certificates get signed by a trusted authority AKA Chain of Trust
+
+- ACM can be a Public or Private Certificate Authority (CA)
+- ACM can generate or import certificates. If generated, it can auto-renew. If imported, you are responsible for renewal
