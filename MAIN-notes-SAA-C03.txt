@@ -3703,3 +3703,7 @@ IDENTITY POOLS = ABOUT SWAPPING ID TOKENS (with Google, Apple, etc) for temporar
 ### Glue Jobs
 Extract, transform (using script), and load Jobs
 - Can be initiated manually or via EVENTS using EventBridge
+
+### Glue VS Data Pipeline (both do ETL)
+- Glue is serverless, ad-hoc, more cost-effective
+- Data Pipeline requires a server
