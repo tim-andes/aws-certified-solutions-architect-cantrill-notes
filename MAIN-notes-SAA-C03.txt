@@ -3694,3 +3694,12 @@ IDENTITY POOLS = ABOUT SWAPPING ID TOKENS (with Google, Apple, etc) for temporar
 - Data Sources: Stores: S3, RDS, JDBC Compatible, DynamoDB. Data Sources: Streams: Kinesis Data Stream, Apache Kafka
 - Data Targets: S3, RDS, JDBC Databases
 - Crawls data sources and generates the AWS Glue Data Catalog
+
+### AWS Glue Data Catalog
+- Persistent metadata about data sources within a region
+- One catalog per region per account
+- Configure crawlers for data sources
+
+### Glue Jobs
+Extract, transform (using script), and load Jobs
+- Can be initiated manually or via EVENTS using EventBridge
