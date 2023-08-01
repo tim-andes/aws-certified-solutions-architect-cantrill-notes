@@ -3602,11 +3602,11 @@ EXAM - Fanout Architecture: SNS fans messages out to multiple SQS queues
 ### FIFO
 - Single-lane highway (performance limited by width of lanes). 300 TPS w/o batching, 3,000 TPS with
 - Delivered in a guaranteed order
-EXAM - Must have a .fifo suffix
+EXAM - FIFO queues Must have a .fifo suffix
 - Exactly-once processing: removes chance of duplicate message delivery
 
 ## SQS - Delay Queues
-Delay queues provide an initial period of invisibility for messages; postpone delivery to consumers. Predefine periods can ensure that processing of messages doesn't begin until this period has expired.
+Delay queues provide an initial period of invisibility for messages; postpone delivery to consumers. Predefined periods can ensure that processing of messages doesn't begin until this period has expired.
 - A message is automatically hidden once it hits a queue
 - NOT the same as Visibility Timeout; VT is automatic re-processing of problem messages whereas this is an initial delay in processing of all messages 
 - DelaySeconds min is 0, it has to be non-zero to be a Delay Queue
@@ -3614,9 +3614,9 @@ Delay queues provide an initial period of invisibility for messages; postpone de
 
 ## SQS - Dead-Letter Queues (DLQ)
 Dead letter queues allow for messages which are causing repeated processing errors to be moved into a dead letter queue.
-- Eg. Message received but keeps re-appearing after visbility timeout and not explicitly deleted (this could technically happen forever unless you set up a DLQ)
--- Each time a message re-appears in queue after timeout, the ReceiveCount tally is incremeted
--- when ReceiveCount > maxReceiveCount && message is NOT delted, it's moved to DLQ
+- Eg. Message received but keeps re-appearing after visibility timeout and not explicitly deleted (this could technically happen forever unless you set up a DLQ)
+-- Each time a message re-appears in queue after timeout, the ReceiveCount tally is incremented
+-- when ReceiveCount > maxReceiveCount && message is NOT deleted, it's moved to DLQ
 
 ## Kinesis Data Streams
 Kinesis data streams are a real-time, scalable streaming service within AWS designed to ingest large quantities of data and allow access to that data for consumers
@@ -3628,11 +3628,11 @@ Kinesis data streams are a real-time, scalable streaming service within AWS desi
 --- Multiple consumers access data from this moving window
 
 ### Kinesis VS SQS
-- SQS = decoupling, asynchronous communicatoions. No message persistence, no window of data stored
+- SQS = decoupling, asynchronous communications. No message persistence, no window of data stored
 - Kinesis = huge-scale data ingestion, real-time data streaming. Made for multiple consumers and has a rolling window of stored data for persistence (default 24 hrs, up to 365 days for add'l cost)
 
 ## Kinesis Data Firehose
-Fully managed service to load data for data lakes, data stores (like S3), an analytics svc's -> This let's data be persisted beyond the rolling window of Kinesis Data Streams
+Fully managed service to load data for data lakes, data stores (like S3), and analytics svc's -> This lets data be persisted beyond the rolling window of Kinesis Data Streams
 - Auto scaling, fully serverless, resilient
 EXAM - NEAR real-time delivery (~60s) which is unlike the main Kinesis Data Stream which offers real-time delivery
 - Firehose supports transformation of data on the fly using Lambda
@@ -3681,7 +3681,7 @@ Cognito has 2 components:
 USER POOLS = SIGN IN / SIGN UP
 IDENTITY POOLS = ABOUT SWAPPING ID TOKENS (with Google, Apple, etc) for temporary tokens to access AWS services
 
-### Cognito - Web ID Federation
+### Cognito - Web ID Federation (using User Pools and Identity Pools in conjunction)
 - First, User Pool JWT replaces all the different external token configs you'd need for handling different external IDs (User Pool removes admin overhead of handling all external social logins)
 - Next, app can pass this User Pool token through to an Identity Pool
 - Federated Identities can swap (Eg. give Google creds to swap for AWS creds)
@@ -3740,7 +3740,7 @@ NOTE: Can use SSL certs with CloudFront as it integrates with AWS Certificate Ma
 NOTE: CloudFront is for DOWNLOAD operations only, uploads go directly to Origin with NO WRITE CACHING. CloudFront does Read-Only caching
 
 ## CloudFront (CF) - Behaviors
-CloudFront Behaviours control much of the TTL, protocol and privacy settings within CloudFront
+CloudFront Behaviors control much of the TTL, protocol and privacy settings within CloudFront
 - Behaviors have caching options, and restrict viewer access options
 - Distribution can have multiple behaviors, but there is one Default(*) behavior
 
@@ -3755,7 +3755,7 @@ Minimum TTL / Maximum TTL can be set
 You can specify TTLs using headers.
 -- Origin Header Types:
 --- Cache-Control max-age (seconds until expiry)
---- Cache-Control s-maxage (seconds)
+--- Cache-Control s-maxage (seconds until expiry)
 --- Expires (Date & Time for expiry)
 
 - Cache Invalidation: Performed on a distribution and applied to all Edge Locations 
@@ -3768,10 +3768,10 @@ A service which allows the creation, management and renewal of certificates. It 
 -- These certificates get signed by a trusted authority AKA Chain of Trust
 
 - ACM can be a Public or Private Certificate Authority (CA)
-EXAM - ACM can generate or import certificates. If generated, it can auto-renew. If imported, you are responsible for renewal
+EXAM - ACM can generate or import certificates. If self-generated, it can auto-renew. If imported, you are responsible for renewal
 EXAM - Certificates can only be deployed out to SUPPORTED services (Eg. pretty much just CloudFront and ALBs, specifically NOT EC2)
 EXAM - Reminder, cannot use ACM with EC2
-EXAM - Certs can't leave the region they are generated/imported into
+EXAM - Certs can't leave the region they are generated/imported into; cert are region specific
 EXAM - To use a cert with an ALB in ap-southeast-2, you need a CERT IN ACM in ap-southeast-2
 - EXAM -- GLOBAL services like CloudFront operate as though within us-east-1
 
@@ -3780,7 +3780,7 @@ EXAM - To use a cert with an ALB in ap-southeast-2, you need a CERT IN ACM in ap
 - SSL supported by default as long as you use *.cloudfront.net cert
 -- Can have Alternate Domain Names Eg. cdn.catagram.com
 --- You need to verify ownership using a matching certificate
-- Global service? Cert must be in us-easst-1, Eg. CloudFront
+- Global service? Cert must be in us-east-1, Eg. CloudFront
 
 When using CloudFront, you actually have TWO SSL connections:
 1. Viewer => CloudFront
