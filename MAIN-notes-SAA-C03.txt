@@ -3859,3 +3859,24 @@ AWS Global Accelerator is designed to improve global network performance by offe
 Global Accelerator is a good fit for non-HTTP use cases, such as gaming (UDP), IoT (MQTT), or Voice over IP, as well as for HTTP use cases that specifically require static IP addresses or deterministic, fast regional failover.
 
 ### Global Accelerator Resource: https://aws.amazon.com/global-accelerator/faqs/
+
+
+# ADVANCED VPC Networking
+## VPC Flow Logs
+VPC Flow logs is a feature allowing the monitoring of traffic flow to and from interfaces within a VPC
+- VPC Flow logs can be added at a VPC, Subnet or Interface level.
+- Flow Logs DON'T monitor packet contents ... that requires a packet sniffer.
+- Flow Logs can be stored on S3 or CloudWatch Logs
+NOTE: VPC flow logs ONLY CAPTURE METADATA, NOT CONTENTS
+
+Flow Logs can monitor at 3 levels: 1. VPC 2. Subnet 3. ENIs directly. And these logs capture from capture point and down (so if VPC flow log, it also captures Subnet and ENIs)
+EXAM:  - Flow Logs NOT real time
+- Log Destinations: S3 or CloudWatch Logs
+-- Athena can query the logs in S3
+- Flow Logs can capture ACCEPTED, REJECTED, or ALL METADATA
+
+## Egress-Only Internet gateway
+Egress-Only internet gateways allow OUTBOUND (and response) only access to the public AWS services and Public Internet for IPv6 enabled instances or other VPC based services
+- TL;DR Egress-Only is OUTBOUND-ONLY for IPv6
+
+## VPC Endpoints (Gateway)
