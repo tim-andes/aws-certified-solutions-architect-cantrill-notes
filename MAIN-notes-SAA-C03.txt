@@ -3904,5 +3904,47 @@ EXAM - TCP and IPv4 ONLY
 ## DEMO - VPC Endpoints - Interface - PART1 / PART2 / PART3 - Skipping for now
 
 ## VPC Peering
-VPC peering is a software defined and logical networking connection between two VPC's
+VPC peering is a software defined and logical networking connection between two [AND ONLY TWO] VPC's
 - VPCs in the same or different accounts and the same or different regions.
+EXAM - TWO VPCs connected only
+- If VPCs in same region, SGs can reference peer SGs
+EXAM - VPC Peering does NOT support transitive peering (AKA A -> B peering, then B -> C peering... C is not auto peered to A)
+- With peering, you're basically setting up gateways in each VPC which requires Routing Configuration on EACH side. SGs/NACLs must be set up to allow traffic through
+EXAM - IP ranges of VPC Peers CANNOT OVERLAP
+
+## DEMO - VPC Peering - Skipping for now
+
+
+# HYBRID ENVIRONMENTS AND MIGRATION
+## Border Gateway Protocol 101
+Introduction to the Border Gateway Protocol (BGP) which is a routing protocol used by some AWS services such as Direct Connect and Dynamic Site to Site VPNs.
+- BGP made of AS (autonomous systems). Routers controlls by one entity; a network in BGP. Your whole company's network system is a 'black box' abstraction, BGP only cares about ingress/egress
+-- Autonomous System Numbers (ASNs) are unique and allocated by IANA (0-65535), 64512-65534 are PRIVATE
+- BGP operates over tcp/179 -- reliable
+- BGP not automatic, peering is manually configured
+- BGP is a PATH-VECTOR protocol; it exchanges the best path to a destination between peers...best path is called ASPATH
+- iBGP (internal routing within an AS) - most common, eBGP (external routing between ASs)
+- ASPATH prepending: A way to make a shorter but slower path look worse than a longer but faster path (by just addking more ASs to the path route)
+
+## IPSec VPN Fundamentals
+IPsec VPN negotiation occurs in two phases:
+1. In Phase 1, participants establish a secure channel in which to negotiate the IPsec security association (SA)
+2. In Phase 2, participants negotiate the IPsec SA for authenticating traffic that will flow through the tunnel
+- sets up secure tunnels across insecure networks
+- provides authentication and encryption; a secure connection over an insecure network
+- asymmetric encryption used to establish symmetric encryption
+
+### IPSec - Two Phases
+IKE Phase 1: Internet Key Exchange. IKE v1 and IKE v2 (v2 is newer)
+- authentication with asummetric encryption to agree on and create a shared symmetric key
+- "Diffie-Helman Private Key"/DH Key created by both sides in Phase 1.. this is what actually creates the symmetrical key for phase 2
+IKE Phase 2: Getting VPN up and running 
+- built on phase one using the symmetric key created in phase 1
+- Phase 2 can be town down and rebuilt when needed, phase 1 can stay
+
+### IPSec - VPN Types (2)
+1. Policy Based. Rule sets match traffic. More difficult to configure, but more flexible than Route Based
+2. Route Based. Target matching based on prefix
+- difference being how they match 'interesting traffic'
+
+## AWS Site-to-Site VPN
