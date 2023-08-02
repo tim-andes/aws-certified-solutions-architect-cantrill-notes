@@ -3880,7 +3880,7 @@ Egress-Only internet gateways allow OUTBOUND (and response) only access to the p
 - TL;DR Egress-Only is OUTBOUND-ONLY for IPv6
 
 ## VPC Endpoints - Gateway
-- Gateway endpoints are a type of VPC endpoint which allow private access to S3 and DynamoDB WITHOUT using PUBLIC addressing. (normally S3 and DynamoDB are public)
+- Gateway endpoints are a type of VPC endpoint which allow private access to public svc's S3 and DynamoDB WITHOUT using PUBLIC addressing. (normally S3 and DynamoDB are public)
 - Gateway endpoints add 'prefix lists' to route table, allowing the VPC router to direct traffic flow to the public services via the gateway endpoint.
 -- Gateway Endpoint => 1 per service, per region
 -- REGION RESILIENT: Highly Available across all AZs in a region by default
@@ -3893,4 +3893,16 @@ Egress-Only internet gateways allow OUTBOUND (and response) only access to the p
 
 ## VPC Endpoints - Interface
 Interface endpoints are used to allow private IP addressing to access public AWS services.
-- S3 and DynamoDB are handled by gateway endpoints - other supported services are handled by interface endpoints.
+- DynamoDB is handled by gateway endpoints - other supported services are handled by interface endpoints. S3 now supported by interface endpoints
+- Added to specific subnets, an ENI. Not Highly Available
+-- For HA, you need an endpoint in each subnet in each AZ used in VPC
+EXAM - TCP and IPv4 ONLY
+- uses PrivateLink: allows AWS or 3rd party svc's to be injected into your vpc and be given network interfaces
+- Apps can access Interface Endpoints via Regional DNS, Zonal DNS, or Private DNS (that overrives default DNS)
+-- Private DNS associates a private R53 hosted zone to the VPC changing the default svc DNS to resolve to the interface endpoint IP
+
+## DEMO - VPC Endpoints - Interface - PART1 / PART2 / PART3 - Skipping for now
+
+## VPC Peering
+VPC peering is a software defined and logical networking connection between two VPC's
+- VPCs in the same or different accounts and the same or different regions.
