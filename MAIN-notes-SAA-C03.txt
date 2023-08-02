@@ -3994,6 +3994,25 @@ How to use these things to achieve end-to-end encrypted access to private VPC ne
 
 ## Transit Gateway
 The AWS Transit gateway is a network gateway which can be used to significantly simplify networking between VPC's, VPN and Direct Connect.
-- It can be used to peer VPCs in the same account, different account, same or different region and supports transitive routing between networks.
+- It can be used to peer VPCs in the same account, different account, same or different region and SUPPORTS TRANSITIVE ROUTING between networks.
+- Single network object that is highly available and scalable
+- create "attachements" to other network types: valid attachments -> VPC, site-to-site VPN, DX Gateway
+- Can use "peering attachments" to ve cross-region/cross-account (cross acct = AWS Ram)
+- Supports transitive routing (which is basically why it exists, since VPCs don't which causes too much complexity)
+EXAM - REMEMBER: TRANSIT gateway supports TRANSITIVE ROUTING (which VPC peering can't do) -- this simplifies vpc-to-vpc
 
+## Storage Gateway
+Storage gateway is a product which integrates local infrastructure and AWS storage such as S3, EBS Snapshots and Glacier.
+
+### Volume Stored Mode
+EXAM - ALL stored locally, which means low latency access
+- Data copied into S3 with EBS Snapshots
+EXAM - Use: Full disk backups of servers
+EXAM - Use: Assists with disaster recovery; created EBS volumes in AWS
+EXAM - VSM does NOT improve or extend data center capacity
+- Something something iSCSI
+
+### Volume Cached Mode
+Instead of having a local storage volume on prem, you have a local cache. Actual data stored in S3, and does EBS Snapshot backups
+EXAM - Use Case: To extend your data center (since data is stored in S3 and only cached locally)
 
