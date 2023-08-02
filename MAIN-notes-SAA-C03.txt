@@ -3910,6 +3910,7 @@ EXAM - TWO VPCs connected only
 - If VPCs in same region, SGs can reference peer SGs
 EXAM - VPC Peering does NOT support transitive peering (AKA A -> B peering, then B -> C peering... C is not auto peered to A)
 - With peering, you're basically setting up gateways in each VPC which requires Routing Configuration on EACH side. SGs/NACLs must be set up to allow traffic through
+EXAM - 4 VPCs... how many peering connection to connect all? 6
 EXAM - IP ranges of VPC Peers CANNOT OVERLAP
 
 ## DEMO - VPC Peering - Skipping for now
@@ -3922,14 +3923,14 @@ Introduction to the Border Gateway Protocol (BGP) which is a routing protocol us
 -- Autonomous System Numbers (ASNs) are unique and allocated by IANA (0-65535), 64512-65534 are PRIVATE
 - BGP operates over tcp/179 -- reliable
 - BGP not automatic, peering is manually configured
-- BGP is a PATH-VECTOR protocol; it exchanges the best path to a destination between peers...best path is called ASPATH
+- BGP is a PATH-VECTOR protocol; it exchanges the best path to a destination between peers...best path (AKA shortest path) is called ASPATH
 - iBGP (internal routing within an AS) - most common, eBGP (external routing between ASs)
 - ASPATH prepending: A way to make a shorter but slower path look worse than a longer but faster path (by just addking more ASs to the path route)
 
 ## IPSec VPN Fundamentals
 IPsec VPN negotiation occurs in two phases:
 1. In Phase 1, participants establish a secure channel in which to negotiate the IPsec security association (SA)
-2. In Phase 2, participants negotiate the IPsec SA for authenticating traffic that will flow through the tunnel
+2. In Phase 2, participants negotiate the IPsec SA for authenticating traffic that will flow through the tunnel and use IPSec Keys to exchange 'interesting traffic'
 - sets up secure tunnels across insecure networks
 - provides authentication and encryption; a secure connection over an insecure network
 - asymmetric encryption used to establish symmetric encryption
@@ -3947,4 +3948,52 @@ IKE Phase 2: Getting VPN up and running
 2. Route Based. Target matching based on prefix
 - difference being how they match 'interesting traffic'
 
-## AWS Site-to-Site VPN
+## AWS Site-to-Site VPN. AWS <-> on-premises VPN
+AWS Site-to-Site VPN is a hardware VPN solution which creates a highly available IPSEC VPN between an AWS VPN and external network such as on-premises traditional networks. 
+- Quickest way to create network link between AWS and non-AWS (less than an hour)
+- VPNs are quick to setup vs direct connect, don't offer the same high performance, but do encrypt data in transit. 
+- Runs over the public internet (unlessw otherwise specificed)
+EXAM - Highly Available
+
+### AWS Site-to-Site VPN - Components
+- VPC. VPC connected to external network via VPN
+- Virtual Private Gateway (VGW). The target one or more route tables
+- Customer Gateway (CGW): Logical piece of config and the thing that the config represents
+- VPN Connection
+
+### Static VS Dynamic VPN
+- Static uses BGP, Border Gateway Protocol (customer router must support this). Static networking config, static routes
+- Dynamic VPN: Need Direct-Connect? Dynamic. Multiple VPN connections for Higher Avail and traffic distribution
+- "Route Propagation": if enabled, means routes are added to RTs automatically
+
+EXAM - AWS speed limitation of VPNs 1.25Gbps
+EXAM - Latency is inconsistent as it is through Public Internet. If need low latency, maybe Direct Connect
+
+## Direct Connect (DX) Concepts
+AWS Direct Connect links your internal network to an AWS Direct Connect location over a standard Ethernet fiber-optic cable. One end of the cable is connected to your router, the other to an AWS Direct Connect router. With this connection, you can create virtual interfaces directly to public AWS services (for example, to Amazon S3) or to Amazon VPC, bypassing internet service providers in your network path. 
+
+An AWS Direct Connect location provides access to AWS in the Region with which it is associated. You can use a single connection in a public Region or AWS GovCloud (US) to access public AWS services in all other public Regions.
+
+Direct connect = physical connection. Between business premises <-> DX Location <-> AWS Region
+- 1, 10, or 100GBps
+- when you order DC, you're really ordering a Port Allocation at the DX Location
+- Cannot access internet
+- DX Location is NOT owned by AWS (just has AWS space/equipment in it - called a "cage". And you'll have customer or comms partner Cage -- need to connect AWS / Customer router)
+- Low latency, high speeds. No resilience (at it's literally 1 cable)
+- requires VIFs (virtual interfaces) for the networking over DX to AWS
+
+## Direct Connect (DX) Resilience
+Initially, DX has NO resilience as it only has 1 cable. For resilience, you need to lay multiple DX connections / provision multiple ports. Lots of single points of failure by default.
+- Best practice... multiple DX Connect Locations... Multiple Customer Premises. Two ports in each DX location, dual routers at customer locations (2)
+- At DX Connect Location... Multiple AWS routers, multiple customer routers
+
+## Direct Connect (DX) - Public VIF + VPN (Encryption)
+How to use these things to achieve end-to-end encrypted access to private VPC networks across Direct Connect
+- Neither public or private VIFS offer any form of encryption.
+- Public VIFs+IPSec VPN is a way to provide access to private VPC resources, using an encrypted IPSEC tunnel for transit.
+
+## Transit Gateway
+The AWS Transit gateway is a network gateway which can be used to significantly simplify networking between VPC's, VPN and Direct Connect.
+- It can be used to peer VPCs in the same account, different account, same or different region and supports transitive routing between networks.
+
+
