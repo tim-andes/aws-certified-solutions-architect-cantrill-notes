@@ -3879,4 +3879,18 @@ EXAM:  - Flow Logs NOT real time
 Egress-Only internet gateways allow OUTBOUND (and response) only access to the public AWS services and Public Internet for IPv6 enabled instances or other VPC based services
 - TL;DR Egress-Only is OUTBOUND-ONLY for IPv6
 
-## VPC Endpoints (Gateway)
+## VPC Endpoints - Gateway
+- Gateway endpoints are a type of VPC endpoint which allow private access to S3 and DynamoDB WITHOUT using PUBLIC addressing. (normally S3 and DynamoDB are public)
+- Gateway endpoints add 'prefix lists' to route table, allowing the VPC router to direct traffic flow to the public services via the gateway endpoint.
+-- Gateway Endpoint => 1 per service, per region
+-- REGION RESILIENT: Highly Available across all AZs in a region by default
+- Endpoint Policy can control what it can access (like certain S3 buckets)
+- CANNOT access cross-region services
+
+### VPC Endpoints uses
+- Private VPC that needs private access to S3/DynamoDB
+- Preventing Leaky Buckets: S3 buckets can be set to private only by allowing access ONLY from a gateway endpoint
+
+## VPC Endpoints - Interface
+Interface endpoints are used to allow private IP addressing to access public AWS services.
+- S3 and DynamoDB are handled by gateway endpoints - other supported services are handled by interface endpoints.
