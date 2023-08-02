@@ -4001,7 +4001,8 @@ The AWS Transit gateway is a network gateway which can be used to significantly 
 - Supports transitive routing (which is basically why it exists, since VPCs don't which causes too much complexity)
 EXAM - REMEMBER: TRANSIT gateway supports TRANSITIVE ROUTING (which VPC peering can't do) -- this simplifies vpc-to-vpc
 
-## Storage Gateway
+## Storage Gateways - Volume, Tape, File
+## Storage Gateway - Volume
 Storage gateway is a product which integrates local infrastructure and AWS storage such as S3, EBS Snapshots and Glacier.
 
 ### Volume Stored Mode
@@ -4016,3 +4017,43 @@ EXAM - VSM does NOT improve or extend data center capacity
 Instead of having a local storage volume on prem, you have a local cache. Actual data stored in S3, and does EBS Snapshot backups
 EXAM - Use Case: To extend your data center (since data is stored in S3 and only cached locally)
 
+## Storage Gateway - Tape (VTL) - Virtual Tape Library
+Storage gateway in VTL mode allows the product to replace a tape based backup solution with one which uses S3 and Glacier rather than physical tape media
+- Max size of virtual tape is 5 TiB, same as size of S3 bucket
+- Pretends to be an iSCSI tape library, changer, and drive. S3 serves as Virtual Tape Library, Glacier is the Virtual Tape Shelf
+- Uses: Backup platform migrations or data center extensions
+
+## Storage Gateway - File
+File gateway bridges local file storage over NFS (linux)/SMB(windows) with S3 Storage
+- It supports multi site, maintains storage structure, integrates with other AWS products and supports S3 object lifecycle Management
+- Files stored this way (to mount point) are visible as objects in an S3 bucket
+- Read/Write caching ensure LAN-like performance
+- 1 file share + 1 S3 = 1 bucket share. Can have 10 Bucket Shares per file gateway
+- Primary data stored in S3
+- File Gateway doesn't support Object Locking--use Read Only Mode on other shares or tightly control file access
+
+## Snowball / Edge / Snowmobile [NEW VERSION COMING SOON]
+Snowball, Snowball Edge and Snowmobile are three parts of the same product family designed to allow the physical transfer of data between business locations and AWS.
+
+### Snowball
+- Order physical device from AWS. Encrypted using KMS. 50TB or 80TB. 
+EXAM - Range of data to use it for 10TB - 10PB
+EXAM - Can order multiple devices / to multiple premises
+EXAM - STORAGE ONLY, no compute
+### Snowball Edge
+EXAM - Has both storage and compute
+- Larger capacity VS snowball
+- Faster networking with Edge
+- 3 types of Edge: 1. Storage Optimized 2. Compute Optimized 3. Compute Optimized with GPU
+EXAM - Ideal for remote sites or where data processing on ingestion is needed
+### Snowmobile
+Portable data center within a shipping container on a truck (mobile, duh)
+- Ideal for single location with 10PB+ is required
+- 10PB - 100PB
+- NOT for multi-site (unless HUGE) or sub 10PB
+
+## Directory Service
+### Directory Service - Three Modes
+- Simple AD - An implementation of Samba 4 (compatibility with basics AD functions)
+- AWS Managed Microsoft AD - An actual Microsoft AD DS Implementation
+- AD Connector which proxies requests back to an on-premises directory
