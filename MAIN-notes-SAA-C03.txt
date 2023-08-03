@@ -4199,3 +4199,38 @@ Guard Duty is an automatic threat detection service which reviews data from supp
 
 ### Inspector VS GuardDuty: If we try to describe it in a chronological fashion, you can have Inspector set up at the start when you deploy your applications, and then GuardDuty immediately after that in order to receive alerts on potential threats. Amazon Inspector provides you with security assessments of your applications’ settings and configurations while Amazon GuardDuty helps with analysing the entirety of your AWS accounts for potential threats.
 
+
+# Infrastructure as Code (CloudFormation)
+## CloudFormation Physical & Logical Resources
+- CloudFormation defines logical resources within TEMPLATES (using YAML or JSON). 
+-- The logical resource defines the WHAT, and leaves the HOW up to the CFN product. 
+- A CFN stack creates a physical resource for every logical resource - updating or deleting them as a template changes.
+- TEMPLATES create STACKS. A stack creates/modifies/deletes physical resources based on the logical resources in the template
+
+## CloudFormation - Template and Pseudo Parameters
+Template and Pseudo Parameters are two methods to provide INPUT to a template, which can influence what resources are provisioned, and the configuration of those resources.
+- Pseudo parameters. These params are injected and made available by AWS. Template params are user made with YAML/JSON
+
+## CloudFormation Intrinsic Functions
+AWS CloudFormation provides several built-in functions that help you manage your stacks. Use intrinsic functions in your templates to assign values to properties that are not available until runtime.
+- !Ref & Fn::GetAtt. Ref is primary value, attributes are secondaries. !GetAtt
+- Fn::Join & Fn::Split
+- Fn::GetAZs & Fn::Select
+- Conditions Fn::IF,And,Equals,Not,Or
+- Fn::Base64 & Fn::Sub. Base64 outputs base64 encoded text
+- Fn::Cidr. Creating a cider range based on parent VPC CIDR range
+
+## CloudFormation Mappings
+The optional Mappings section matches a key to a corresponding set of named values. For example, if you want to set values based on a region, you can create a mapping that uses the region name as a key and contains the values you want to specify for each specific region
+- Use the Fn::FindInMap intrinsic function to retrieve values in a map.
+- Mapping -> key:value
+- Mappings Improves Template Portability
+
+## CloudFormation Outputs
+The optional Outputs section declares output values that you can import into other stacks (to create cross-stack references), return in response (to describe stack calls), or view on the AWS CloudFormation console. 
+- For example, you can output the S3 bucket name for a stack to make the bucket easier to find.
+- Output section is optional
+- Visible as outputs from CLI, console UI, parent stack, can be exported to other stacks (cross-stack references)
+- Components: Description and Value
+
+## DEMO - Template v2 - Portable - Skipping for now
