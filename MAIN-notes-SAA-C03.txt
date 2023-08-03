@@ -4234,3 +4234,20 @@ The optional Outputs section declares output values that you can import into oth
 - Components: Description and Value
 
 ## DEMO - Template v2 - Portable - Skipping for now
+
+## CloudFormation Conditions
+The optional Conditions section contains statements that define the circumstances under which entities are created or configured. You might use conditions when you want to reuse a template that can create resources in different contexts, such as a test environment versus a production environment.
+- Conditions evaluated to True or False and are processed BEFORE resources are created
+- In your template, you can add an EnvironmentType input parameter, which accepts either prod or test as inputs. 
+- Conditions are evaluated based on predefined pseudo parameters or input parameter values that you specify when you create or update a stack. 
+- Within each condition, you can reference another condition, a parameter value, or a mapping. 
+- Components: Parameter, Conditions, Resources
+
+## CloudFormation DependsOn
+With the DependsOn attribute you can specify that the creation of a specific resource follows another. When you add a DependsOn attribute to a resource, that resource is created only after the creation of the resource specified in theDependsOn attribute.
+
+## CloudFormation Wait Conditions & cfn-signal
+CreationPolicy, WaitConditions and cfn-signal can all be used together to prevent the status if a resource from reaching create complete until AWS CloudFormation receives a specified number of success signals or the timeout period is exceeded.
+- The cfn-signal helper script signals AWS CloudFormation to indicate whether Amazon EC2 instances have been successfully created or updated.
+- After you define all your conditions, you can associate them with resources and resource properties in the Resources and Outputs sections of a template
+- tl;dr resource create paused until expected signal(s) received
