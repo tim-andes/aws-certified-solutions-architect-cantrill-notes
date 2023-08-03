@@ -4005,7 +4005,7 @@ EXAM - REMEMBER: TRANSIT gateway supports TRANSITIVE ROUTING (which VPC peering 
 ## Storage Gateway - Volume
 Storage gateway is a product which integrates local infrastructure and AWS storage such as S3, EBS Snapshots and Glacier.
 
-### Volume Stored Mode
+### Storage Gateway - Volume Stored Mode
 EXAM - ALL stored locally, which means low latency access
 - Data copied into S3 with EBS Snapshots
 EXAM - Use: Full disk backups of servers
@@ -4013,7 +4013,7 @@ EXAM - Use: Assists with disaster recovery; created EBS volumes in AWS
 EXAM - VSM does NOT improve or extend data center capacity
 - Something something iSCSI
 
-### Volume Cached Mode
+### Storage Gateway - Volume Cached Mode
 Instead of having a local storage volume on prem, you have a local cache. Actual data stored in S3, and does EBS Snapshot backups
 EXAM - Use Case: To extend your data center (since data is stored in S3 and only cached locally)
 
@@ -4108,3 +4108,45 @@ FSx for Windows Servers provides a native windows file system as a service which
 - FSx is dedicated to Windows Environments, the similar EFS is for Linux/Unix
 - File level versioning; support volume shadow copies; file-level restores
 EXAM - Key words to look for: VSS (user driven restores), native file system over SMB (SMB=windows), uses Windows permissions model, supports DFS (distributed file system), integrates with Directory Service and YOUR OWN directory
+
+## FSx For Lustre
+FSx for Lustre is a managed file system which uses the FSx product designed for high performance computing
+- It delivers extreme performance for scenarios such as Big Data, Machine Learning and Financial Modeling
+-- Fsx for Lustre is a managed Lustre high compute system. Linux clients (POSIX)
+- Two deploment types: Persistent or Scratch
+-- Scratch: highliy optimized for short-term. No replication and fast. not HA
+-- Persistent: Longer term, high avail in one AZ, self-healing
+EXAM - If Lustre, POSIX mentioned... FSx for Lustre, ML/big data/fin-modeling
+
+## AWS Transfer Family
+Managed file transfer service using these protocols: SFTP, FTP, FTP Transfer, AS2
+EXAM - supports transferring data over the following protocols: SFTP, FTPS, and FTP transfer
+- Managed File Transfer Workflows (MFTW) - serverless file workflow engine (for tagging and stuff)
+- Using FTP? Since not secure, you can only use FTP protocol within VPC (not public)
+
+# SECURITY, DEPLOYMENT & OPERATIONS
+## AWS Secrets Manager
+AWS Secrets manager is a product which can manage secrets within AWS. There is some overlap between it and the SSM Parameter Store - but Secrets manager is specialised for secrets.
+EXAM - Secrets manager is capable of automatic CREDENTIAL ROTATION using LAMBDA.
+- For supported services it can even adjust the credentials of the service itself.
+- Secrets encrypted using KMS
+- Integrates with RDS
+
+EXAM Secrets Manager VS Parameter Store? SM is designed for SECRETS (passwords, API Keys), SM auto rotation of secrets with Lambda, 
+- Parameter store stores strongs, secure strings--for config info
+
+## Application Layer (L7) Firewall
+L7 firewalls are capable of inspecting, filtering and even adjusting data up to Layer 7 of the OSI model. They have visibility of the data inside a L7 connection. For HTTP this means content, headers, DNS names .. for SMTP this would mean visibility of email metadata and for plaintext emails the contents.
+- WAF is an L7 Firewall
+
+## Web Application Firewall (WAF), WEBACLs, Rule Groups and Rules
+AWS WAF is an L7 web application firewall that helps protect your web applications or APIs against common web exploits and bots that may affect availability, compromise security, or consume excessive resources.
+- DDoS, SQL Injection, ALLOW/DENY lists, XSS, HTTP Flood, IP Reputation, bots
+- Actual unit of configuration within WAF is the WEB Access Control List (ACL)
+- Web ACLs use Rules/Rule Groups
+-- Rule components: Type, Statement, Action
+--- Rule types: Regular or Rate-based
+--- Statement: WHAT to match/count... even down to matching body (first 8192 bytes ONLY)
+--- Action: Allow, Block, Count, custom respon, label
+
+## AWS Shield
