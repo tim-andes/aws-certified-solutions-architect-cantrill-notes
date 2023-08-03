@@ -4053,7 +4053,58 @@ Portable data center within a shipping container on a truck (mobile, duh)
 - NOT for multi-site (unless HUGE) or sub 10PB
 
 ## Directory Service
+What are directories? Identity and asset info storage. Stores objects with structure (inverse tree). 
+- Multiple trees grouped into a FOREST
+- Commonly used with Windows environments
+- Users, devices, groups, servers, file shares -- things that can be objects in a directory
+
+ AWS Directory Service is an AWS managed implementation of a directory that runs in a VPC
+- High availability, deploy into multiple AZs
+- Amazon Workspaces NEEDS the AWS Directory Svc to function
+- can be isolated or integrated with an on-premise system
+
 ### Directory Service - Three Modes
-- Simple AD - An implementation of Samba 4 (compatibility with basics AD functions)
-- AWS Managed Microsoft AD - An actual Microsoft AD DS Implementation
-- AD Connector which proxies requests back to an on-premises directory
+1. Simple AD - An implementation of Samba 4 (compatibility with basics AD functions)
+- cheapest / simplest mode
+- 500 - 5000 users
+- Simple AD is based off of Samba 4 (an open-source version of Microsoft AD)
+- Simple AD designed to be used in isolation
+2. AWS Managed Microsoft AD - An actual Microsoft AD DS Implementation
+- AWS presense while having an existing on-premises directory
+- Primary location is at AWS. TRUST relationships created between AWS and on-premmise
+3. AD Connector which proxies requests back to an on-premises directory
+- An entity made to integrate with AWS services. It has NO local functionality - great for hosting Workspaces
+- If private connectivity fails, AD fails and AWS-side related svd would be interrupted
+
+### When to pick one of the 3 ADs?
+Simple AD -  The default. Simple reqs. A directory in AWS
+Microsoft AD - Apps in AWS which req MS AD, or you need to TRUST AWS AD Directory Service
+AD Connector - To use AWS p&s that require a directory without actually housing one on AWS side (as you have it on prem), use AD connector
+
+## DataSync
+AWS DataSync is a product which can orchestrate the movement of large scale data (amounts or files) from on-premises NAS/SAN into AWS or vice-versa
+- Data transfer service To and FROM AWS
+- Designed to work at HUGE scale
+- Keeps metadata (permissions/timestamps)
+- Built-in data validation
+- Scalable: 10Gbps/agent (~100TB/day)
+- FEATURES EVERYWHERE... Bandwidth limiters, incremental/scheduled xfer options, compression and encryption, auto recovery from transit errors, svc integration with S3 EFS FSx, bidirectional transfer
+EXAM - The DataSync agent needs to be intalled LOCALLY on-prem
+EXAM - communicates via NFS/SMB w/ on-prem storage
+
+### DataSync Components
+- tasks: a "job"
+- agent: the software living on-prem that reads/writes to on-prem data stores using NFS/SMB
+- location: every task has a TO and FROM location
+
+## FSx for Windows Servers
+FSx for Windows Servers provides a native windows file system as a service which can be used within AWS, or from on-premises environments via VPN or Direct Connect
+- FSx is an advanced shared file system accessible over SMB, and integrates with Active Directory (either managed, or self-hosted).
+- It provides advanced features such as VSS, Data de-duplication, backups, encryption at rest and forced encryption in transit.
+- Integrats with Directory Service or Self-Managed Active Directory
+- Single or Multi-AZ within a VPC
+- on-demand/scheduled backups
+- accessible using VPC, peering, VPN, Direct Connect
+- FSx is dedicated to Windows Environments, the similar EFS is for Linux/Unix
+- File level versioning; support volume shadow copies; file-level restores
+EXAM - Key words to look for: VSS (user driven restores), native file system over SMB (SMB=windows), uses Windows permissions model, supports DFS (distributed file system), integrates with Directory Service and YOUR OWN directory
