@@ -4251,3 +4251,20 @@ CreationPolicy, WaitConditions and cfn-signal can all be used together to preven
 - The cfn-signal helper script signals AWS CloudFormation to indicate whether Amazon EC2 instances have been successfully created or updated.
 - After you define all your conditions, you can associate them with resources and resource properties in the Resources and Outputs sections of a template
 - tl;dr resource create paused until expected signal(s) received
+
+
+## CloudFormation Nested Stacks
+Nested stacks allow for a hierarchy of related templates to be combined to form a single product
+- A ROOT STACK can contain and create nested stacks .. each of which can be passed parameters and provide back outputs.
+- Nested stacks should be used when the resources being provisioned ****share a lifecycle**** and are related.
+- Single stacks have resource limits of 500, use nested to overcome this
+- Stacks are isolated; can't easily reference each other. Nested stacked can reference outputs from parents, however
+- Nested stacks for modular-type template re-use. Cross-reference stacks are for resource re-use
+
+## CloudFormation CloudFormation Cross-Stack References
+- Nested stacks for modular-type template re-use. CloudFormation Cross-Stack References are for resource re-use
+-- Outputs in one stack reference logical resources or attributes in that stack
+-- They can be exported, and then using the !ImportValue intrinsic function, referenced from another stack.
+
+
+
