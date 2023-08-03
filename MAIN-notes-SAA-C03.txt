@@ -4157,3 +4157,32 @@ You can use AWS WAF web access control lists (web ACLs) to help minimize the eff
 - AWS Shield Advanced (not free) provides expanded DDoS attack protection for your Amazon EC2 instances, Elastic Load Balancing load balancers, CloudFront distributions, Route 53 hosted zones, and AWS Global Accelerator standard accelerators.
 -- Advanced requires manual configuration, explicit enabling. Has const protection incurred from attacks
 --- Advanced Shield USES WAF for L7 DDoS protection
+
+## CloudHSM
+CloudHSM - an AWS provided Hardware Security Module products. Similar to KMS... creates/manages/secures crypto keys
+- CloudHSM is required to achieve COMPLIANCE with certain SECURITY STANDARDS such as FIPS 140-2 Level 3
+
+### When to use KMS over CloudHSM
+- KMS is a SHARED service and AWS has certain level of access to it. KMS is mostly Level 2 FIPS
+EXAM - CloudHSM is a SINGLE TENANT HSM (hardware security module). CloudHSM is aws provisioned but fully customer managed. CloudHSM is LEVEL 3 FIPS compliant. 
+* EXAM - Need CloudHSM if need access by industry standard APIs (not AWS api's); JCE, PKCS#11, CryptoNG
+EXAM - Need to enable Transparent Data Encryption (TDE) for Oracle DBs? CloudHSM
+EXAM - Protect private keys for an issuing CA (cert authority)
+
+## AWS Config 
+AWS Config is a service which records the configuration of resources over time (configuration items) into configuration histories.
+- All the information is stored regionally in an S3 config bucket.
+- AWS Config is capable of checking for compliance .. and generating notifications and events based on compliance.
+- Terms: config item, config history, config rules, config stream, config notifications (via eventbridge or sns)
+### AWS Config - Two main jobs
+1. Record configuration changes over time on resources
+2. Auditing of changes, compliance with standards
+NOTE: AWS Config DOES NOT prevent changes from happening; no protectoin, just watches
+
+## Amazon Macie
+Amazon Macie is a fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS.
+- protect personally identifiable information of stuff in S3 buckets
+- Can have Managed (built in, ML\patterns) or Custom Data Identifiers (regex based)
+
+## Amazon Inspector
+Inspect for COMPLIANCE. Amazon Inspector is an automated security assessment service that helps improve the security and compliance of applications deployed on AWS. Amazon Inspector automatically assesses applications for exposure, vulnerabilities, and deviations from best practices
