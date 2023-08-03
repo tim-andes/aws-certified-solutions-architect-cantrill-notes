@@ -4153,7 +4153,7 @@ AWS WAF is an L7 web application firewall that helps protect your web applicatio
 For DDoS protection. AWS Shield provides always-on detection and automatic inline mitigations that minimize application downtime and latency, so there is no need to engage AWS Support to benefit from DDoS protection. 
 
 You can use AWS WAF web access control lists (web ACLs) to help minimize the effects of a Distributed Denial of Service (DDoS) attack. For additional protection against DDoS attacks, AWS also provides AWS Shield Standard and AWS Shield Advanced. AWS Shield Standard is automatically included at no extra cost beyond what you already pay for AWS WAF and your other AWS services.
-- Shield Standard is free
+- Shield Standard is free. Automatically provided with CloudFront and R53
 - AWS Shield Advanced (not free) provides expanded DDoS attack protection for your Amazon EC2 instances, Elastic Load Balancing load balancers, CloudFront distributions, Route 53 hosted zones, and AWS Global Accelerator standard accelerators.
 -- Advanced requires manual configuration, explicit enabling. Has const protection incurred from attacks
 --- Advanced Shield USES WAF for L7 DDoS protection
@@ -4183,6 +4183,19 @@ NOTE: AWS Config DOES NOT prevent changes from happening; no protectoin, just wa
 Amazon Macie is a fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS.
 - protect personally identifiable information of stuff in S3 buckets
 - Can have Managed (built in, ML\patterns) or Custom Data Identifiers (regex based)
+- checks s3 buckets
 
 ## Amazon Inspector
 Inspect for COMPLIANCE. Amazon Inspector is an automated security assessment service that helps improve the security and compliance of applications deployed on AWS. Amazon Inspector automatically assesses applications for exposure, vulnerabilities, and deviations from best practices
+- checks EC2 instances and the instance OS, and containers
+- creates security reports ordered by priority
+- Does Network Reachability (with or without Agent--agent means more info)
+- Packages: Host Assessments, Common Vulnerabilities/Exposures (CVE), Center for Internet Security (CIS) Benchmarks, Security Best Practices for Amazon Inspector
+
+## Amazon Guardduty
+Guard Duty is an automatic threat detection service which reviews data from supported services and attempts to identify any events outside of the 'norm' for a given AWS account or Accounts. 
+- CONTINUOUS SECURITY MONITORING SERVICE
+- Ingests Logs and Events
+
+### Inspector VS GuardDuty: If we try to describe it in a chronological fashion, you can have Inspector set up at the start when you deploy your applications, and then GuardDuty immediately after that in order to receive alerts on potential threats. Amazon Inspector provides you with security assessments of your applications’ settings and configurations while Amazon GuardDuty helps with analysing the entirety of your AWS accounts for potential threats.
+
