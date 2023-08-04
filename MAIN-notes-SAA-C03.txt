@@ -4333,3 +4333,31 @@ EXAM - Key/Value DB mentioned? DynamoDB
 EXAM - Relational Data/DB? NOT DynamoDB
 
 ## DynamoDB - Operations, Consistency and Performance
+Key elements of READS and WRITES to DynamoDB and step through how the QUERY AND SCAN operations work.
+- When you create a DynamoDB table, you choose from two capacity modes: on-demand and provisioned
+-- On-Demand: If you need low admin overhead or traffic is unknown/unpredictable. Price per million R or W units. More expensive
+-- Provisioned: RCU/WCU capacity set per table basis
+- 1 RCU = 1 x 4KB read ops per second, 1 WCU is 1 x 1KB write ops per second
+-- Every table has RCU/WCU Burst Pool (300 seconds)
+
+### DynamoDB - Query and Scan
+- Query. One way to retrieve data. Accepts a single PK value and optionally an SK or range.
+- Scan. Least efficient but most flexible way to get data in DynamoDB. Scans through table item-by-item - consumed capacity is all items read/scanned
+
+### DynamoDB - Consistency model in DynamoDB
+In DynamoDB, each piece of data is replicated into different AZs known as Storage Nodes, and one is the Leader storage node. Leader storage nodes receive the reads/writes and write updates are replicated by leader to other nodes
+- Eventually Consistent Reads. You are not guaranteed to see the most updated data if you're send to a node that hasn't received the replicated new data yet. Cheaper option
+- Strongly Consistent Reads. Always reads from Leader node to guarantee data up to date
+NOT: Not every app can tolerate eventual consistency (some things MUST be accurate)
+
+### Calculate WCU
+Problem: Need to store 10 items per second, 2.5K average size per item
+1. Round up average size to nearest whole number. 2.5K -> 3
+2. Multiply item size x # items/sec. 3 x 10 = 30
+= 30 WCU required
+
+### Calculate RCU
+Problem: Need to retrieve 10 items per second, 2.5K average size per item
+1. Divide Item size / 4 then round up. 2.5K/4K rounded up is 1.
+2. Multiply item size x # items/sec. 1 x 10 = 10
+= 10 RCU required for Strongly Consistent. Eventual is 50% cost, so 5RCU required for Eventually Consistent Reads
