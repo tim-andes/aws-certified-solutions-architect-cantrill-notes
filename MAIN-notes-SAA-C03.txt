@@ -4435,4 +4435,31 @@ Redshift is a column based, petabyte-scale, data warehousing product within AWS
 -- snapshots can be sent to other regions for disaster recovery with a separate configurable retention period
 - SERVER based
 
+# MACHINE LEARNING
+## Amazon Comprehend 
+Amazon Comprehend is a natural-language processing (NLP) service that uses machine learning to uncover valuable insights and connections in text.
+- input document and it parses and develops insights (like name, addresses, PII, phrases, common elements, sentiment)
+- pre-trained or custom models
+- realtime for small workloads, async for larger workloads
+- confidence 0.0 - 1.0 (1 being wholly confident)
 
+## Amazon Kendra
+Amazon Kendra is an intelligent search service powered by machine learning (ML).
+- designed to mimic interacting with a human expert
+- suppports wide range of question types: factoid, descriptive, keyword
+- Kendra is a backend service that you'd API-integrate with your app for search functionality
+### Kendra Concepts
+- Index. Searchable data 
+- Data source. Where your data lives; S3, Google Workspace, RDS, Salesforce, FSx, etc etc
+- Documents. Structured and unstructured indexable items
+
+## Amazon Lex
+Amazon Lex is a fully managed artificial intelligence (AI) service with advanced natural language models to design, build, test, and deploy CONVERSATIONAL interfaces in applications.
+- interactive chat bots
+- backend service that you'll use to add capabilities to your application
+- POWERS THE ALEXA SERVICE
+- Automatic Speesh Recognition (ASR); sppech-to-text, Natural Language Understanding (NLU); intent, 
+- Chatbots, Voice Assistance, Q&A Bots, Phone bots
+
+## Amazon Polly
+Amazon Polly is a service that turns text into lifelike speech, allowing you to create applications that talk, and build entirely new categories of speech-enabled products.
