@@ -4409,6 +4409,7 @@ Amazon Athena is serverless querying service which allows for ad-hoc questions w
 - Uses process called "schema-on-read", a table-like translation --- original data on S3 never changed
 EXAM - Best option for querying AWS logs; VPC flow logs, CloudTrail, ELB Logs, cost reports, Glue, Web Server, etc
 - Athena Federated Query -- a way for Athena to query outside S3
+- Athena = ad-hoc. Redshift is not ad-hoc
 
 ## Elasticache
 Elasticache is a managed in-memory cache which provides a managed implementation of the redis or memcacheD engines. Useful for READ-HEAVY workloads that demand low latency, scaling reads in a cost effective way and allowing for externally hosted user session state
@@ -4421,7 +4422,17 @@ EXAM - Can store Session Data (for stateless servers)
 EXAM - Elasticash requires application code changes to work
 
 ## Redshift Architecture
-Redshift is a column based, petabyte scale, data warehousing product within AWS
-- It's designed for OLAP products within AWS/on-premises to add data to for long term processing, aggregation and trending.
+Redshift is a column based, petabyte-scale, data warehousing product within AWS
+- It's designed for OLAP products within AWS/on-premises to add data to for long term processing, aggregation and trending. (Not OLTP which is row/transaction; inserts/modifies/deletes)
+- Redshift Spectrum. Direct Query S3 without having to load it into redshift in advance
+- Federated Query. Query data in remote data sources
+- Redshift has Enhanced VPC Routing; VPC networking for advanced networking control
+- AZ specific
+
+## Redshift DR and Resilience
+- RedShift only exists in 1 AZ. There are a number of recovery features:
+- snapshots. Either automatic (1-35 day retention) or manual (no retention period). Since data is backed up to S3, you have S3 protections against failure
+-- snapshots can be sent to other regions for disaster recovery with a separate configurable retention period
+- SERVER based
 
 
