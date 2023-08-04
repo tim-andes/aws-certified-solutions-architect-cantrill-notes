@@ -4264,7 +4264,72 @@ Nested stacks allow for a hierarchy of related templates to be combined to form 
 ## CloudFormation CloudFormation Cross-Stack References
 - Nested stacks for modular-type template re-use. CloudFormation Cross-Stack References are for resource re-use
 -- Outputs in one stack reference logical resources or attributes in that stack
--- They can be exported, and then using the !ImportValue intrinsic function, referenced from another stack.
+-- Outputs can be exported, and then using the !ImportValue intrinsic function, referenced from another stack.
+--- Exports must be UNIQUELY NAMED in region
 
+## CloudFormation Stack Sets
+StackSets are a feature of CloudFormation allowing infrastructure to be deployed and managed across MULTIPLE REGIONS and MULTIPLE ACCOUNTS from a single location. 
+- Additionally it adds a dynamic architecture - allowing automatic operations based on accounts being added or removed from the scope of a StackSet.
+- StackSets are containers in an admin account which contain stack instances which REFERENCE stacks
+-- Stack instances and stacks are in TARGET ACCOUNTS
+- Each stack is 1 region 1 account
 
+### CFN StackSet Terms
+- Concurrent Accounts. How many concurrent stacks are created together. Eg. If you have 10 stacks to make, you set concurrnet acct to 2... you'll create stacks in 5 pairs.
+- Failure Tolerance. Amount of individual deployments that can fail before StackSet is considered failed
+- Retain Stacks. Delete stacks FROM YOUR stack set, but save them so they continue to RUN INDEPENDENTLY of your stack set by choosing the Retain Stacks option. You can then manage retained stacks outside of your stack set in AWS CloudFormation. "cut it loose"
 
+## CloudFormation Deletion Policy
+With the DeletionPolicy attribute you can preserve or (in some cases) backup a resource when its stack is deleted. You specify a DeletionPolicy attribute for each resource that you want to control. If a resource has no DeletionPolicy attribute, AWS CloudFormation deletes the resource by default.
+- cut the resource loose from the Stack b/c resource deletion can sometimes cause data loss
+- Deletion Policies: Delete, Retain, or Snapshot (if supported)
+-- Snapshots continue past stack lifetime
+
+## CloudFormation Stack Roles
+Stack roles allow an IAM role to be passed into the stack via PassRole
+- A stack uses this role, rather than the identity interacting with the stack to create, update and delete AWS resources.
+- It allows ROLE SEPARATION and is a powerful security feature
+
+## CloudFormation Init (CFN-INIT)
+CloudFormationInit and cfn-init are tools which allow a desired state configuration management system to be implemented within CloudFormation
+- Another way to provide config info into EC2 instance
+- Use the AWS::CloudFormation::Init type to include metadata on an Amazon EC2 instance for the cfn-init helper script. If your template calls the cfn-init script, the script looks for resource metadata rooted in the AWS::CloudFormation::Init metadata key. cfn-init supports all metadata types for Linux systems & It supports some metadata types for Windows
+- AWS::CloudFormation::Init which is procedural (you tell it how to bootstrap itself)
+-... or CFN-INIT which is where you tell the system WHAT you want and it builds it out (this one is idempotent). It is run ONCE as a part of bootstrapping; if CloudFormation::Init is updated, cfn-init isn't re-run (which is where cfn-hup comes in, see below)
+
+## CloudFormation cfn-hup
+The cfn-hup helper is a daemon that detects changes in resource metadata and runs user-specified actions when a change is detected (Ie. re-running cfn-init). This allows you to make configuration updates on your running Amazon EC2 instances through the UpdateStack API action.
+
+## CloudFormation ChangeSets - CFN stack update dry runs (like Find/Replace dry runs in WordPress)
+When you need to update a stack, understanding how your changes will affect running resources before you implement them can help you update stacks with confidence. Change sets allow you to preview how proposed changes to a stack might impact your running resources, for example, whether your changes will delete or replace any critical resources, AWS CloudFormation makes the changes to your stack only when you decide to execute the change set, allowing you to decide whether to proceed with your proposed changes or explore other changes by creating another change set.
+
+## CloudFormation Custom Resources
+Custom resources enable you to write custom provisioning logic in templates that AWS CloudFormation runs anytime you create, update (if you changed the custom resource), or delete stacks
+- AKA Custom Resources let CFN integrate with anything it doesn't yet, or doesn't natively support
+
+# NOSQL Databases & DynamoDB
+## DynamoDB - Architecture
+DynamoDB is a NoSQL fully managed Database-as-a-Service (DBaaS) product available within AWS. This is the traditional serverless DB route in AWS
+- uses Key/Value &/or Document data. "Wide column DB"
+- no self-managed servers or infrastructure
+- Highly resilient and can be optionally Globally resilient
+- Single digit millisecond speeds -- SSD based
+- manual or auto scaling or on-demand (set and forget)
+- RCU - read capacity units, WCU - write capacity units
+
+### DynamoDB - Tables
+- Table is a grouping of ITEMS with the same PRIMARY key. Item is like a row in a traditional DB
+-- item max size 400KB. item can have all, none, or some of the attibutes/columns in an item(row)
+- Table has two primary keys to pick from: 
+1. Partition key. made up of just a partition key
+2. Composite primary key. made up of a partition key and a sort key
+
+### DynamoDB - Backups
+Two types of backups:
+1. On-demand backup. Full copy of table retained until removed
+2. Point-in-time Recovery. Not enabled by default. 35 day window to restore to 1 second granularity, PER table restores
+EXAM - NoSQL mentioned? DynamoDB
+EXAM - Key/Value DB mentioned? DynamoDB
+EXAM - Relational Data/DB? NOT DynamoDB
+
+## DynamoDB - Operations, Consistency and Performance
