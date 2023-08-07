@@ -2239,7 +2239,7 @@ Elastic Network Interfaces (ENIs) which can be allocated to EC2 instances - and 
 ### EC2 - Elastic IP address
 Allocated to your AWS account. If Elastic IP assigned, it removes the Public IPv4 and replaces with the Elastic IP
 
-EXAM: If you assign Elastic IP and remove it, can you get the original, replaced IPv4 adddress back? NO, you get a different one back
+EXAM: If you assign Elastic IP and remove it, can you get the original, replaced IPv4 address back? NO, you get a different one back
 EXAM: Secondary ENIs + MAC addresses = Licensing that can move between instances
 EXAM: Multi-homed (subnets) Management & Data: An instance with an ENI in two different subnets (maybe use one for management and one for data)
 EXAM: Security Groups are attached to ENIs, not instances. Different rules needed for different groups? Set up multiple ENIs with SGs on each
