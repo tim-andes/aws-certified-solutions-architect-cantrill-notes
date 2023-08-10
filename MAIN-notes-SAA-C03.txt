@@ -2313,7 +2313,7 @@ Create WP EC2 instance. Improve EC2 login screen. Create AMI from custom instanc
 
 Steps: 
 1. Set up WP Instance: https://learn-cantrill-labs.s3.amazonaws.com/awscoursedemos/0007-aws-associate-ec2-ami-demo/lesson_commands.txt > Create Stack
-NOTE: This bullshit tutorial also broke like the previous one. Submitted a ticket. Cantrill says it works
+***UNSUCCESSFUL DEMO: Failed to complete. Cantrill says it works but I couldn't get it 
 
 
 ## EC2 Purchase Options (Launch Types)
@@ -2917,7 +2917,7 @@ Steps:
 Looks like...
 /** Database hostname */
 define( 'DB_HOST', 'a4lwordpress.cloy7bpdvh9v.us-east-1.rds.amazonaws.com' ); > ctrl+o to Save, ctrl+x to Exit nano
-10... annnnnd the site no longer works get fucked loser
+10... Demo broke at this stage
 11. Cleanup: RDS > Delete DB > VPC > Delete Security group "a4lvpc-rds-sg" > Cloufformation > Delete Stack
 
 ## Relational Database Service (RDS) MultiAZ - Instance and Cluster Deployments
