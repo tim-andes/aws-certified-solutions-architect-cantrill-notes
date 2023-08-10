@@ -2120,7 +2120,7 @@ Provisioned IOPS SSD — Provides high performance for mission-critical, low-lat
 - Size: 4BG -> 16TB for io1/io2. io2 Block Express 4GB -> 64TB
 - Size-to-performance ratio maximums: io1 50IOPS/GB, io2 500IOPS/GB, io2 Block Express 1000IOPS/GB
 - Per Instance Performance restriction: the max performance between the EBS svc and an EC2 instance
-- WOW NUMBERS EVERYWHERE (all the specs for Provisioned IOPS): https://imgur.com/a/zYQk7G1
+- NUMBERS (all the specs for Provisioned IOPS): https://imgur.com/a/zYQk7G1
 
 EXAM: Provisioned IOPS: Most consistent low latency and jitter. 
 EXAM: Prov.IOPS for sub-millisecond latency, consistent latency, and higher performance.
@@ -2282,9 +2282,8 @@ echo "GRANT ALL ON $DBName.* TO '$DBUser'@'localhost';" >> /tmp/db.setup >
 echo "FLUSH PRIVILEGES;" >> /tmp/db.setup >
 mysql -u root --password=$DBRootPassword < /tmp/db.setup
 sudo rm /tmp/db.setup
-*** Somewhere this bullshit fucked up and the system couldn't see tmp/db.setup, then it could, so the commands got duplicated
-**** Useless demo to show how annoying it is to do manually. Fucking up was a great example of dont do it this way
-Clean up Account: CFN > delete stack
+*** UNSUCCESSFUL DEMO--Somewhere this messed up and the system couldn't see tmp/db.setup, then it could, so the commands got duplicated - 
+10. Clean up Account: CFN > delete stack
 
 
 ## EC2 - Amazon Machine Image (AMI)
