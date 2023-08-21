@@ -6,10 +6,10 @@ Results: Passed on the first attempt.
 140 hours of study, May 1 - August 10 Mon-Fri
 
 Tools:
-Cantrill's SAA-C03 course (1.5x speed, pausing to take notes)
-Tutorials Dojo SAA-C03 practice exam collection
-AWS docs
-Flash cards on phone while vacationing (Quizlet app free version, found collections made by other users)
+- Cantrill's SAA-C03 course (1.5x speed, pausing to take notes)
+- Tutorials Dojo SAA-C03 practice exam collection
+- AWS docs
+- Flash cards on phone while vacationing (Quizlet app free version, found collections made by other users)
 
 Exam: August 11
 Studied roughly 3 hours a day usually using the Pomodoro technique (25min study, 5min break, repeat). Basically spent 95% of the time just going through Cantrill's course and taking notes. I would go in to Tutorials Dojo to reinforce the topic I learned with quizzes and reviews. And Googling often when I didn't understand concepts or how different services connected. For the last 5 days after I finished Cantrill's course, I focused on the Tutorials Dojo full practice exams, all timed. I would then review what I answered incorrectly and then retake the same exam to get a 95%+. I did each exam twice in a row and completed two new exams a day. During a vacation during my study period, I brought some flashcards on my phone found on Quizlet to just keep the content close in mind, but not study heavily during the break. I burned out a few times and took a 3 day weekend here and there, as well.
