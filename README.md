@@ -1,5 +1,5 @@
 # aws-certified-solutions-architect-cantrill-notes
-My personal notes from Adrian Cantrill's course for AWS Certified Solutions Architect - Associate.
+My personal notes from Adrian Cantrill's course for AWS Certified Solutions Architect - Associate (SAA-C03).
 
 Results: Passed on the first attempt. 
 
