@@ -27,8 +27,8 @@ Create Cost Budgets: click "Budgets" > select Use a Template > select an appropr
 
 ## 4. Create an IAM user, IAMADMIN and give permissions
 Search "IAM" > IAM Dashboard > Create user "iamadmin"
-- Create an IAM user (2nd radial option, 1st option to be covered later)
-- Custom PW
+- Create an IAM user (2nd radial option, 1st option to be covered later), check "Provide user access to the AWS Management Console - optional"
+- Select second radial option, Create IAM User: Custom PW
 - Give admin permissions "Attach policies directly" > check "AdministratorAccess"
 - Create user
 - Test login by visiting alias URL
