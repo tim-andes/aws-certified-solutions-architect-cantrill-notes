@@ -21,3 +21,15 @@ In terms of the actual exam, I found that the content and questions were overall
 Overall, the content and certification exam was difficult, but entirely doable on the first attempt if you use your resources and stay consistent. Good luck!
 ___
 What's Next? It was recommended to me (by a friend who works professionally in AWS) that I complete the Cloud Resume Challenge which has been extremely valuable so far. I am a self-taught developer with 2 years of professional Web Dev experience and the CRC challenge is helping me bridge the gap from AWS study to job-readiness. I'll be able to share this project and its results with recruiters/hiring managers to display my abilities
+
+# Basic Account Setup 
+1. create account and root user
+2. add alt contact info
+3. billing notifications, create free-tier budget (skip MFA and security), "CRC Zero-Spend Budget"
+4. create IAM admin 
+- create alias for sign in
+5. sign in with crc-admin
+6. create access keys
+-public
+-secret
+7. configure CLI (command prompt) ``aws configure --profile crc-admin
